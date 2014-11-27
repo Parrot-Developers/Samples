@@ -6,5 +6,4 @@ The device controllers are used as an interface between the products and the con
 
 * MiniDroneDeviceController is used to control the RollingSpider
 * JumpingSumoDeviceController is used to control the JumpingSumo
-
-You can implement your own to control the Bebop drone.
+* Drone3DeviceController is used to control the Bebop drone
