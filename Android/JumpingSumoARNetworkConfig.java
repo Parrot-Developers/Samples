@@ -35,6 +35,7 @@ import java.util.ArrayList;
 import com.parrot.arsdk.arnetwork.ARNetworkIOBufferParam;
 import com.parrot.arsdk.arnetworkal.ARNETWORKAL_FRAME_TYPE_ENUM;
 import com.parrot.arsdk.arnetworkal.ARNetworkALManager;
+import com.parrot.arsdk.arstream.ARStreamReader;
 
 public final class JumpingSumoARNetworkConfig extends ARNetworkConfig
 {
@@ -54,6 +55,7 @@ public final class JumpingSumoARNetworkConfig extends ARNetworkConfig
         outboundPort = 43210;
         
         hasVideo = true;
+        videoMaxAckInterval = -1;
         
         bleNotificationIDs = null;
         

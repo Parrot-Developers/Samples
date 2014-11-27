@@ -65,17 +65,29 @@ import com.parrot.arsdk.arcommands.ARCommandCommonCommonStateMassStorageInfoStat
 import com.parrot.arsdk.arcommands.ARCommandCommonCommonStateCurrentDateChangedListener;
 import com.parrot.arsdk.arcommands.ARCommandCommonCommonStateCurrentTimeChangedListener;
 import com.parrot.arsdk.arcommands.ARCommandCommonCommonStateMassStorageInfoRemainingListChangedListener;
+import com.parrot.arsdk.arcommands.ARCommandCommonCommonStateWifiSignalChangedListener;
 import com.parrot.arsdk.arcommands.ARCommandCommonOverHeatStateOverHeatChangedListener;
 import com.parrot.arsdk.arcommands.ARCommandCommonOverHeatStateOverHeatRegulationChangedListener;
 import com.parrot.arsdk.arcommands.ARCommandCommonControllerStateIsPilotingChangedListener;
+import com.parrot.arsdk.arcommands.ARCommandCommonWifiSettingsStateOutdoorSettingsChangedListener;
+import com.parrot.arsdk.arcommands.ARCOMMANDS_COMMON_MAVLINK_START_TYPE_ENUM;
+import com.parrot.arsdk.arcommands.ARCommandCommonMavlinkStateMavlinkFilePlayingStateChangedListener;
+import com.parrot.arsdk.arcommands.ARCOMMANDS_COMMON_MAVLINKSTATE_MAVLINKFILEPLAYINGSTATECHANGED_STATE_ENUM;
+import com.parrot.arsdk.arcommands.ARCOMMANDS_COMMON_MAVLINKSTATE_MAVLINKFILEPLAYINGSTATECHANGED_TYPE_ENUM;
+import com.parrot.arsdk.arcommands.ARCommandCommonCalibrationStateMagnetoCalibrationStateChangedListener;
+import com.parrot.arsdk.arcommands.ARCommandCommonCalibrationStateMagnetoCalibrationRequiredStateListener;
+import com.parrot.arsdk.arcommands.ARCommandCommonCalibrationStateMagnetoCalibrationAxisToCalibrateChangedListener;
+import com.parrot.arsdk.arcommands.ARCOMMANDS_COMMON_CALIBRATIONSTATE_MAGNETOCALIBRATIONAXISTOCALIBRATECHANGED_AXIS_ENUM;
+import com.parrot.arsdk.arcommands.ARCommandCommonCalibrationStateMagnetoCalibrationStartedChangedListener;
+import com.parrot.arsdk.arcommands.ARCommandCommonCameraSettingsStateCameraSettingsChangedListener;
 import com.parrot.arsdk.arcommands.ARCommandCommonDebugStatsEventSendPacketListener;
 
-public abstract class DeviceControllerAndLibARCommands extends Service implements ARCommandCommonSettingsStateAllSettingsChangedListener, ARCommandCommonSettingsStateResetChangedListener, ARCommandCommonSettingsStateProductNameChangedListener, ARCommandCommonSettingsStateProductVersionChangedListener, ARCommandCommonSettingsStateProductSerialHighChangedListener, ARCommandCommonSettingsStateProductSerialLowChangedListener, ARCommandCommonSettingsStateCountryChangedListener, ARCommandCommonSettingsStateAutoCountryChangedListener, ARCommandCommonCommonStateAllStatesChangedListener, ARCommandCommonCommonStateBatteryStateChangedListener, ARCommandCommonCommonStateMassStorageStateListChangedListener, ARCommandCommonCommonStateMassStorageInfoStateListChangedListener, ARCommandCommonCommonStateCurrentDateChangedListener, ARCommandCommonCommonStateCurrentTimeChangedListener, ARCommandCommonCommonStateMassStorageInfoRemainingListChangedListener, ARCommandCommonOverHeatStateOverHeatChangedListener, ARCommandCommonOverHeatStateOverHeatRegulationChangedListener, ARCommandCommonControllerStateIsPilotingChangedListener, ARCommandCommonDebugStatsEventSendPacketListener
+public abstract class DeviceControllerAndLibARCommands extends Service implements ARCommandCommonSettingsStateAllSettingsChangedListener, ARCommandCommonSettingsStateResetChangedListener, ARCommandCommonSettingsStateProductNameChangedListener, ARCommandCommonSettingsStateProductVersionChangedListener, ARCommandCommonSettingsStateProductSerialHighChangedListener, ARCommandCommonSettingsStateProductSerialLowChangedListener, ARCommandCommonSettingsStateCountryChangedListener, ARCommandCommonSettingsStateAutoCountryChangedListener, ARCommandCommonCommonStateAllStatesChangedListener, ARCommandCommonCommonStateBatteryStateChangedListener, ARCommandCommonCommonStateMassStorageStateListChangedListener, ARCommandCommonCommonStateMassStorageInfoStateListChangedListener, ARCommandCommonCommonStateCurrentDateChangedListener, ARCommandCommonCommonStateCurrentTimeChangedListener, ARCommandCommonCommonStateMassStorageInfoRemainingListChangedListener, ARCommandCommonCommonStateWifiSignalChangedListener, ARCommandCommonOverHeatStateOverHeatChangedListener, ARCommandCommonOverHeatStateOverHeatRegulationChangedListener, ARCommandCommonControllerStateIsPilotingChangedListener, ARCommandCommonWifiSettingsStateOutdoorSettingsChangedListener, ARCommandCommonMavlinkStateMavlinkFilePlayingStateChangedListener, ARCommandCommonCalibrationStateMagnetoCalibrationStateChangedListener, ARCommandCommonCalibrationStateMagnetoCalibrationRequiredStateListener, ARCommandCommonCalibrationStateMagnetoCalibrationAxisToCalibrateChangedListener, ARCommandCommonCalibrationStateMagnetoCalibrationStartedChangedListener, ARCommandCommonCameraSettingsStateCameraSettingsChangedListener, ARCommandCommonDebugStatsEventSendPacketListener
 {
     private final static String DEVICECONTROLLERANDLIBARCOMMANDS_TAG = "DeviceControllerAndLibARCommands";
     
     private HashMap<String, Intent> deviceControllerAndLibARCommandsIntentCache;
-    protected Bundle notificationDictionary = new Bundle();
+    protected ARBundle notificationDictionary = new ARBundle();
     
     public final static String DeviceControllerNotificationDictionaryChanged = "DeviceControllerNotificationDictionaryChanged";
     public final static String DeviceControllerSettingsStateAllSettingsChangedNotification = "DeviceControllerSettingsStateAllSettingsChangedNotification";
@@ -114,11 +126,36 @@ public abstract class DeviceControllerAndLibARCommands extends Service implement
     public final static String DeviceControllerCommonStateMassStorageInfoRemainingListChangedNotificationFree_spaceKey = "DeviceControllerCommonStateMassStorageInfoRemainingListChangedNotificationFree_spaceKey";
     public final static String DeviceControllerCommonStateMassStorageInfoRemainingListChangedNotificationRec_timeKey = "DeviceControllerCommonStateMassStorageInfoRemainingListChangedNotificationRec_timeKey";
     public final static String DeviceControllerCommonStateMassStorageInfoRemainingListChangedNotificationPhoto_remainingKey = "DeviceControllerCommonStateMassStorageInfoRemainingListChangedNotificationPhoto_remainingKey";
+    public final static String DeviceControllerCommonStateWifiSignalChangedNotification = "DeviceControllerCommonStateWifiSignalChangedNotification";
+    public final static String DeviceControllerCommonStateWifiSignalChangedNotificationRssiKey = "DeviceControllerCommonStateWifiSignalChangedNotificationRssiKey";
     public final static String DeviceControllerOverHeatStateOverHeatChangedNotification = "DeviceControllerOverHeatStateOverHeatChangedNotification";
     public final static String DeviceControllerOverHeatStateOverHeatRegulationChangedNotification = "DeviceControllerOverHeatStateOverHeatRegulationChangedNotification";
     public final static String DeviceControllerOverHeatStateOverHeatRegulationChangedNotificationRegulationTypeKey = "DeviceControllerOverHeatStateOverHeatRegulationChangedNotificationRegulationTypeKey";
     public final static String DeviceControllerControllerStateIsPilotingChangedNotification = "DeviceControllerControllerStateIsPilotingChangedNotification";
     public final static String DeviceControllerControllerStateIsPilotingChangedNotificationPilotingKey = "DeviceControllerControllerStateIsPilotingChangedNotificationPilotingKey";
+    public final static String DeviceControllerWifiSettingsStateOutdoorSettingsChangedNotification = "DeviceControllerWifiSettingsStateOutdoorSettingsChangedNotification";
+    public final static String DeviceControllerWifiSettingsStateOutdoorSettingsChangedNotificationOutdoorKey = "DeviceControllerWifiSettingsStateOutdoorSettingsChangedNotificationOutdoorKey";
+    public final static String DeviceControllerMavlinkStateMavlinkFilePlayingStateChangedNotification = "DeviceControllerMavlinkStateMavlinkFilePlayingStateChangedNotification";
+    public final static String DeviceControllerMavlinkStateMavlinkFilePlayingStateChangedNotificationStateKey = "DeviceControllerMavlinkStateMavlinkFilePlayingStateChangedNotificationStateKey";
+    public final static String DeviceControllerMavlinkStateMavlinkFilePlayingStateChangedNotificationFilepathKey = "DeviceControllerMavlinkStateMavlinkFilePlayingStateChangedNotificationFilepathKey";
+    public final static String DeviceControllerMavlinkStateMavlinkFilePlayingStateChangedNotificationTypeKey = "DeviceControllerMavlinkStateMavlinkFilePlayingStateChangedNotificationTypeKey";
+    public final static String DeviceControllerCalibrationStateMagnetoCalibrationStateChangedNotification = "DeviceControllerCalibrationStateMagnetoCalibrationStateChangedNotification";
+    public final static String DeviceControllerCalibrationStateMagnetoCalibrationStateChangedNotificationXAxisCalibrationKey = "DeviceControllerCalibrationStateMagnetoCalibrationStateChangedNotificationXAxisCalibrationKey";
+    public final static String DeviceControllerCalibrationStateMagnetoCalibrationStateChangedNotificationYAxisCalibrationKey = "DeviceControllerCalibrationStateMagnetoCalibrationStateChangedNotificationYAxisCalibrationKey";
+    public final static String DeviceControllerCalibrationStateMagnetoCalibrationStateChangedNotificationZAxisCalibrationKey = "DeviceControllerCalibrationStateMagnetoCalibrationStateChangedNotificationZAxisCalibrationKey";
+    public final static String DeviceControllerCalibrationStateMagnetoCalibrationStateChangedNotificationCalibrationFailedKey = "DeviceControllerCalibrationStateMagnetoCalibrationStateChangedNotificationCalibrationFailedKey";
+    public final static String DeviceControllerCalibrationStateMagnetoCalibrationRequiredStateNotification = "DeviceControllerCalibrationStateMagnetoCalibrationRequiredStateNotification";
+    public final static String DeviceControllerCalibrationStateMagnetoCalibrationRequiredStateNotificationRequiredKey = "DeviceControllerCalibrationStateMagnetoCalibrationRequiredStateNotificationRequiredKey";
+    public final static String DeviceControllerCalibrationStateMagnetoCalibrationAxisToCalibrateChangedNotification = "DeviceControllerCalibrationStateMagnetoCalibrationAxisToCalibrateChangedNotification";
+    public final static String DeviceControllerCalibrationStateMagnetoCalibrationAxisToCalibrateChangedNotificationAxisKey = "DeviceControllerCalibrationStateMagnetoCalibrationAxisToCalibrateChangedNotificationAxisKey";
+    public final static String DeviceControllerCalibrationStateMagnetoCalibrationStartedChangedNotification = "DeviceControllerCalibrationStateMagnetoCalibrationStartedChangedNotification";
+    public final static String DeviceControllerCalibrationStateMagnetoCalibrationStartedChangedNotificationStartedKey = "DeviceControllerCalibrationStateMagnetoCalibrationStartedChangedNotificationStartedKey";
+    public final static String DeviceControllerCameraSettingsStateCameraSettingsChangedNotification = "DeviceControllerCameraSettingsStateCameraSettingsChangedNotification";
+    public final static String DeviceControllerCameraSettingsStateCameraSettingsChangedNotificationFovKey = "DeviceControllerCameraSettingsStateCameraSettingsChangedNotificationFovKey";
+    public final static String DeviceControllerCameraSettingsStateCameraSettingsChangedNotificationPanMaxKey = "DeviceControllerCameraSettingsStateCameraSettingsChangedNotificationPanMaxKey";
+    public final static String DeviceControllerCameraSettingsStateCameraSettingsChangedNotificationPanMinKey = "DeviceControllerCameraSettingsStateCameraSettingsChangedNotificationPanMinKey";
+    public final static String DeviceControllerCameraSettingsStateCameraSettingsChangedNotificationTiltMaxKey = "DeviceControllerCameraSettingsStateCameraSettingsChangedNotificationTiltMaxKey";
+    public final static String DeviceControllerCameraSettingsStateCameraSettingsChangedNotificationTiltMinKey = "DeviceControllerCameraSettingsStateCameraSettingsChangedNotificationTiltMinKey";
     public final static String DeviceControllerStatsEventSendPacketNotification = "DeviceControllerStatsEventSendPacketNotification";
     public final static String DeviceControllerStatsEventSendPacketNotificationPacketKey = "DeviceControllerStatsEventSendPacketNotificationPacketKey";
 
@@ -144,9 +181,17 @@ public abstract class DeviceControllerAndLibARCommands extends Service implement
         ARCommand.setCommonCommonStateCurrentDateChangedListener (this);
         ARCommand.setCommonCommonStateCurrentTimeChangedListener (this);
         ARCommand.setCommonCommonStateMassStorageInfoRemainingListChangedListener (this);
+        ARCommand.setCommonCommonStateWifiSignalChangedListener (this);
         ARCommand.setCommonOverHeatStateOverHeatChangedListener (this);
         ARCommand.setCommonOverHeatStateOverHeatRegulationChangedListener (this);
         ARCommand.setCommonControllerStateIsPilotingChangedListener (this);
+        ARCommand.setCommonWifiSettingsStateOutdoorSettingsChangedListener (this);
+        ARCommand.setCommonMavlinkStateMavlinkFilePlayingStateChangedListener (this);
+        ARCommand.setCommonCalibrationStateMagnetoCalibrationStateChangedListener (this);
+        ARCommand.setCommonCalibrationStateMagnetoCalibrationRequiredStateListener (this);
+        ARCommand.setCommonCalibrationStateMagnetoCalibrationAxisToCalibrateChangedListener (this);
+        ARCommand.setCommonCalibrationStateMagnetoCalibrationStartedChangedListener (this);
+        ARCommand.setCommonCameraSettingsStateCameraSettingsChangedListener (this);
         ARCommand.setCommonDebugStatsEventSendPacketListener (this);
     }
     
@@ -167,15 +212,23 @@ public abstract class DeviceControllerAndLibARCommands extends Service implement
         ARCommand.setCommonCommonStateCurrentDateChangedListener (null);
         ARCommand.setCommonCommonStateCurrentTimeChangedListener (null);
         ARCommand.setCommonCommonStateMassStorageInfoRemainingListChangedListener (null);
+        ARCommand.setCommonCommonStateWifiSignalChangedListener (null);
         ARCommand.setCommonOverHeatStateOverHeatChangedListener (null);
         ARCommand.setCommonOverHeatStateOverHeatRegulationChangedListener (null);
         ARCommand.setCommonControllerStateIsPilotingChangedListener (null);
+        ARCommand.setCommonWifiSettingsStateOutdoorSettingsChangedListener (null);
+        ARCommand.setCommonMavlinkStateMavlinkFilePlayingStateChangedListener (null);
+        ARCommand.setCommonCalibrationStateMagnetoCalibrationStateChangedListener (null);
+        ARCommand.setCommonCalibrationStateMagnetoCalibrationRequiredStateListener (null);
+        ARCommand.setCommonCalibrationStateMagnetoCalibrationAxisToCalibrateChangedListener (null);
+        ARCommand.setCommonCalibrationStateMagnetoCalibrationStartedChangedListener (null);
+        ARCommand.setCommonCameraSettingsStateCameraSettingsChangedListener (null);
         ARCommand.setCommonDebugStatsEventSendPacketListener (null);
     }
     
     private void initDeviceControllerAndLibARCommandsIntents ()
     {
-        deviceControllerAndLibARCommandsIntentCache = new HashMap<String, Intent>(19);
+        deviceControllerAndLibARCommandsIntentCache = new HashMap<String, Intent>(27);
         deviceControllerAndLibARCommandsIntentCache.put(DeviceControllerSettingsStateAllSettingsChangedNotification, new Intent (DeviceControllerSettingsStateAllSettingsChangedNotification));
         deviceControllerAndLibARCommandsIntentCache.put(DeviceControllerSettingsStateResetChangedNotification, new Intent (DeviceControllerSettingsStateResetChangedNotification));
         deviceControllerAndLibARCommandsIntentCache.put(DeviceControllerSettingsStateProductNameChangedNotification, new Intent (DeviceControllerSettingsStateProductNameChangedNotification));
@@ -191,9 +244,17 @@ public abstract class DeviceControllerAndLibARCommands extends Service implement
         deviceControllerAndLibARCommandsIntentCache.put(DeviceControllerCommonStateCurrentDateChangedNotification, new Intent (DeviceControllerCommonStateCurrentDateChangedNotification));
         deviceControllerAndLibARCommandsIntentCache.put(DeviceControllerCommonStateCurrentTimeChangedNotification, new Intent (DeviceControllerCommonStateCurrentTimeChangedNotification));
         deviceControllerAndLibARCommandsIntentCache.put(DeviceControllerCommonStateMassStorageInfoRemainingListChangedNotification, new Intent (DeviceControllerCommonStateMassStorageInfoRemainingListChangedNotification));
+        deviceControllerAndLibARCommandsIntentCache.put(DeviceControllerCommonStateWifiSignalChangedNotification, new Intent (DeviceControllerCommonStateWifiSignalChangedNotification));
         deviceControllerAndLibARCommandsIntentCache.put(DeviceControllerOverHeatStateOverHeatChangedNotification, new Intent (DeviceControllerOverHeatStateOverHeatChangedNotification));
         deviceControllerAndLibARCommandsIntentCache.put(DeviceControllerOverHeatStateOverHeatRegulationChangedNotification, new Intent (DeviceControllerOverHeatStateOverHeatRegulationChangedNotification));
         deviceControllerAndLibARCommandsIntentCache.put(DeviceControllerControllerStateIsPilotingChangedNotification, new Intent (DeviceControllerControllerStateIsPilotingChangedNotification));
+        deviceControllerAndLibARCommandsIntentCache.put(DeviceControllerWifiSettingsStateOutdoorSettingsChangedNotification, new Intent (DeviceControllerWifiSettingsStateOutdoorSettingsChangedNotification));
+        deviceControllerAndLibARCommandsIntentCache.put(DeviceControllerMavlinkStateMavlinkFilePlayingStateChangedNotification, new Intent (DeviceControllerMavlinkStateMavlinkFilePlayingStateChangedNotification));
+        deviceControllerAndLibARCommandsIntentCache.put(DeviceControllerCalibrationStateMagnetoCalibrationStateChangedNotification, new Intent (DeviceControllerCalibrationStateMagnetoCalibrationStateChangedNotification));
+        deviceControllerAndLibARCommandsIntentCache.put(DeviceControllerCalibrationStateMagnetoCalibrationRequiredStateNotification, new Intent (DeviceControllerCalibrationStateMagnetoCalibrationRequiredStateNotification));
+        deviceControllerAndLibARCommandsIntentCache.put(DeviceControllerCalibrationStateMagnetoCalibrationAxisToCalibrateChangedNotification, new Intent (DeviceControllerCalibrationStateMagnetoCalibrationAxisToCalibrateChangedNotification));
+        deviceControllerAndLibARCommandsIntentCache.put(DeviceControllerCalibrationStateMagnetoCalibrationStartedChangedNotification, new Intent (DeviceControllerCalibrationStateMagnetoCalibrationStartedChangedNotification));
+        deviceControllerAndLibARCommandsIntentCache.put(DeviceControllerCameraSettingsStateCameraSettingsChangedNotification, new Intent (DeviceControllerCameraSettingsStateCameraSettingsChangedNotification));
         deviceControllerAndLibARCommandsIntentCache.put(DeviceControllerStatsEventSendPacketNotification, new Intent (DeviceControllerStatsEventSendPacketNotification));
     }
     
@@ -202,9 +263,9 @@ public abstract class DeviceControllerAndLibARCommands extends Service implement
         return deviceControllerAndLibARCommandsIntentCache.get(name) ;
     }
     
-    public Bundle getNotificationDictionary ()
+    public synchronized ARBundle getNotificationDictionary ()
     {
-        return new Bundle(notificationDictionary);
+        return new ARBundle(notificationDictionary);
     }
     
     /**
@@ -217,7 +278,7 @@ public abstract class DeviceControllerAndLibARCommands extends Service implement
      * Called when a command <code>AllSettingsChanged</code> of class <code>SettingsState</code> in project <code>Common</code> is decoded
      */
     @Override
-    public void onCommonSettingsStateAllSettingsChangedUpdate ()
+    public synchronized void onCommonSettingsStateAllSettingsChangedUpdate ()
     {
         /* dictionary of update */
         Bundle updateDictionary = new Bundle();
@@ -242,7 +303,7 @@ public abstract class DeviceControllerAndLibARCommands extends Service implement
      * Called when a command <code>ResetChanged</code> of class <code>SettingsState</code> in project <code>Common</code> is decoded
      */
     @Override
-    public void onCommonSettingsStateResetChangedUpdate ()
+    public synchronized void onCommonSettingsStateResetChangedUpdate ()
     {
         /* dictionary of update */
         Bundle updateDictionary = new Bundle();
@@ -268,7 +329,7 @@ public abstract class DeviceControllerAndLibARCommands extends Service implement
      * @param name Product name
      */
     @Override
-    public void onCommonSettingsStateProductNameChangedUpdate (String name)
+    public synchronized void onCommonSettingsStateProductNameChangedUpdate (String name)
     {
         /* dictionary of update */
         Bundle updateDictionary = new Bundle();
@@ -297,7 +358,7 @@ public abstract class DeviceControllerAndLibARCommands extends Service implement
      * @param hardware Product hardware version
      */
     @Override
-    public void onCommonSettingsStateProductVersionChangedUpdate (String software, String hardware)
+    public synchronized void onCommonSettingsStateProductVersionChangedUpdate (String software, String hardware)
     {
         /* dictionary of update */
         Bundle updateDictionary = new Bundle();
@@ -326,7 +387,7 @@ public abstract class DeviceControllerAndLibARCommands extends Service implement
      * @param high Serial high number (hexadecimal value)
      */
     @Override
-    public void onCommonSettingsStateProductSerialHighChangedUpdate (String high)
+    public synchronized void onCommonSettingsStateProductSerialHighChangedUpdate (String high)
     {
         /* dictionary of update */
         Bundle updateDictionary = new Bundle();
@@ -354,7 +415,7 @@ public abstract class DeviceControllerAndLibARCommands extends Service implement
      * @param low Serial low number (hexadecimal value)
      */
     @Override
-    public void onCommonSettingsStateProductSerialLowChangedUpdate (String low)
+    public synchronized void onCommonSettingsStateProductSerialLowChangedUpdate (String low)
     {
         /* dictionary of update */
         Bundle updateDictionary = new Bundle();
@@ -382,7 +443,7 @@ public abstract class DeviceControllerAndLibARCommands extends Service implement
      * @param code Country code with ISO 3166 format, empty string means unknown country.
      */
     @Override
-    public void onCommonSettingsStateCountryChangedUpdate (String code)
+    public synchronized void onCommonSettingsStateCountryChangedUpdate (String code)
     {
         /* dictionary of update */
         Bundle updateDictionary = new Bundle();
@@ -410,7 +471,7 @@ public abstract class DeviceControllerAndLibARCommands extends Service implement
      * @param automatic Boolean : 0 : Manual / 1 : Auto
      */
     @Override
-    public void onCommonSettingsStateAutoCountryChangedUpdate (byte automatic)
+    public synchronized void onCommonSettingsStateAutoCountryChangedUpdate (byte automatic)
     {
         /* dictionary of update */
         Bundle updateDictionary = new Bundle();
@@ -437,7 +498,7 @@ public abstract class DeviceControllerAndLibARCommands extends Service implement
      * Called when a command <code>AllStatesChanged</code> of class <code>CommonState</code> in project <code>Common</code> is decoded
      */
     @Override
-    public void onCommonCommonStateAllStatesChangedUpdate ()
+    public synchronized void onCommonCommonStateAllStatesChangedUpdate ()
     {
         /* dictionary of update */
         Bundle updateDictionary = new Bundle();
@@ -463,7 +524,7 @@ public abstract class DeviceControllerAndLibARCommands extends Service implement
      * @param percent Battery percentage
      */
     @Override
-    public void onCommonCommonStateBatteryStateChangedUpdate (byte percent)
+    public synchronized void onCommonCommonStateBatteryStateChangedUpdate (byte percent)
     {
         /* dictionary of update */
         Bundle updateDictionary = new Bundle();
@@ -492,7 +553,7 @@ public abstract class DeviceControllerAndLibARCommands extends Service implement
      * @param name Mass storage name
      */
     @Override
-    public void onCommonCommonStateMassStorageStateListChangedUpdate (byte mass_storage_id, String name)
+    public synchronized void onCommonCommonStateMassStorageStateListChangedUpdate (byte mass_storage_id, String name)
     {
         /* dictionary of update */
         Bundle updateDictionary = new Bundle();
@@ -534,7 +595,7 @@ public abstract class DeviceControllerAndLibARCommands extends Service implement
      * @param internal Mass storage internal type state (1 if mass storage is internal, 0 otherwise)
      */
     @Override
-    public void onCommonCommonStateMassStorageInfoStateListChangedUpdate (byte mass_storage_id, int size, int used_size, byte plugged, byte full, byte internal)
+    public synchronized void onCommonCommonStateMassStorageInfoStateListChangedUpdate (byte mass_storage_id, int size, int used_size, byte plugged, byte full, byte internal)
     {
         /* dictionary of update */
         Bundle updateDictionary = new Bundle();
@@ -575,7 +636,7 @@ public abstract class DeviceControllerAndLibARCommands extends Service implement
      * @param date Date with ISO-8601 format
      */
     @Override
-    public void onCommonCommonStateCurrentDateChangedUpdate (String date)
+    public synchronized void onCommonCommonStateCurrentDateChangedUpdate (String date)
     {
         /* dictionary of update */
         Bundle updateDictionary = new Bundle();
@@ -603,7 +664,7 @@ public abstract class DeviceControllerAndLibARCommands extends Service implement
      * @param time Time with ISO-8601 format
      */
     @Override
-    public void onCommonCommonStateCurrentTimeChangedUpdate (String time)
+    public synchronized void onCommonCommonStateCurrentTimeChangedUpdate (String time)
     {
         /* dictionary of update */
         Bundle updateDictionary = new Bundle();
@@ -633,7 +694,7 @@ public abstract class DeviceControllerAndLibARCommands extends Service implement
      * @param photo_remaining Mass storage photo remaining
      */
     @Override
-    public void onCommonCommonStateMassStorageInfoRemainingListChangedUpdate (int free_space, short rec_time, int photo_remaining)
+    public synchronized void onCommonCommonStateMassStorageInfoRemainingListChangedUpdate (int free_space, short rec_time, int photo_remaining)
     {
         /* dictionary of update */
         Bundle updateDictionary = new Bundle();
@@ -667,10 +728,38 @@ public abstract class DeviceControllerAndLibARCommands extends Service implement
     }
     
     /**
+     * Called when a command <code>WifiSignalChanged</code> of class <code>CommonState</code> in project <code>Common</code> is decoded
+     * @param rssi RSSI of the signal between controller and the product (in dbm)
+     */
+    @Override
+    public synchronized void onCommonCommonStateWifiSignalChangedUpdate (short rssi)
+    {
+        /* dictionary of update */
+        Bundle updateDictionary = new Bundle();
+        Bundle notificationBundle = new Bundle();
+        notificationBundle.putShort(DeviceControllerCommonStateWifiSignalChangedNotificationRssiKey, rssi);
+        
+        updateDictionary.putBundle(DeviceControllerCommonStateWifiSignalChangedNotification, notificationBundle);
+        
+        /* update the NotificationDictionary */
+        notificationDictionary.putBundle(DeviceControllerCommonStateWifiSignalChangedNotification, notificationBundle);
+        
+        /* send NotificationDictionaryChanged */
+        Intent intentDicChanged = new Intent (DeviceControllerNotificationDictionaryChanged);
+        intentDicChanged.putExtras (updateDictionary);
+        LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intentDicChanged);
+        
+        /* send notification dedicated */
+        Intent intent = deviceControllerAndLibARCommandsIntentCache.get(DeviceControllerCommonStateWifiSignalChangedNotification);
+        intent.putExtras (notificationBundle);
+        LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
+    }
+    
+    /**
      * Called when a command <code>OverHeatChanged</code> of class <code>OverHeatState</code> in project <code>Common</code> is decoded
      */
     @Override
-    public void onCommonOverHeatStateOverHeatChangedUpdate ()
+    public synchronized void onCommonOverHeatStateOverHeatChangedUpdate ()
     {
         /* dictionary of update */
         Bundle updateDictionary = new Bundle();
@@ -696,7 +785,7 @@ public abstract class DeviceControllerAndLibARCommands extends Service implement
      * @param regulationType Type of overheat regulation : 0 for ventilation, 1 for switch off
      */
     @Override
-    public void onCommonOverHeatStateOverHeatRegulationChangedUpdate (byte regulationType)
+    public synchronized void onCommonOverHeatStateOverHeatRegulationChangedUpdate (byte regulationType)
     {
         /* dictionary of update */
         Bundle updateDictionary = new Bundle();
@@ -724,7 +813,7 @@ public abstract class DeviceControllerAndLibARCommands extends Service implement
      * @param piloting 0 when the application is not in the piloting HUD, 1 when it enters the HUD.
      */
     @Override
-    public void onCommonControllerStateIsPilotingChangedUpdate (byte piloting)
+    public synchronized void onCommonControllerStateIsPilotingChangedUpdate (byte piloting)
     {
         /* dictionary of update */
         Bundle updateDictionary = new Bundle();
@@ -748,11 +837,237 @@ public abstract class DeviceControllerAndLibARCommands extends Service implement
     }
     
     /**
+     * Called when a command <code>OutdoorSettingsChanged</code> of class <code>WifiSettingsState</code> in project <code>Common</code> is decoded
+     * @param outdoor 1 if it should use outdoor wifi settings, 0 otherwise
+     */
+    @Override
+    public synchronized void onCommonWifiSettingsStateOutdoorSettingsChangedUpdate (byte outdoor)
+    {
+        /* dictionary of update */
+        Bundle updateDictionary = new Bundle();
+        Bundle notificationBundle = new Bundle();
+        notificationBundle.putByte(DeviceControllerWifiSettingsStateOutdoorSettingsChangedNotificationOutdoorKey, outdoor);
+        
+        updateDictionary.putBundle(DeviceControllerWifiSettingsStateOutdoorSettingsChangedNotification, notificationBundle);
+        
+        /* update the NotificationDictionary */
+        notificationDictionary.putBundle(DeviceControllerWifiSettingsStateOutdoorSettingsChangedNotification, notificationBundle);
+        
+        /* send NotificationDictionaryChanged */
+        Intent intentDicChanged = new Intent (DeviceControllerNotificationDictionaryChanged);
+        intentDicChanged.putExtras (updateDictionary);
+        LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intentDicChanged);
+        
+        /* send notification dedicated */
+        Intent intent = deviceControllerAndLibARCommandsIntentCache.get(DeviceControllerWifiSettingsStateOutdoorSettingsChangedNotification);
+        intent.putExtras (notificationBundle);
+        LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
+    }
+    
+    /**
+     * Called when a command <code>MavlinkFilePlayingStateChanged</code> of class <code>MavlinkState</code> in project <code>Common</code> is decoded
+     * @param state State of the mavlink
+     * @param filepath flight plan file path from the mavlink ftp root
+     * @param type type of the played mavlink file
+     */
+    @Override
+    public synchronized void onCommonMavlinkStateMavlinkFilePlayingStateChangedUpdate (ARCOMMANDS_COMMON_MAVLINKSTATE_MAVLINKFILEPLAYINGSTATECHANGED_STATE_ENUM state, String filepath, ARCOMMANDS_COMMON_MAVLINKSTATE_MAVLINKFILEPLAYINGSTATECHANGED_TYPE_ENUM type)
+    {
+        /* dictionary of update */
+        Bundle updateDictionary = new Bundle();
+        Bundle notificationBundle = new Bundle();
+        notificationBundle.putInt(DeviceControllerMavlinkStateMavlinkFilePlayingStateChangedNotificationStateKey, (state != null) ? state.getValue() : ARCOMMANDS_COMMON_MAVLINKSTATE_MAVLINKFILEPLAYINGSTATECHANGED_STATE_ENUM.ARCOMMANDS_COMMON_MAVLINKSTATE_MAVLINKFILEPLAYINGSTATECHANGED_STATE_MAX.getValue());
+        if (state == null)
+        {
+            ARSALPrint.e(DEVICECONTROLLERANDLIBARCOMMANDS_TAG, "Bad value for argument `state` in MavlinkFilePlayingStateChanged command from the device.");
+        }
+        notificationBundle.putString(DeviceControllerMavlinkStateMavlinkFilePlayingStateChangedNotificationFilepathKey, filepath);
+        notificationBundle.putInt(DeviceControllerMavlinkStateMavlinkFilePlayingStateChangedNotificationTypeKey, (type != null) ? type.getValue() : ARCOMMANDS_COMMON_MAVLINKSTATE_MAVLINKFILEPLAYINGSTATECHANGED_TYPE_ENUM.ARCOMMANDS_COMMON_MAVLINKSTATE_MAVLINKFILEPLAYINGSTATECHANGED_TYPE_MAX.getValue());
+        if (type == null)
+        {
+            ARSALPrint.e(DEVICECONTROLLERANDLIBARCOMMANDS_TAG, "Bad value for argument `type` in MavlinkFilePlayingStateChanged command from the device.");
+        }
+        
+        updateDictionary.putBundle(DeviceControllerMavlinkStateMavlinkFilePlayingStateChangedNotification, notificationBundle);
+        
+        /* update the NotificationDictionary */
+        notificationDictionary.putBundle(DeviceControllerMavlinkStateMavlinkFilePlayingStateChangedNotification, notificationBundle);
+        
+        /* send NotificationDictionaryChanged */
+        Intent intentDicChanged = new Intent (DeviceControllerNotificationDictionaryChanged);
+        intentDicChanged.putExtras (updateDictionary);
+        LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intentDicChanged);
+        
+        /* send notification dedicated */
+        Intent intent = deviceControllerAndLibARCommandsIntentCache.get(DeviceControllerMavlinkStateMavlinkFilePlayingStateChangedNotification);
+        intent.putExtras (notificationBundle);
+        LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
+    }
+    
+    /**
+     * Called when a command <code>MagnetoCalibrationStateChanged</code> of class <code>CalibrationState</code> in project <code>Common</code> is decoded
+     * @param xAxisCalibration State of the x axis (roll) calibration : 1 if calibration is done, 0 otherwise
+     * @param yAxisCalibration State of the y axis (pitch) calibration : 1 if calibration is done, 0 otherwise
+     * @param zAxisCalibration State of the z axis (yaw) calibration : 1 if calibration is done, 0 otherwise
+     * @param calibrationFailed 1 if calibration has failed, 0 otherwise. If this arg is 1, consider all previous arg as 0
+     */
+    @Override
+    public synchronized void onCommonCalibrationStateMagnetoCalibrationStateChangedUpdate (byte xAxisCalibration, byte yAxisCalibration, byte zAxisCalibration, byte calibrationFailed)
+    {
+        /* dictionary of update */
+        Bundle updateDictionary = new Bundle();
+        Bundle notificationBundle = new Bundle();
+        notificationBundle.putByte(DeviceControllerCalibrationStateMagnetoCalibrationStateChangedNotificationXAxisCalibrationKey, xAxisCalibration);
+        notificationBundle.putByte(DeviceControllerCalibrationStateMagnetoCalibrationStateChangedNotificationYAxisCalibrationKey, yAxisCalibration);
+        notificationBundle.putByte(DeviceControllerCalibrationStateMagnetoCalibrationStateChangedNotificationZAxisCalibrationKey, zAxisCalibration);
+        notificationBundle.putByte(DeviceControllerCalibrationStateMagnetoCalibrationStateChangedNotificationCalibrationFailedKey, calibrationFailed);
+        
+        updateDictionary.putBundle(DeviceControllerCalibrationStateMagnetoCalibrationStateChangedNotification, notificationBundle);
+        
+        /* update the NotificationDictionary */
+        notificationDictionary.putBundle(DeviceControllerCalibrationStateMagnetoCalibrationStateChangedNotification, notificationBundle);
+        
+        /* send NotificationDictionaryChanged */
+        Intent intentDicChanged = new Intent (DeviceControllerNotificationDictionaryChanged);
+        intentDicChanged.putExtras (updateDictionary);
+        LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intentDicChanged);
+        
+        /* send notification dedicated */
+        Intent intent = deviceControllerAndLibARCommandsIntentCache.get(DeviceControllerCalibrationStateMagnetoCalibrationStateChangedNotification);
+        intent.putExtras (notificationBundle);
+        LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
+    }
+    
+    /**
+     * Called when a command <code>MagnetoCalibrationRequiredState</code> of class <code>CalibrationState</code> in project <code>Common</code> is decoded
+     * @param required 1 if calibration is required, 0 if current calibration is still valid
+     */
+    @Override
+    public synchronized void onCommonCalibrationStateMagnetoCalibrationRequiredStateUpdate (byte required)
+    {
+        /* dictionary of update */
+        Bundle updateDictionary = new Bundle();
+        Bundle notificationBundle = new Bundle();
+        notificationBundle.putByte(DeviceControllerCalibrationStateMagnetoCalibrationRequiredStateNotificationRequiredKey, required);
+        
+        updateDictionary.putBundle(DeviceControllerCalibrationStateMagnetoCalibrationRequiredStateNotification, notificationBundle);
+        
+        /* update the NotificationDictionary */
+        notificationDictionary.putBundle(DeviceControllerCalibrationStateMagnetoCalibrationRequiredStateNotification, notificationBundle);
+        
+        /* send NotificationDictionaryChanged */
+        Intent intentDicChanged = new Intent (DeviceControllerNotificationDictionaryChanged);
+        intentDicChanged.putExtras (updateDictionary);
+        LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intentDicChanged);
+        
+        /* send notification dedicated */
+        Intent intent = deviceControllerAndLibARCommandsIntentCache.get(DeviceControllerCalibrationStateMagnetoCalibrationRequiredStateNotification);
+        intent.putExtras (notificationBundle);
+        LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
+    }
+    
+    /**
+     * Called when a command <code>MagnetoCalibrationAxisToCalibrateChanged</code> of class <code>CalibrationState</code> in project <code>Common</code> is decoded
+     * @param axis The axis to calibrate
+     */
+    @Override
+    public synchronized void onCommonCalibrationStateMagnetoCalibrationAxisToCalibrateChangedUpdate (ARCOMMANDS_COMMON_CALIBRATIONSTATE_MAGNETOCALIBRATIONAXISTOCALIBRATECHANGED_AXIS_ENUM axis)
+    {
+        /* dictionary of update */
+        Bundle updateDictionary = new Bundle();
+        Bundle notificationBundle = new Bundle();
+        notificationBundle.putInt(DeviceControllerCalibrationStateMagnetoCalibrationAxisToCalibrateChangedNotificationAxisKey, (axis != null) ? axis.getValue() : ARCOMMANDS_COMMON_CALIBRATIONSTATE_MAGNETOCALIBRATIONAXISTOCALIBRATECHANGED_AXIS_ENUM.ARCOMMANDS_COMMON_CALIBRATIONSTATE_MAGNETOCALIBRATIONAXISTOCALIBRATECHANGED_AXIS_MAX.getValue());
+        if (axis == null)
+        {
+            ARSALPrint.e(DEVICECONTROLLERANDLIBARCOMMANDS_TAG, "Bad value for argument `axis` in MagnetoCalibrationAxisToCalibrateChanged command from the device.");
+        }
+        
+        updateDictionary.putBundle(DeviceControllerCalibrationStateMagnetoCalibrationAxisToCalibrateChangedNotification, notificationBundle);
+        
+        /* update the NotificationDictionary */
+        notificationDictionary.putBundle(DeviceControllerCalibrationStateMagnetoCalibrationAxisToCalibrateChangedNotification, notificationBundle);
+        
+        /* send NotificationDictionaryChanged */
+        Intent intentDicChanged = new Intent (DeviceControllerNotificationDictionaryChanged);
+        intentDicChanged.putExtras (updateDictionary);
+        LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intentDicChanged);
+        
+        /* send notification dedicated */
+        Intent intent = deviceControllerAndLibARCommandsIntentCache.get(DeviceControllerCalibrationStateMagnetoCalibrationAxisToCalibrateChangedNotification);
+        intent.putExtras (notificationBundle);
+        LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
+    }
+    
+    /**
+     * Called when a command <code>MagnetoCalibrationStartedChanged</code> of class <code>CalibrationState</code> in project <code>Common</code> is decoded
+     * @param started 1 if calibration has started, 0 otherwise
+     */
+    @Override
+    public synchronized void onCommonCalibrationStateMagnetoCalibrationStartedChangedUpdate (byte started)
+    {
+        /* dictionary of update */
+        Bundle updateDictionary = new Bundle();
+        Bundle notificationBundle = new Bundle();
+        notificationBundle.putByte(DeviceControllerCalibrationStateMagnetoCalibrationStartedChangedNotificationStartedKey, started);
+        
+        updateDictionary.putBundle(DeviceControllerCalibrationStateMagnetoCalibrationStartedChangedNotification, notificationBundle);
+        
+        /* update the NotificationDictionary */
+        notificationDictionary.putBundle(DeviceControllerCalibrationStateMagnetoCalibrationStartedChangedNotification, notificationBundle);
+        
+        /* send NotificationDictionaryChanged */
+        Intent intentDicChanged = new Intent (DeviceControllerNotificationDictionaryChanged);
+        intentDicChanged.putExtras (updateDictionary);
+        LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intentDicChanged);
+        
+        /* send notification dedicated */
+        Intent intent = deviceControllerAndLibARCommandsIntentCache.get(DeviceControllerCalibrationStateMagnetoCalibrationStartedChangedNotification);
+        intent.putExtras (notificationBundle);
+        LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
+    }
+    
+    /**
+     * Called when a command <code>CameraSettingsChanged</code> of class <code>CameraSettingsState</code> in project <code>Common</code> is decoded
+     * @param fov Value of the camera horizontal fov (in degree)
+     * @param panMax Value of max pan (right pan) (in degree)
+     * @param panMin Value of min pan (left pan) (in degree)
+     * @param tiltMax Value of max tilt (top tilt) (in degree)
+     * @param tiltMin Value of min tilt (bottom tilt) (in degree)
+     */
+    @Override
+    public synchronized void onCommonCameraSettingsStateCameraSettingsChangedUpdate (float fov, float panMax, float panMin, float tiltMax, float tiltMin)
+    {
+        /* dictionary of update */
+        Bundle updateDictionary = new Bundle();
+        Bundle notificationBundle = new Bundle();
+        notificationBundle.putFloat(DeviceControllerCameraSettingsStateCameraSettingsChangedNotificationFovKey, fov);
+        notificationBundle.putFloat(DeviceControllerCameraSettingsStateCameraSettingsChangedNotificationPanMaxKey, panMax);
+        notificationBundle.putFloat(DeviceControllerCameraSettingsStateCameraSettingsChangedNotificationPanMinKey, panMin);
+        notificationBundle.putFloat(DeviceControllerCameraSettingsStateCameraSettingsChangedNotificationTiltMaxKey, tiltMax);
+        notificationBundle.putFloat(DeviceControllerCameraSettingsStateCameraSettingsChangedNotificationTiltMinKey, tiltMin);
+        
+        updateDictionary.putBundle(DeviceControllerCameraSettingsStateCameraSettingsChangedNotification, notificationBundle);
+        
+        /* update the NotificationDictionary */
+        notificationDictionary.putBundle(DeviceControllerCameraSettingsStateCameraSettingsChangedNotification, notificationBundle);
+        
+        /* send NotificationDictionaryChanged */
+        Intent intentDicChanged = new Intent (DeviceControllerNotificationDictionaryChanged);
+        intentDicChanged.putExtras (updateDictionary);
+        LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intentDicChanged);
+        
+        /* send notification dedicated */
+        Intent intent = deviceControllerAndLibARCommandsIntentCache.get(DeviceControllerCameraSettingsStateCameraSettingsChangedNotification);
+        intent.putExtras (notificationBundle);
+        LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
+    }
+    
+    /**
      * Called when a command <code>SendPacket</code> of class <code>StatsEvent</code> in project <code>Common</code> is decoded
      * @param packet packet from drone
      */
     @Override
-    public void onCommonDebugStatsEventSendPacketUpdate (String packet)
+    public synchronized void onCommonDebugStatsEventSendPacketUpdate (String packet)
     {
         /* dictionary of update */
         Bundle updateDictionary = new Bundle();
@@ -1099,6 +1414,145 @@ public abstract class DeviceControllerAndLibARCommands extends Service implement
         if (sentStatus == false)
         {
             ARSALPrint.e(DEVICECONTROLLERANDLIBARCOMMANDS_TAG, "Failed to send Ventilate command.");
+        }
+        
+        return sentStatus;
+    }
+    
+    /**
+     * Send a command <code>OutdoorSetting</code> of class <code>WifiSettings</code> in project <code>Common</code>
+     * @param bufferId id of the network buffer used to send
+     * @param timeoutPolicy policy when sending timeout
+     * @param outdoor 1 if it should use outdoor wifi settings, 0 otherwise
+     */
+    protected boolean DeviceController_SendWifiSettingsOutdoorSetting (int bufferId, ARNETWORK_MANAGER_CALLBACK_RETURN_ENUM timeoutPolicy, NetworkNotificationData notificationData, byte outdoor)
+    {
+        ARCOMMANDS_GENERATOR_ERROR_ENUM cmdError = ARCOMMANDS_GENERATOR_ERROR_ENUM.ARCOMMANDS_GENERATOR_OK;
+        boolean sentStatus = false;
+        ARCommand cmd = new ARCommand();
+        
+        cmdError = cmd.setCommonWifiSettingsOutdoorSetting (outdoor);
+        if (cmdError == ARCOMMANDS_GENERATOR_ERROR_ENUM.ARCOMMANDS_GENERATOR_OK)
+        {
+            /** send the command */
+            sentStatus = sendData (cmd, bufferId, timeoutPolicy, notificationData);
+            cmd.dispose();
+        }
+        
+        if (sentStatus == false)
+        {
+            ARSALPrint.e(DEVICECONTROLLERANDLIBARCOMMANDS_TAG, "Failed to send OutdoorSetting command.");
+        }
+        
+        return sentStatus;
+    }
+    
+    /**
+     * Send a command <code>Start</code> of class <code>Mavlink</code> in project <code>Common</code>
+     * @param bufferId id of the network buffer used to send
+     * @param timeoutPolicy policy when sending timeout
+     * @param filepath flight plan file path from the mavlink ftp root
+     * @param type type of the played mavlink file
+     */
+    protected boolean DeviceController_SendMavlinkStart (int bufferId, ARNETWORK_MANAGER_CALLBACK_RETURN_ENUM timeoutPolicy, NetworkNotificationData notificationData, String filepath, ARCOMMANDS_COMMON_MAVLINK_START_TYPE_ENUM type)
+    {
+        ARCOMMANDS_GENERATOR_ERROR_ENUM cmdError = ARCOMMANDS_GENERATOR_ERROR_ENUM.ARCOMMANDS_GENERATOR_OK;
+        boolean sentStatus = false;
+        ARCommand cmd = new ARCommand();
+        
+        cmdError = cmd.setCommonMavlinkStart (filepath, type);
+        if (cmdError == ARCOMMANDS_GENERATOR_ERROR_ENUM.ARCOMMANDS_GENERATOR_OK)
+        {
+            /** send the command */
+            sentStatus = sendData (cmd, bufferId, timeoutPolicy, notificationData);
+            cmd.dispose();
+        }
+        
+        if (sentStatus == false)
+        {
+            ARSALPrint.e(DEVICECONTROLLERANDLIBARCOMMANDS_TAG, "Failed to send Start command.");
+        }
+        
+        return sentStatus;
+    }
+    
+    /**
+     * Send a command <code>Pause</code> of class <code>Mavlink</code> in project <code>Common</code>
+     * @param bufferId id of the network buffer used to send
+     * @param timeoutPolicy policy when sending timeout
+     */
+    protected boolean DeviceController_SendMavlinkPause (int bufferId, ARNETWORK_MANAGER_CALLBACK_RETURN_ENUM timeoutPolicy, NetworkNotificationData notificationData)
+    {
+        ARCOMMANDS_GENERATOR_ERROR_ENUM cmdError = ARCOMMANDS_GENERATOR_ERROR_ENUM.ARCOMMANDS_GENERATOR_OK;
+        boolean sentStatus = false;
+        ARCommand cmd = new ARCommand();
+        
+        cmdError = cmd.setCommonMavlinkPause ();
+        if (cmdError == ARCOMMANDS_GENERATOR_ERROR_ENUM.ARCOMMANDS_GENERATOR_OK)
+        {
+            /** send the command */
+            sentStatus = sendData (cmd, bufferId, timeoutPolicy, notificationData);
+            cmd.dispose();
+        }
+        
+        if (sentStatus == false)
+        {
+            ARSALPrint.e(DEVICECONTROLLERANDLIBARCOMMANDS_TAG, "Failed to send Pause command.");
+        }
+        
+        return sentStatus;
+    }
+    
+    /**
+     * Send a command <code>Stop</code> of class <code>Mavlink</code> in project <code>Common</code>
+     * @param bufferId id of the network buffer used to send
+     * @param timeoutPolicy policy when sending timeout
+     */
+    protected boolean DeviceController_SendMavlinkStop (int bufferId, ARNETWORK_MANAGER_CALLBACK_RETURN_ENUM timeoutPolicy, NetworkNotificationData notificationData)
+    {
+        ARCOMMANDS_GENERATOR_ERROR_ENUM cmdError = ARCOMMANDS_GENERATOR_ERROR_ENUM.ARCOMMANDS_GENERATOR_OK;
+        boolean sentStatus = false;
+        ARCommand cmd = new ARCommand();
+        
+        cmdError = cmd.setCommonMavlinkStop ();
+        if (cmdError == ARCOMMANDS_GENERATOR_ERROR_ENUM.ARCOMMANDS_GENERATOR_OK)
+        {
+            /** send the command */
+            sentStatus = sendData (cmd, bufferId, timeoutPolicy, notificationData);
+            cmd.dispose();
+        }
+        
+        if (sentStatus == false)
+        {
+            ARSALPrint.e(DEVICECONTROLLERANDLIBARCOMMANDS_TAG, "Failed to send Stop command.");
+        }
+        
+        return sentStatus;
+    }
+    
+    /**
+     * Send a command <code>MagnetoCalibration</code> of class <code>Calibration</code> in project <code>Common</code>
+     * @param bufferId id of the network buffer used to send
+     * @param timeoutPolicy policy when sending timeout
+     * @param calibrate 1 if the calibration should be started, 0 if it should be aborted
+     */
+    protected boolean DeviceController_SendCalibrationMagnetoCalibration (int bufferId, ARNETWORK_MANAGER_CALLBACK_RETURN_ENUM timeoutPolicy, NetworkNotificationData notificationData, byte calibrate)
+    {
+        ARCOMMANDS_GENERATOR_ERROR_ENUM cmdError = ARCOMMANDS_GENERATOR_ERROR_ENUM.ARCOMMANDS_GENERATOR_OK;
+        boolean sentStatus = false;
+        ARCommand cmd = new ARCommand();
+        
+        cmdError = cmd.setCommonCalibrationMagnetoCalibration (calibrate);
+        if (cmdError == ARCOMMANDS_GENERATOR_ERROR_ENUM.ARCOMMANDS_GENERATOR_OK)
+        {
+            /** send the command */
+            sentStatus = sendData (cmd, bufferId, timeoutPolicy, notificationData);
+            cmd.dispose();
+        }
+        
+        if (sentStatus == false)
+        {
+            ARSALPrint.e(DEVICECONTROLLERANDLIBARCOMMANDS_TAG, "Failed to send MagnetoCalibration command.");
         }
         
         return sentStatus;

@@ -41,7 +41,6 @@
 #import <libARCommands/ARCommands.h>
 
 #import <ARUtils/ARUtils.h>
-#import "DeviceController+libARCommands.h"
 #import "DeviceControllerProtected.h"
 #import "ARStreamManager.h"
 #import "ARThread.h"
@@ -102,6 +101,7 @@ static eARDISCOVERY_ERROR ARDISCOVERY_Connection_ReceiveJsonCallback (uint8_t *d
 @property (nonatomic) int d2cPort;
 @property (nonatomic) int videoFragmentSize;
 @property (nonatomic) int maximumNumberOfFragment;
+@property (nonatomic) int videoMaxAckInterval;
 // Base controller initialization state.
 @property (nonatomic) ARSAL_Thread_t rxThread;
 @property (nonatomic) ARSAL_Thread_t txThread;
@@ -121,10 +121,11 @@ static eARDISCOVERY_ERROR ARDISCOVERY_Connection_ReceiveJsonCallback (uint8_t *d
 @synthesize notificationsDictionary = _notificationsDictionary;
 @synthesize privateNotificationsDictionary = _privateNotificationsDictionary;
 @synthesize videoStreamDelegate = _videoStreamDelegate;
+@synthesize fastReconnection = _fastReconnection;
 
 #pragma mark - Public and protected methods implementations.
 
-- (id)initWithARNetworkConfig:(ARNetworkConfig*)netConfig withARService:(ARService*)service withLoopInterval:(NSTimeInterval)interval
+- (id)initWithARNetworkConfig:(ARNetworkConfig*)netConfig withARService:(ARService*)service withBridgeDeviceController:(DeviceController *)bridgeDeviceController withLoopInterval:(NSTimeInterval)interval
 {
     self = [super init];
     if (self)
@@ -132,11 +133,14 @@ static eARDISCOVERY_ERROR ARDISCOVERY_Connection_ReceiveJsonCallback (uint8_t *d
         _baseControllerStarted = NO;
         _baseControllerStartCancelled = NO;
         _allowCommands = NO;
+        _fastReconnection = NO;
         _netConfig = netConfig;
         _service = service;
+        _bridgeDeviceController = bridgeDeviceController;
         _loopInterval = interval;
         _videoFragmentSize = kDefaultVideoFragmentSize;
         _maximumNumberOfFragment = kDefaultVideoFragmentMaximumNumber;
+        _videoMaxAckInterval = [netConfig defaultVideoMaxAckInterval];
         _rxThreadCreated = _txThreadCreated = NO;
 #if ENABLE_ARNETWORKAL_BANDWIDTH_MEASURE
         _bwThreadCreated = NO;
@@ -189,10 +193,7 @@ static eARDISCOVERY_ERROR ARDISCOVERY_Connection_ReceiveJsonCallback (uint8_t *d
 
 - (eBASE_DEVICE_CONTROLLER_START_RETVAL)startBaseController
 {
-    eARNETWORKAL_ERROR netAlError = ARNETWORKAL_OK;
-    eARNETWORK_ERROR netError = ARNETWORK_OK;
     BOOL failed = NO;
-    int pingDelay = 0; // 0 means default, -1 means no ping
     
     if (_baseControllerStarted)
     {
@@ -200,17 +201,65 @@ static eARDISCOVERY_ERROR ARDISCOVERY_Connection_ReceiveJsonCallback (uint8_t *d
     }
     _baseControllerStartCancelled = NO;
     
-    // Create the reader threads.
-    for (int i = 0; i < _netConfig.numCommandsIOBuffers; i ++)
+    if(_baseControllerStartCancelled == NO)
     {
-        int bufferId = _netConfig.commandsIOBuffers[i];
-        NSNumber* bufferIdNumber = [[NSNumber alloc] initWithInt:bufferId];
-        ARThread* readerThread = [[ARThread alloc] initWithTarget:self selector:@selector(readerThreadRoutine:) object:(id)bufferIdNumber];
-        [_readerThreads addObject:readerThread];
+        if(_bridgeDeviceController == nil)
+        {
+            failed = [self startNetwork];
+        }
+        //else use bridge
     }
     
-    // Create the looper thread
-    _looperThread = [[ARThread alloc] initWithTarget:self selector:@selector(looperThreadRoutine:) object:nil];
+    if ((failed == NO) && (_baseControllerStartCancelled == NO) && (_bridgeDeviceController == nil))
+    {
+        [self startReaderThreads];
+    }
+    
+    if ((failed == NO) && (_baseControllerStartCancelled == NO) && (_bridgeDeviceController == nil))
+    {
+        [self startVideoThread];
+    }
+    
+    if ((failed == NO) && (_baseControllerStartCancelled == NO))
+    {
+        [self startLooperThread];
+    }
+    
+    if(!failed && !_baseControllerStartCancelled)
+    {
+        [self registerCommonARCommandsCallbacks];
+    }
+    
+    /* Failed to start. Rolling back to a clean state. */
+    if (failed || _baseControllerStartCancelled)
+    {
+        [self stopBaseController];
+    }
+    else
+    {
+        _baseControllerStarted = YES;
+        _allowCommands = YES;
+    }
+    
+    eBASE_DEVICE_CONTROLLER_START_RETVAL retval = BASE_DEVICE_CONTROLLER_START_RETVAL_OK;
+    if (failed)
+    {
+        retval = BASE_DEVICE_CONTROLLER_START_RETVAL_FAILED;
+    }
+    else if (_baseControllerStartCancelled)
+    {
+        retval = BASE_DEVICE_CONTROLLER_START_RETVAL_CANCELLED;
+    }
+    
+    return retval;
+}
+
+- (BOOL) startNetwork
+{
+    eARNETWORK_ERROR netError = ARNETWORK_OK;
+    eARNETWORKAL_ERROR netAlError = ARNETWORKAL_OK;
+    int pingDelay = 0; // 0 means default, -1 means no ping
+    BOOL failed = NO;
     
     // Create the ARNetworkALManager
     _alManager = ARNETWORKAL_Manager_New(&netAlError);
@@ -340,71 +389,66 @@ static eARDISCOVERY_ERROR ARDISCOVERY_Connection_ReceiveJsonCallback (uint8_t *d
         }
     }
     
+    return failed;
+}
+
+- (void) startReaderThreads
+{
+    // Create the reader threads.
+    for (int i = 0; i < _netConfig.numCommandsIOBuffers; i ++)
+    {
+        int bufferId = _netConfig.commandsIOBuffers[i];
+        NSNumber* bufferIdNumber = [[NSNumber alloc] initWithInt:bufferId];
+        ARThread* readerThread = [[ARThread alloc] initWithTarget:self selector:@selector(readerThreadRoutine:) object:(id)bufferIdNumber];
+        [_readerThreads addObject:readerThread];
+    }
+    
+    if (!_baseControllerStartCancelled)
+    {
+        // Start all the reader threads at once.
+        [_readerThreads enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop)
+         {
+             if (!_baseControllerStartCancelled)
+             {
+                 ARThread* thread = obj;
+                 [thread start];
+             }
+         }];
+    }
+}
+
+- (void) startVideoThread
+{
     /* Create an ARStreamManager and create the video thread if target supports video streaming. */
-    if (_netConfig.hasVideo && !failed && !_baseControllerStartCancelled)
+    if ((_netConfig.hasVideo) && !_baseControllerStartCancelled)
     {
         _videoStreamDelegate = nil; // Reset the video delegate to prevent forwarding frames to it before we return from this method.
-        _streamManager = [[ARStreamManager alloc] initWithARNetworkManager:_netManager dataBufferId:_netConfig.videoDataIOBuffer ackBufferId:_netConfig.videoAckIOBuffer andFragmentSize:_videoFragmentSize];
+        _streamManager = [[ARStreamManager alloc] initWithARNetworkManager:_netManager dataBufferId:_netConfig.videoDataIOBuffer ackBufferId:_netConfig.videoAckIOBuffer fragmentSize:_videoFragmentSize andMaxAckInterval:_videoMaxAckInterval];
         // Create the video thread.
         _videoThread = [[ARThread alloc] initWithTarget:self selector:@selector(videoThreadRoutine:) object:_streamManager];
     }
     
-    if (!failed && !_baseControllerStartCancelled)
-    {
-        // Start all the reader threads at once.
-        [_readerThreads enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop)
-        {
-            
-            if (!failed && !_baseControllerStartCancelled)
-            {
-                ARThread* thread = obj;
-                [thread start];
-            }
-        }];
-    }
-    
-    if (!failed && !_baseControllerStartCancelled)
-    {
-        // Start the looper thread.
-        [_looperThread start];
-    }
-        
-    if (!failed && !_baseControllerStartCancelled)
+    if (!_baseControllerStartCancelled)
     {
         // Start the video thread.
         if (_netConfig.hasVideo)
         {
+            [_videoThread setThreadPriority:1.0];
             [_videoThread start];
         }
     }
-    
-    if(!failed && !_baseControllerStartCancelled)
+}
+
+- (void)startLooperThread
+{
+    // Create the looper thread
+    _looperThread = [[ARThread alloc] initWithTarget:self selector:@selector(looperThreadRoutine:) object:nil];
+
+    if (!_baseControllerStartCancelled)
     {
-        [self registerCommonARCommandsCallbacks];
+        // Start the looper thread.
+        [_looperThread start];
     }
-    
-    /* Failed to start. Rolling back to a clean state. */
-    if (failed || _baseControllerStartCancelled)
-    {
-        [self stopBaseController];
-    }
-    else
-    {
-        _baseControllerStarted = YES;
-        _allowCommands = YES;
-    }
-    
-    eBASE_DEVICE_CONTROLLER_START_RETVAL retval = BASE_DEVICE_CONTROLLER_START_RETVAL_OK;
-    if (failed)
-    {
-        retval = BASE_DEVICE_CONTROLLER_START_RETVAL_FAILED;
-    }
-    else if (_baseControllerStartCancelled)
-    {
-        retval = BASE_DEVICE_CONTROLLER_START_RETVAL_CANCELLED;
-    }
-    
-    return retval;
 }
 
 - (void)stopBaseController
@@ -413,25 +457,33 @@ static eARDISCOVERY_ERROR ARDISCOVERY_Connection_ReceiveJsonCallback (uint8_t *d
     
     [self unregisterCommonARCommandsCallbacks];
     
-    // Cancel the video thread and wait for it to terminate.
-    if (_netConfig.hasVideo)
-    {
-        if([_videoThread isRunning])
-        {
-            [_videoThread stop];
-            [_videoThread join];
-        }
-    }
+    // Cancel the looper thread and block until it is stopped.
+    [self stopLooperThread];
+    _allowCommands = NO;
     
+    // Cancel all reader threads and block until they are all stopped.
+    [self stopReaderThreads];
+    
+    // Cancel the video thre;ad and wait for it to terminate.
+    [self stopVideoThread];
+    
+    
+    // ARNetwork cleanup
+    [self stopNetwork];
+}
+
+- (void)stopLooperThread
+{
     // Cancel the looper thread and block until it is stopped.
     if([_looperThread isRunning])
     {
         [_looperThread stop];
         [_looperThread join];
     }
-    
-    _allowCommands = NO;
-    
+}
+
+- (void)stopReaderThreads
+{
     // Cancel all reader threads and block until they are all stopped.
     [_readerThreads enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
         ARThread* thread = obj;
@@ -442,6 +494,19 @@ static eARDISCOVERY_ERROR ARDISCOVERY_Connection_ReceiveJsonCallback (uint8_t *d
         }
     }];
     [_readerThreads removeAllObjects];
+}
+
+- (void)stopVideoThread
+{
+    // Cancel the video thread and wait for it to terminate.
+    if (_netConfig.hasVideo)
+    {
+        if([_videoThread isRunning])
+        {
+            [_videoThread stop];
+            [_videoThread join];
+        }
+    }
     
     // Stop the video streamer.
     if (_streamManager != nil)
@@ -449,7 +514,10 @@ static eARDISCOVERY_ERROR ARDISCOVERY_Connection_ReceiveJsonCallback (uint8_t *d
         [_streamManager stopStream];
         _streamManager = nil;
     }
-    
+}
+
+- (void) stopNetwork
+{
     // ARNetwork cleanup
     if (_netManager != NULL)
     {
@@ -497,6 +565,18 @@ static eARDISCOVERY_ERROR ARDISCOVERY_Connection_ReceiveJsonCallback (uint8_t *d
     ARNETWORKAL_Manager_Delete(&_alManager);
 }
 
+- (void) setVideoStreamDelegate:(id<DeviceControllerVideoStreamDelegate>)videoStreamDelegate
+{
+    if(_bridgeDeviceController != nil)
+    {
+        [_bridgeDeviceController setVideoStreamDelegate:videoStreamDelegate];
+    }
+    else
+    {
+        _videoStreamDelegate = videoStreamDelegate;
+    }
+}
+
 - (void)cancelBaseControllerStart
 {
     if (!_baseControllerStartCancelled)
@@ -533,51 +613,59 @@ static eARDISCOVERY_ERROR ARDISCOVERY_Connection_ReceiveJsonCallback (uint8_t *d
     
     BOOL retval = YES;
     
-    // Prepare metadata.
-    ARNetworkSendInfo* sendInfo = malloc(sizeof(ARNetworkSendInfo));
-    if (sendInfo == NULL)
+    if(_bridgeDeviceController != nil)
     {
-        retval = NO;
+        retval = [_bridgeDeviceController sendData:data withSize:size onBufferWithId:bufferId withSendPolicy:policy withCompletionBlock:completion];
     }
-    
-    /* FIXME: Temporary workaround to know the sendInfo struct should be free'd. */
-    int i;
-    for (i = 0; i < _netConfig.numC2dParams && retval != NO; i ++)
+    else
     {
-        if (_netConfig.c2dParams[i].ID == bufferId)
-        {
-            sendInfo->is_acknowledged = (_netConfig.c2dParams[i].dataType == ARNETWORKAL_FRAME_TYPE_DATA_WITH_ACK) ? YES : NO;
-            break;
-        }
-        if (i >= _netConfig.numC2dParams)
-        {
-            NSLog(@"Error: Invalid ARNetwork buffer ID.");
-            abort(); // Fail miserably.
-        }
-    }
     
-    if (retval == YES)
-    {
-        sendInfo->device_controller = (__bridge void*)self;
-        sendInfo->sending_policy = policy;
-        sendInfo->completionBlock = (__bridge void*)completion;
-    }
-    
-    // Send data with ARNetwork.
-    if (retval == YES)
-    {
-        eARNETWORK_ERROR netError = ARNETWORK_Manager_SendData(_netManager, bufferId, (uint8_t*)data, size, sendInfo, base_network_manager_arnetwork_c_callback, 1);
-        if (netError != ARNETWORK_OK)
+        // Prepare metadata.
+        ARNetworkSendInfo* sendInfo = malloc(sizeof(ARNetworkSendInfo));
+        if (sendInfo == NULL)
         {
-            ARSAL_PRINT(ARSAL_PRINT_ERROR, TAG, "ARNETWORK_Manager_SendData() failed. %s", ARNETWORK_Error_ToString(netError));
             retval = NO;
         }
-    }
-    
-    if (retval == NO)
-    {
-        free(sendInfo);
-        sendInfo = NULL;
+        
+        /* FIXME: Temporary workaround to know the sendInfo struct should be free'd. */
+        int i;
+        for (i = 0; i < _netConfig.numC2dParams && retval != NO; i ++)
+        {
+            if (_netConfig.c2dParams[i].ID == bufferId)
+            {
+                sendInfo->is_acknowledged = (_netConfig.c2dParams[i].dataType == ARNETWORKAL_FRAME_TYPE_DATA_WITH_ACK) ? YES : NO;
+                break;
+            }
+            if (i >= _netConfig.numC2dParams)
+            {
+                NSLog(@"Error: Invalid ARNetwork buffer ID.");
+                abort(); // Fail miserably.
+            }
+        }
+        
+        if (retval == YES)
+        {
+            sendInfo->device_controller = (__bridge void*)self;
+            sendInfo->sending_policy = policy;
+            sendInfo->completionBlock = (__bridge void*)completion;
+        }
+        
+        // Send data with ARNetwork.
+        if (retval == YES)
+        {
+            eARNETWORK_ERROR netError = ARNETWORK_Manager_SendData(_netManager, bufferId, (uint8_t*)data, size, sendInfo, base_network_manager_arnetwork_c_callback, 1);
+            if (netError != ARNETWORK_OK)
+            {
+                ARSAL_PRINT(ARSAL_PRINT_ERROR, TAG, "ARNETWORK_Manager_SendData() failed. %s", ARNETWORK_Error_ToString(netError));
+                retval = NO;
+            }
+        }
+        
+        if (retval == NO)
+        {
+            free(sendInfo);
+            sendInfo = NULL;
+        }
     }
     
     return retval;
@@ -638,6 +726,34 @@ static eARDISCOVERY_ERROR ARDISCOVERY_Connection_ReceiveJsonCallback (uint8_t *d
     AbstractMethodRaiseException;
 }
 
+- (void)userRequestedOutdoorWifi:(BOOL)outdoor
+{
+    uint8_t outdoorInt = (outdoor) ? 1 : 0;
+    [self DeviceController_SendWifiSettingsOutdoorSetting:[ARDrone3ARNetworkConfig c2dAckId] withSendPolicy:ARNETWORK_SEND_POLICY_DROP withCompletionBlock:nil withOutdoor:outdoorInt];
+}
+
+- (void)userRequestMavlinkPlay:(NSString *)filename type:(eARCOMMANDS_COMMON_MAVLINK_START_TYPE)type
+{
+    char* filenameChar = strdup([filename UTF8String]);
+    [self DeviceController_SendMavlinkStart:[ARDrone3ARNetworkConfig c2dAckId] withSendPolicy:ARNETWORK_SEND_POLICY_DROP withCompletionBlock:nil withFilepath:filenameChar withType:type];
+}
+
+- (void)userRequestMavlinkPause
+{
+    [self DeviceController_SendMavlinkPause:[ARDrone3ARNetworkConfig c2dAckId] withSendPolicy:ARNETWORK_SEND_POLICY_DROP withCompletionBlock:nil];
+}
+
+- (void)userRequestMavlinkStop
+{
+    [self DeviceController_SendMavlinkStop:[ARDrone3ARNetworkConfig c2dAckId] withSendPolicy:ARNETWORK_SEND_POLICY_DROP withCompletionBlock:nil];
+}
+
+- (void)userRequestedCalibrate:(BOOL)startProcess
+{
+    uint8_t calibrate = (startProcess) ? 1 : 0;
+    [self DeviceController_SendCalibrationMagnetoCalibration:[ARDrone3ARNetworkConfig c2dAckId] withSendPolicy:ARNETWORK_SEND_POLICY_DROP withCompletionBlock:nil withCalibrate:calibrate];
+}
+
 #pragma mark - Thread routines.
 
 - (void)videoThreadRoutine:(ARStreamManager*)streamManager
@@ -659,6 +775,13 @@ static eARDISCOVERY_ERROR ARDISCOVERY_Connection_ReceiveJsonCallback (uint8_t *d
                     [_videoStreamDelegate didReceiveFrame:frame];
                 }
                 [streamManager freeFrame:frame];
+            }
+            else
+            {
+                if (_videoStreamDelegate != nil && [_videoStreamDelegate respondsToSelector:@selector(didTimedOutReceivingFrame)])
+                {
+                    [_videoStreamDelegate didTimedOutReceivingFrame];
+                }
             }
         }
     }
@@ -814,9 +937,16 @@ static eARDISCOVERY_ERROR ARDISCOVERY_Connection_ReceiveJsonCallback (uint8_t *d
 - (void)ARDiscoveryDidReceiveResponse:(NSString *)json
 {
     NSError *err;
-    id jsonobj = [NSJSONSerialization JSONObjectWithData:[json dataUsingEncoding:NSUTF8StringEncoding] options:kNilOptions error:&err];
+    id jsonobj = nil;
     
-    //NSLog(@"Json obj : %@", jsonobj);
+    if (json != nil)
+    {
+        jsonobj = [NSJSONSerialization JSONObjectWithData:[json dataUsingEncoding:NSUTF8StringEncoding] options:kNilOptions error:&err];
+    }
+    else
+    {
+        NSLog(@"error json = nil");
+    }
     
     NSDictionary *jsonDict = (NSDictionary *)jsonobj;
     NSNumber *c2dPortData = [jsonDict objectForKey:[NSString stringWithCString:ARDISCOVERY_CONNECTION_JSON_C2DPORT_KEY encoding:NSUTF8StringEncoding]];
@@ -832,6 +962,18 @@ static eARDISCOVERY_ERROR ARDISCOVERY_Connection_ReceiveJsonCallback (uint8_t *d
     {
         _maximumNumberOfFragment = maximumNumberOfFragment.intValue;
     } // Else leave it to the default value.
+    
+    NSNumber *maxAckIntervalNumber = [jsonDict objectForKey:[NSString stringWithCString:ARDISCOVERY_CONNECTION_JSON_ARSTREAM_MAX_ACK_INTERVAL_KEY encoding:NSUTF8StringEncoding]];
+    if (maxAckIntervalNumber != nil)
+    {
+        _videoMaxAckInterval = maxAckIntervalNumber.intValue;
+    } // Else use the default value from the network config for the device.
+    
+    NSString *skyControllerVersionNumber = [jsonDict objectForKey:[NSString stringWithCString:ARDISCOVERY_CONNECTION_JSON_SKYCONTROLLER_VERSION encoding:NSUTF8StringEncoding]];
+    if (maxAckIntervalNumber != nil)
+    {
+        _skyControllerSoftVersion = skyControllerVersionNumber;
+    } // Else use the default value
 }
 
 #pragma mark - Commands-sending methods.
@@ -909,7 +1051,9 @@ static eARNETWORK_MANAGER_CALLBACK_RETURN base_network_manager_arnetwork_c_callb
             break;
             
         case ARNETWORK_MANAGER_CALLBACK_STATUS_ACK_RECEIVED:
+#ifdef DEBUG
             assert(sendInfo->is_acknowledged == YES);
+#endif //DEBUG
             /* Send notification if requested to. */
             if (sendInfo->device_controller != NULL)
             {
@@ -923,7 +1067,9 @@ static eARNETWORK_MANAGER_CALLBACK_RETURN base_network_manager_arnetwork_c_callb
             break;
             
         case ARNETWORK_MANAGER_CALLBACK_STATUS_TIMEOUT:
+#ifdef DEBUG
             assert(sendInfo->is_acknowledged == YES);
+#endif
             /* Send notification if requested. */
             if (sendInfo->device_controller != NULL)
             {
@@ -1016,8 +1162,15 @@ static eARDISCOVERY_ERROR ARDISCOVERY_Connection_ReceiveJsonCallback (uint8_t *d
     
     if (dataRx != NULL && dataRxSize != 0)
     {
-        NSString *strResponse = [NSString stringWithCString:(const char *)dataRx encoding:NSUTF8StringEncoding];
+        char *json = malloc(dataRxSize + 1);
+        strncpy(json, (char *)dataRx, dataRxSize);
+        json[dataRxSize] = '\0';
+        
+        NSString *strResponse = [NSString stringWithCString:(const char *)json encoding:NSUTF8StringEncoding];
+        free(json);
+        
         [deviceController ARDiscoveryDidReceiveResponse:strResponse];
+        
     }
     else
     {

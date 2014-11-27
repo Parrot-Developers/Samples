@@ -156,10 +156,19 @@ public abstract class JumpingSumoDeviceControllerAndLibARCommands extends Device
     public final static String JumpingSumoDeviceControllerUserScriptStateUserScriptParsedNotificationSuccessKey = "JumpingSumoDeviceControllerUserScriptStateUserScriptParsedNotificationSuccessKey";
     public final static String JumpingSumoDeviceControllerUserScriptStateUserScriptParsedNotificationMessageKey = "JumpingSumoDeviceControllerUserScriptStateUserScriptParsedNotificationMessageKey";
 
-    protected void initialize (ARNetworkConfig netConfig, ARDiscoveryDeviceService service, double interval)
+    protected void initialize ()
     {
-        super.initialize (netConfig, service, interval);
-        initJumpingSumoDeviceControllerAndLibARCommandsIntents ();
+        if(!isInitialized())
+        {
+            initJumpingSumoDeviceControllerAndLibARCommandsIntents ();
+            super.initialize ();
+        }
+    }
+    
+    @Override
+    protected void setConfigurations (ARNetworkConfig netConfig, ARDiscoveryDeviceService service, double interval, Class<? extends DeviceController> dcBridgeClass)
+    {
+        super.setConfigurations (netConfig, service, interval, dcBridgeClass);
     }
     
     @Override
@@ -280,12 +289,16 @@ public abstract class JumpingSumoDeviceControllerAndLibARCommands extends Device
      * @param state State of posture
      */
     @Override
-    public void onJumpingSumoPilotingStatePostureChangedUpdate (ARCOMMANDS_JUMPINGSUMO_PILOTINGSTATE_POSTURECHANGED_STATE_ENUM state)
+    public synchronized void onJumpingSumoPilotingStatePostureChangedUpdate (ARCOMMANDS_JUMPINGSUMO_PILOTINGSTATE_POSTURECHANGED_STATE_ENUM state)
     {
         /* dictionary of update */
         Bundle updateDictionary = new Bundle();
         Bundle notificationBundle = new Bundle();
-        notificationBundle.putInt(JumpingSumoDeviceControllerPilotingStatePostureChangedNotificationStateKey, state.getValue());
+        notificationBundle.putInt(JumpingSumoDeviceControllerPilotingStatePostureChangedNotificationStateKey, (state != null) ? state.getValue() : ARCOMMANDS_JUMPINGSUMO_PILOTINGSTATE_POSTURECHANGED_STATE_ENUM.ARCOMMANDS_JUMPINGSUMO_PILOTINGSTATE_POSTURECHANGED_STATE_MAX.getValue());
+        if (state == null)
+        {
+            ARSALPrint.e(JUMPINGSUMODEVICECONTROLLERANDLIBARCOMMANDS_TAG, "Bad value for argument `state` in PostureChanged command from the device.");
+        }
         
         updateDictionary.putBundle(JumpingSumoDeviceControllerPilotingStatePostureChangedNotification, notificationBundle);
         
@@ -308,12 +321,16 @@ public abstract class JumpingSumoDeviceControllerAndLibARCommands extends Device
      * @param state JS alert state
      */
     @Override
-    public void onJumpingSumoPilotingStateAlertStateChangedUpdate (ARCOMMANDS_JUMPINGSUMO_PILOTINGSTATE_ALERTSTATECHANGED_STATE_ENUM state)
+    public synchronized void onJumpingSumoPilotingStateAlertStateChangedUpdate (ARCOMMANDS_JUMPINGSUMO_PILOTINGSTATE_ALERTSTATECHANGED_STATE_ENUM state)
     {
         /* dictionary of update */
         Bundle updateDictionary = new Bundle();
         Bundle notificationBundle = new Bundle();
-        notificationBundle.putInt(JumpingSumoDeviceControllerPilotingStateAlertStateChangedNotificationStateKey, state.getValue());
+        notificationBundle.putInt(JumpingSumoDeviceControllerPilotingStateAlertStateChangedNotificationStateKey, (state != null) ? state.getValue() : ARCOMMANDS_JUMPINGSUMO_PILOTINGSTATE_ALERTSTATECHANGED_STATE_ENUM.ARCOMMANDS_JUMPINGSUMO_PILOTINGSTATE_ALERTSTATECHANGED_STATE_MAX.getValue());
+        if (state == null)
+        {
+            ARSALPrint.e(JUMPINGSUMODEVICECONTROLLERANDLIBARCOMMANDS_TAG, "Bad value for argument `state` in AlertStateChanged command from the device.");
+        }
         
         updateDictionary.putBundle(JumpingSumoDeviceControllerPilotingStateAlertStateChangedNotification, notificationBundle);
         
@@ -336,12 +353,16 @@ public abstract class JumpingSumoDeviceControllerAndLibARCommands extends Device
      * @param state State of jump load
      */
     @Override
-    public void onJumpingSumoAnimationsStateJumpLoadChangedUpdate (ARCOMMANDS_JUMPINGSUMO_ANIMATIONSSTATE_JUMPLOADCHANGED_STATE_ENUM state)
+    public synchronized void onJumpingSumoAnimationsStateJumpLoadChangedUpdate (ARCOMMANDS_JUMPINGSUMO_ANIMATIONSSTATE_JUMPLOADCHANGED_STATE_ENUM state)
     {
         /* dictionary of update */
         Bundle updateDictionary = new Bundle();
         Bundle notificationBundle = new Bundle();
-        notificationBundle.putInt(JumpingSumoDeviceControllerAnimationsStateJumpLoadChangedNotificationStateKey, state.getValue());
+        notificationBundle.putInt(JumpingSumoDeviceControllerAnimationsStateJumpLoadChangedNotificationStateKey, (state != null) ? state.getValue() : ARCOMMANDS_JUMPINGSUMO_ANIMATIONSSTATE_JUMPLOADCHANGED_STATE_ENUM.ARCOMMANDS_JUMPINGSUMO_ANIMATIONSSTATE_JUMPLOADCHANGED_STATE_MAX.getValue());
+        if (state == null)
+        {
+            ARSALPrint.e(JUMPINGSUMODEVICECONTROLLERANDLIBARCOMMANDS_TAG, "Bad value for argument `state` in JumpLoadChanged command from the device.");
+        }
         
         updateDictionary.putBundle(JumpingSumoDeviceControllerAnimationsStateJumpLoadChangedNotification, notificationBundle);
         
@@ -365,7 +386,7 @@ public abstract class JumpingSumoDeviceControllerAndLibARCommands extends Device
      * @param hardware Product GPS hardware version
      */
     @Override
-    public void onJumpingSumoSettingsStateProductGPSVersionChangedUpdate (String software, String hardware)
+    public synchronized void onJumpingSumoSettingsStateProductGPSVersionChangedUpdate (String software, String hardware)
     {
         /* dictionary of update */
         Bundle updateDictionary = new Bundle();
@@ -395,7 +416,7 @@ public abstract class JumpingSumoDeviceControllerAndLibARCommands extends Device
      * @param mass_storage_id Mass storage id where the picture was recorded
      */
     @Override
-    public void onJumpingSumoMediaRecordStatePictureStateChangedUpdate (byte state, byte mass_storage_id)
+    public synchronized void onJumpingSumoMediaRecordStatePictureStateChangedUpdate (byte state, byte mass_storage_id)
     {
         /* dictionary of update */
         Bundle updateDictionary = new Bundle();
@@ -425,12 +446,16 @@ public abstract class JumpingSumoDeviceControllerAndLibARCommands extends Device
      * @param mass_storage_id Mass storage id where the video was recorded
      */
     @Override
-    public void onJumpingSumoMediaRecordStateVideoStateChangedUpdate (ARCOMMANDS_JUMPINGSUMO_MEDIARECORDSTATE_VIDEOSTATECHANGED_STATE_ENUM state, byte mass_storage_id)
+    public synchronized void onJumpingSumoMediaRecordStateVideoStateChangedUpdate (ARCOMMANDS_JUMPINGSUMO_MEDIARECORDSTATE_VIDEOSTATECHANGED_STATE_ENUM state, byte mass_storage_id)
     {
         /* dictionary of update */
         Bundle updateDictionary = new Bundle();
         Bundle notificationBundle = new Bundle();
-        notificationBundle.putInt(JumpingSumoDeviceControllerMediaRecordStateVideoStateChangedNotificationStateKey, state.getValue());
+        notificationBundle.putInt(JumpingSumoDeviceControllerMediaRecordStateVideoStateChangedNotificationStateKey, (state != null) ? state.getValue() : ARCOMMANDS_JUMPINGSUMO_MEDIARECORDSTATE_VIDEOSTATECHANGED_STATE_ENUM.ARCOMMANDS_JUMPINGSUMO_MEDIARECORDSTATE_VIDEOSTATECHANGED_STATE_MAX.getValue());
+        if (state == null)
+        {
+            ARSALPrint.e(JUMPINGSUMODEVICECONTROLLERANDLIBARCOMMANDS_TAG, "Bad value for argument `state` in VideoStateChanged command from the device.");
+        }
         notificationBundle.putByte(JumpingSumoDeviceControllerMediaRecordStateVideoStateChangedNotificationMass_storage_idKey, mass_storage_id);
         
         updateDictionary.putBundle(JumpingSumoDeviceControllerMediaRecordStateVideoStateChangedNotification, notificationBundle);
@@ -456,13 +481,21 @@ public abstract class JumpingSumoDeviceControllerAndLibARCommands extends Device
      * @param channel The channel (depends of the band)
      */
     @Override
-    public void onJumpingSumoNetworkSettingsStateWifiSelectionChangedUpdate (ARCOMMANDS_JUMPINGSUMO_NETWORKSETTINGSSTATE_WIFISELECTIONCHANGED_TYPE_ENUM type, ARCOMMANDS_JUMPINGSUMO_NETWORKSETTINGSSTATE_WIFISELECTIONCHANGED_BAND_ENUM band, byte channel)
+    public synchronized void onJumpingSumoNetworkSettingsStateWifiSelectionChangedUpdate (ARCOMMANDS_JUMPINGSUMO_NETWORKSETTINGSSTATE_WIFISELECTIONCHANGED_TYPE_ENUM type, ARCOMMANDS_JUMPINGSUMO_NETWORKSETTINGSSTATE_WIFISELECTIONCHANGED_BAND_ENUM band, byte channel)
     {
         /* dictionary of update */
         Bundle updateDictionary = new Bundle();
         Bundle notificationBundle = new Bundle();
-        notificationBundle.putInt(JumpingSumoDeviceControllerNetworkSettingsStateWifiSelectionChangedNotificationTypeKey, type.getValue());
-        notificationBundle.putInt(JumpingSumoDeviceControllerNetworkSettingsStateWifiSelectionChangedNotificationBandKey, band.getValue());
+        notificationBundle.putInt(JumpingSumoDeviceControllerNetworkSettingsStateWifiSelectionChangedNotificationTypeKey, (type != null) ? type.getValue() : ARCOMMANDS_JUMPINGSUMO_NETWORKSETTINGSSTATE_WIFISELECTIONCHANGED_TYPE_ENUM.ARCOMMANDS_JUMPINGSUMO_NETWORKSETTINGSSTATE_WIFISELECTIONCHANGED_TYPE_MAX.getValue());
+        if (type == null)
+        {
+            ARSALPrint.e(JUMPINGSUMODEVICECONTROLLERANDLIBARCOMMANDS_TAG, "Bad value for argument `type` in WifiSelectionChanged command from the device.");
+        }
+        notificationBundle.putInt(JumpingSumoDeviceControllerNetworkSettingsStateWifiSelectionChangedNotificationBandKey, (band != null) ? band.getValue() : ARCOMMANDS_JUMPINGSUMO_NETWORKSETTINGSSTATE_WIFISELECTIONCHANGED_BAND_ENUM.ARCOMMANDS_JUMPINGSUMO_NETWORKSETTINGSSTATE_WIFISELECTIONCHANGED_BAND_MAX.getValue());
+        if (band == null)
+        {
+            ARSALPrint.e(JUMPINGSUMODEVICECONTROLLERANDLIBARCOMMANDS_TAG, "Bad value for argument `band` in WifiSelectionChanged command from the device.");
+        }
         notificationBundle.putByte(JumpingSumoDeviceControllerNetworkSettingsStateWifiSelectionChangedNotificationChannelKey, channel);
         
         updateDictionary.putBundle(JumpingSumoDeviceControllerNetworkSettingsStateWifiSelectionChangedNotification, notificationBundle);
@@ -489,14 +522,18 @@ public abstract class JumpingSumoDeviceControllerAndLibARCommands extends Device
      * @param channel Channel of the AP
      */
     @Override
-    public void onJumpingSumoNetworkStateWifiScanListChangedUpdate (String ssid, short rssi, ARCOMMANDS_JUMPINGSUMO_NETWORKSTATE_WIFISCANLISTCHANGED_BAND_ENUM band, byte channel)
+    public synchronized void onJumpingSumoNetworkStateWifiScanListChangedUpdate (String ssid, short rssi, ARCOMMANDS_JUMPINGSUMO_NETWORKSTATE_WIFISCANLISTCHANGED_BAND_ENUM band, byte channel)
     {
         /* dictionary of update */
         Bundle updateDictionary = new Bundle();
         Bundle notificationBundle = new Bundle();
         notificationBundle.putString(JumpingSumoDeviceControllerNetworkStateWifiScanListChangedNotificationSsidKey, ssid);
         notificationBundle.putShort(JumpingSumoDeviceControllerNetworkStateWifiScanListChangedNotificationRssiKey, rssi);
-        notificationBundle.putInt(JumpingSumoDeviceControllerNetworkStateWifiScanListChangedNotificationBandKey, band.getValue());
+        notificationBundle.putInt(JumpingSumoDeviceControllerNetworkStateWifiScanListChangedNotificationBandKey, (band != null) ? band.getValue() : ARCOMMANDS_JUMPINGSUMO_NETWORKSTATE_WIFISCANLISTCHANGED_BAND_ENUM.ARCOMMANDS_JUMPINGSUMO_NETWORKSTATE_WIFISCANLISTCHANGED_BAND_MAX.getValue());
+        if (band == null)
+        {
+            ARSALPrint.e(JUMPINGSUMODEVICECONTROLLERANDLIBARCOMMANDS_TAG, "Bad value for argument `band` in WifiScanListChanged command from the device.");
+        }
         notificationBundle.putByte(JumpingSumoDeviceControllerNetworkStateWifiScanListChangedNotificationChannelKey, channel);
         
         Bundle listDictionary = notificationDictionary.getBundle( JumpingSumoDeviceControllerNetworkStateWifiScanListChangedNotification);
@@ -527,7 +564,7 @@ public abstract class JumpingSumoDeviceControllerAndLibARCommands extends Device
      * Called when a command <code>AllWifiScanChanged</code> of class <code>NetworkState</code> in project <code>JumpingSumo</code> is decoded
      */
     @Override
-    public void onJumpingSumoNetworkStateAllWifiScanChangedUpdate ()
+    public synchronized void onJumpingSumoNetworkStateAllWifiScanChangedUpdate ()
     {
         /* dictionary of update */
         Bundle updateDictionary = new Bundle();
@@ -555,12 +592,16 @@ public abstract class JumpingSumoDeviceControllerAndLibARCommands extends Device
      * @param in_or_out Bit 0 is 1 if channel is authorized outside (0 otherwise) ; Bit 1 is 1 if channel is authorized inside (0 otherwise)
      */
     @Override
-    public void onJumpingSumoNetworkStateWifiAuthChannelListChangedUpdate (ARCOMMANDS_JUMPINGSUMO_NETWORKSTATE_WIFIAUTHCHANNELLISTCHANGED_BAND_ENUM band, byte channel, byte in_or_out)
+    public synchronized void onJumpingSumoNetworkStateWifiAuthChannelListChangedUpdate (ARCOMMANDS_JUMPINGSUMO_NETWORKSTATE_WIFIAUTHCHANNELLISTCHANGED_BAND_ENUM band, byte channel, byte in_or_out)
     {
         /* dictionary of update */
         Bundle updateDictionary = new Bundle();
         Bundle notificationBundle = new Bundle();
-        notificationBundle.putInt(JumpingSumoDeviceControllerNetworkStateWifiAuthChannelListChangedNotificationBandKey, band.getValue());
+        notificationBundle.putInt(JumpingSumoDeviceControllerNetworkStateWifiAuthChannelListChangedNotificationBandKey, (band != null) ? band.getValue() : ARCOMMANDS_JUMPINGSUMO_NETWORKSTATE_WIFIAUTHCHANNELLISTCHANGED_BAND_ENUM.ARCOMMANDS_JUMPINGSUMO_NETWORKSTATE_WIFIAUTHCHANNELLISTCHANGED_BAND_MAX.getValue());
+        if (band == null)
+        {
+            ARSALPrint.e(JUMPINGSUMODEVICECONTROLLERANDLIBARCOMMANDS_TAG, "Bad value for argument `band` in WifiAuthChannelListChanged command from the device.");
+        }
         notificationBundle.putByte(JumpingSumoDeviceControllerNetworkStateWifiAuthChannelListChangedNotificationChannelKey, channel);
         notificationBundle.putByte(JumpingSumoDeviceControllerNetworkStateWifiAuthChannelListChangedNotificationIn_or_outKey, in_or_out);
         
@@ -592,7 +633,7 @@ public abstract class JumpingSumoDeviceControllerAndLibARCommands extends Device
      * Called when a command <code>AllWifiAuthChannelChanged</code> of class <code>NetworkState</code> in project <code>JumpingSumo</code> is decoded
      */
     @Override
-    public void onJumpingSumoNetworkStateAllWifiAuthChannelChangedUpdate ()
+    public synchronized void onJumpingSumoNetworkStateAllWifiAuthChannelChangedUpdate ()
     {
         /* dictionary of update */
         Bundle updateDictionary = new Bundle();
@@ -618,7 +659,7 @@ public abstract class JumpingSumoDeviceControllerAndLibARCommands extends Device
      * @param quality The WiFi link quality in range 0-6, the higher the value, the higher the link quality.
      */
     @Override
-    public void onJumpingSumoNetworkStateLinkQualityChangedUpdate (byte quality)
+    public synchronized void onJumpingSumoNetworkStateLinkQualityChangedUpdate (byte quality)
     {
         /* dictionary of update */
         Bundle updateDictionary = new Bundle();
@@ -646,7 +687,7 @@ public abstract class JumpingSumoDeviceControllerAndLibARCommands extends Device
      * @param volume Master audio volume [0:100].
      */
     @Override
-    public void onJumpingSumoAudioSettingsStateMasterVolumeChangedUpdate (byte volume)
+    public synchronized void onJumpingSumoAudioSettingsStateMasterVolumeChangedUpdate (byte volume)
     {
         /* dictionary of update */
         Bundle updateDictionary = new Bundle();
@@ -674,12 +715,16 @@ public abstract class JumpingSumoDeviceControllerAndLibARCommands extends Device
      * @param theme The audio theme to set.
      */
     @Override
-    public void onJumpingSumoAudioSettingsStateThemeChangedUpdate (ARCOMMANDS_JUMPINGSUMO_AUDIOSETTINGSSTATE_THEMECHANGED_THEME_ENUM theme)
+    public synchronized void onJumpingSumoAudioSettingsStateThemeChangedUpdate (ARCOMMANDS_JUMPINGSUMO_AUDIOSETTINGSSTATE_THEMECHANGED_THEME_ENUM theme)
     {
         /* dictionary of update */
         Bundle updateDictionary = new Bundle();
         Bundle notificationBundle = new Bundle();
-        notificationBundle.putInt(JumpingSumoDeviceControllerAudioSettingsStateThemeChangedNotificationThemeKey, theme.getValue());
+        notificationBundle.putInt(JumpingSumoDeviceControllerAudioSettingsStateThemeChangedNotificationThemeKey, (theme != null) ? theme.getValue() : ARCOMMANDS_JUMPINGSUMO_AUDIOSETTINGSSTATE_THEMECHANGED_THEME_ENUM.ARCOMMANDS_JUMPINGSUMO_AUDIOSETTINGSSTATE_THEMECHANGED_THEME_MAX.getValue());
+        if (theme == null)
+        {
+            ARSALPrint.e(JUMPINGSUMODEVICECONTROLLERANDLIBARCOMMANDS_TAG, "Bad value for argument `theme` in ThemeChanged command from the device.");
+        }
         
         updateDictionary.putBundle(JumpingSumoDeviceControllerAudioSettingsStateThemeChangedNotification, notificationBundle);
         
@@ -706,7 +751,7 @@ public abstract class JumpingSumoDeviceControllerAndLibARCommands extends Device
      * @param lastModified Timestamp relative to the UNIX epoch of the last time the file was modified.
      */
     @Override
-    public void onJumpingSumoRoadPlanStateScriptMetadataListChangedUpdate (String uuid, byte version, String product, String name, long lastModified)
+    public synchronized void onJumpingSumoRoadPlanStateScriptMetadataListChangedUpdate (String uuid, byte version, String product, String name, long lastModified)
     {
         /* dictionary of update */
         Bundle updateDictionary = new Bundle();
@@ -745,7 +790,7 @@ public abstract class JumpingSumoDeviceControllerAndLibARCommands extends Device
      * Called when a command <code>AllScriptsMetadataChanged</code> of class <code>RoadPlanState</code> in project <code>JumpingSumo</code> is decoded
      */
     @Override
-    public void onJumpingSumoRoadPlanStateAllScriptsMetadataChangedUpdate ()
+    public synchronized void onJumpingSumoRoadPlanStateAllScriptsMetadataChangedUpdate ()
     {
         /* dictionary of update */
         Bundle updateDictionary = new Bundle();
@@ -771,12 +816,16 @@ public abstract class JumpingSumoDeviceControllerAndLibARCommands extends Device
      * @param resultCode Error code.
      */
     @Override
-    public void onJumpingSumoRoadPlanStateScriptUploadChangedUpdate (ARCOMMANDS_JUMPINGSUMO_ROADPLANSTATE_SCRIPTUPLOADCHANGED_RESULTCODE_ENUM resultCode)
+    public synchronized void onJumpingSumoRoadPlanStateScriptUploadChangedUpdate (ARCOMMANDS_JUMPINGSUMO_ROADPLANSTATE_SCRIPTUPLOADCHANGED_RESULTCODE_ENUM resultCode)
     {
         /* dictionary of update */
         Bundle updateDictionary = new Bundle();
         Bundle notificationBundle = new Bundle();
-        notificationBundle.putInt(JumpingSumoDeviceControllerRoadPlanStateScriptUploadChangedNotificationResultCodeKey, resultCode.getValue());
+        notificationBundle.putInt(JumpingSumoDeviceControllerRoadPlanStateScriptUploadChangedNotificationResultCodeKey, (resultCode != null) ? resultCode.getValue() : ARCOMMANDS_JUMPINGSUMO_ROADPLANSTATE_SCRIPTUPLOADCHANGED_RESULTCODE_ENUM.ARCOMMANDS_JUMPINGSUMO_ROADPLANSTATE_SCRIPTUPLOADCHANGED_RESULTCODE_MAX.getValue());
+        if (resultCode == null)
+        {
+            ARSALPrint.e(JUMPINGSUMODEVICECONTROLLERANDLIBARCOMMANDS_TAG, "Bad value for argument `resultCode` in ScriptUploadChanged command from the device.");
+        }
         
         updateDictionary.putBundle(JumpingSumoDeviceControllerRoadPlanStateScriptUploadChangedNotification, notificationBundle);
         
@@ -799,12 +848,16 @@ public abstract class JumpingSumoDeviceControllerAndLibARCommands extends Device
      * @param resultCode Error code.
      */
     @Override
-    public void onJumpingSumoRoadPlanStateScriptDeleteChangedUpdate (ARCOMMANDS_JUMPINGSUMO_ROADPLANSTATE_SCRIPTDELETECHANGED_RESULTCODE_ENUM resultCode)
+    public synchronized void onJumpingSumoRoadPlanStateScriptDeleteChangedUpdate (ARCOMMANDS_JUMPINGSUMO_ROADPLANSTATE_SCRIPTDELETECHANGED_RESULTCODE_ENUM resultCode)
     {
         /* dictionary of update */
         Bundle updateDictionary = new Bundle();
         Bundle notificationBundle = new Bundle();
-        notificationBundle.putInt(JumpingSumoDeviceControllerRoadPlanStateScriptDeleteChangedNotificationResultCodeKey, resultCode.getValue());
+        notificationBundle.putInt(JumpingSumoDeviceControllerRoadPlanStateScriptDeleteChangedNotificationResultCodeKey, (resultCode != null) ? resultCode.getValue() : ARCOMMANDS_JUMPINGSUMO_ROADPLANSTATE_SCRIPTDELETECHANGED_RESULTCODE_ENUM.ARCOMMANDS_JUMPINGSUMO_ROADPLANSTATE_SCRIPTDELETECHANGED_RESULTCODE_MAX.getValue());
+        if (resultCode == null)
+        {
+            ARSALPrint.e(JUMPINGSUMODEVICECONTROLLERANDLIBARCOMMANDS_TAG, "Bad value for argument `resultCode` in ScriptDeleteChanged command from the device.");
+        }
         
         updateDictionary.putBundle(JumpingSumoDeviceControllerRoadPlanStateScriptDeleteChangedNotification, notificationBundle);
         
@@ -827,12 +880,16 @@ public abstract class JumpingSumoDeviceControllerAndLibARCommands extends Device
      * @param resultCode Error code.
      */
     @Override
-    public void onJumpingSumoRoadPlanStatePlayScriptChangedUpdate (ARCOMMANDS_JUMPINGSUMO_ROADPLANSTATE_PLAYSCRIPTCHANGED_RESULTCODE_ENUM resultCode)
+    public synchronized void onJumpingSumoRoadPlanStatePlayScriptChangedUpdate (ARCOMMANDS_JUMPINGSUMO_ROADPLANSTATE_PLAYSCRIPTCHANGED_RESULTCODE_ENUM resultCode)
     {
         /* dictionary of update */
         Bundle updateDictionary = new Bundle();
         Bundle notificationBundle = new Bundle();
-        notificationBundle.putInt(JumpingSumoDeviceControllerRoadPlanStatePlayScriptChangedNotificationResultCodeKey, resultCode.getValue());
+        notificationBundle.putInt(JumpingSumoDeviceControllerRoadPlanStatePlayScriptChangedNotificationResultCodeKey, (resultCode != null) ? resultCode.getValue() : ARCOMMANDS_JUMPINGSUMO_ROADPLANSTATE_PLAYSCRIPTCHANGED_RESULTCODE_ENUM.ARCOMMANDS_JUMPINGSUMO_ROADPLANSTATE_PLAYSCRIPTCHANGED_RESULTCODE_MAX.getValue());
+        if (resultCode == null)
+        {
+            ARSALPrint.e(JUMPINGSUMODEVICECONTROLLERANDLIBARCOMMANDS_TAG, "Bad value for argument `resultCode` in PlayScriptChanged command from the device.");
+        }
         
         updateDictionary.putBundle(JumpingSumoDeviceControllerRoadPlanStatePlayScriptChangedNotification, notificationBundle);
         
@@ -855,7 +912,7 @@ public abstract class JumpingSumoDeviceControllerAndLibARCommands extends Device
      * @param outdoor 1 if outdoor, 0 if indoor
      */
     @Override
-    public void onJumpingSumoSpeedSettingsStateOutdoorChangedUpdate (byte outdoor)
+    public synchronized void onJumpingSumoSpeedSettingsStateOutdoorChangedUpdate (byte outdoor)
     {
         /* dictionary of update */
         Bundle updateDictionary = new Bundle();
@@ -883,12 +940,16 @@ public abstract class JumpingSumoDeviceControllerAndLibARCommands extends Device
      * @param enabled Current video streaming status.
      */
     @Override
-    public void onJumpingSumoMediaStreamingStateVideoEnableChangedUpdate (ARCOMMANDS_JUMPINGSUMO_MEDIASTREAMINGSTATE_VIDEOENABLECHANGED_ENABLED_ENUM enabled)
+    public synchronized void onJumpingSumoMediaStreamingStateVideoEnableChangedUpdate (ARCOMMANDS_JUMPINGSUMO_MEDIASTREAMINGSTATE_VIDEOENABLECHANGED_ENABLED_ENUM enabled)
     {
         /* dictionary of update */
         Bundle updateDictionary = new Bundle();
         Bundle notificationBundle = new Bundle();
-        notificationBundle.putInt(JumpingSumoDeviceControllerMediaStreamingStateVideoEnableChangedNotificationEnabledKey, enabled.getValue());
+        notificationBundle.putInt(JumpingSumoDeviceControllerMediaStreamingStateVideoEnableChangedNotificationEnabledKey, (enabled != null) ? enabled.getValue() : ARCOMMANDS_JUMPINGSUMO_MEDIASTREAMINGSTATE_VIDEOENABLECHANGED_ENABLED_ENUM.ARCOMMANDS_JUMPINGSUMO_MEDIASTREAMINGSTATE_VIDEOENABLECHANGED_ENABLED_MAX.getValue());
+        if (enabled == null)
+        {
+            ARSALPrint.e(JUMPINGSUMODEVICECONTROLLERANDLIBARCOMMANDS_TAG, "Bad value for argument `enabled` in VideoEnableChanged command from the device.");
+        }
         
         updateDictionary.putBundle(JumpingSumoDeviceControllerMediaStreamingStateVideoEnableChangedNotification, notificationBundle);
         
@@ -912,7 +973,7 @@ public abstract class JumpingSumoDeviceControllerAndLibARCommands extends Device
      * @param message Error message.
      */
     @Override
-    public void onJumpingSumoDebugUserScriptStateUserScriptParsedUpdate (byte success, String message)
+    public synchronized void onJumpingSumoDebugUserScriptStateUserScriptParsedUpdate (byte success, String message)
     {
         /* dictionary of update */
         Bundle updateDictionary = new Bundle();

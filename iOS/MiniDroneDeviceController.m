@@ -41,6 +41,7 @@
 #import "MiniDroneDeviceController+libARCommandsDebug.h"
 #import "MiniDroneARNetworkConfig.h"
 #import "DeviceControllerProtected.h"
+#import "MiniDronePhotoRecordController.h"
 
 NSString* MiniDroneDeviceControllerFlyingStateChangedNotification = @"MiniDroneDeviceControllerFlyingStateChangedNotification";
 NSString* MiniDroneDeviceControllerEmergencyStateChangedNotification = @"MiniDroneDeviceControllerEmergencyStateChangedNotification";
@@ -81,7 +82,7 @@ typedef struct
 - (id)initWithService:(ARService*)service;
 {
     MiniDroneARNetworkConfig* netConfig = [[MiniDroneARNetworkConfig alloc] init];
-    self = [super initWithARNetworkConfig:netConfig withARService:service withLoopInterval:LOOP_INTERVAL];
+    self = [super initWithARNetworkConfig:netConfig withARService:service withBridgeDeviceController:nil withLoopInterval:LOOP_INTERVAL];
     if (self != nil) {
         _stateLock = [[NSRecursiveLock alloc] init];
         _state = DEVICE_CONTROLLER_STATE_STOPPED;
@@ -485,7 +486,7 @@ typedef struct
 #endif
     }
     
-    if (!failed && !_startCancelled)
+    if (!failed && !_startCancelled && !self.fastReconnection)
     {
         NSDate *currentDate = [NSDate date];
         NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
@@ -501,7 +502,7 @@ typedef struct
         [self DeviceController_SendCommonCurrentTime:[MiniDroneARNetworkConfig c2dAckId] withSendPolicy:ARNETWORK_SEND_POLICY_RETRY withCompletionBlock:nil withTime:(char *)[[dateFormatter stringFromDate:currentDate] cStringUsingEncoding:NSUTF8StringEncoding]];
     }
 
-    if (!failed && !_startCancelled)
+    if (!failed && !_startCancelled && !self.fastReconnection)
     {
         // Attempt to get initial settings
         [[NSNotificationCenter defaultCenter] postNotificationName:DeviceControllerNotificationAllSettingsDidStart object:self userInfo:nil];
@@ -536,6 +537,8 @@ typedef struct
     if (!failed && !_startCancelled)
     {
         [self registerCurrentProduct];
+        _photoRecordController = [[MiniDronePhotoRecordController alloc] init];
+        _photoRecordController.deviceController = self;
     }
 
     return (failed == NO);
@@ -543,6 +546,7 @@ typedef struct
 
 - (void)privateStop
 {
+    _photoRecordController = nil;
     [self unregisterMiniDroneARCommandsCallbacks];
 #ifdef ARCOMMANDS_HAS_DEBUG_COMMANDS
     [self unregisterMiniDroneDebugARCommandsCallbacks];

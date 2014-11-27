@@ -30,8 +30,6 @@
 */
 package com.parrot.freeflight3.devicecontrollers;
 
-import android.support.v4.content.LocalBroadcastManager;
-
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -45,47 +43,74 @@ import android.util.Log;
 import com.parrot.arsdk.arcommands.ARCOMMANDS_MINIDRONE_ANIMATIONS_FLIP_DIRECTION_ENUM;
 import com.parrot.arsdk.ardiscovery.ARDiscoveryDeviceService;
 import com.parrot.arsdk.arnetwork.ARNETWORK_MANAGER_CALLBACK_RETURN_ENUM;
+import com.parrot.freeflight3.recordcontrollers.ARDrone3PhotoRecordController;
+import com.parrot.freeflight3.recordcontrollers.ARDrone3VideoRecordController;
+import com.parrot.freeflight3.recordcontrollers.JumpingSumoPhotoRecordController;
+import com.parrot.freeflight3.recordcontrollers.JumpingSumoVideoRecordController;
+import com.parrot.freeflight3.recordcontrollers.MiniDronePhotoRecordController;
 
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+import android.os.SystemClock;
 
 public class MiniDroneDeviceController extends MiniDroneDeviceControllerAndLibARCommands
 {
+	private static double MINI_DRONE_DEVICE_CONTROLLER_FLOOD_CONTROL_STEP = 0.1;
     private static double LOOP_INTERVAL = 0.05;
     private boolean isInPause = false; 
     
     private MiniDroneState droneState; // Current MiniDrone state. Lock before use.
     private Lock droneStateLock; // Lock for the MiniDrone state.
     
+    private MiniDronePhotoRecordController photoRecordController;
+    
     private long mCurrentLoopInterval;
     
     @Override
     public int onStartCommand(Intent intent, int flags, int startId)
     {
-    	if (intent != null)
-    	{
-	        /** get the deviceService */
-	        ARDiscoveryDeviceService extraService = (ARDiscoveryDeviceService) intent.getParcelableExtra(DRONECONTROLESERVICE_EXTRA_DEVICESERVICE);
-	        
-	        initialize (extraService);
-	        
-	        start ();
-    	}
+        if(!isInitialized())
+        {
+            initialize();
+        }
+        
+        stateLock.lock();
+        
+        if(intent != null)
+        {
+            if (state == DEVICE_CONTROLER_STATE_ENUM.DEVICE_CONTROLLER_STATE_STOPPED)
+            {
+                
+                /** get the deviceService */
+                ARDiscoveryDeviceService extraService = (ARDiscoveryDeviceService) intent.getParcelableExtra(DEVICECONTROLLER_EXTRA_DEVICESERVICE);
+                boolean fastReconnection = intent.getBooleanExtra(DEVICECONTROLLER_EXTRA_FASTRECONNECTION, false);
+                
+                setConfigurations (extraService, fastReconnection);
+                
+                start ();
+            }
+        }
+        
+        stateLock.unlock();
         
         return super.onStartCommand (intent, flags, startId);
     }
     
-    public void initialize (ARDiscoveryDeviceService service)
+    public void initialize ()
+    {
+        if(!isInitialized())
+        {
+            droneStateLock = new ReentrantLock ();
+            super.initialize ();
+        }
+    }
+    
+    public void setConfigurations (ARDiscoveryDeviceService service, boolean fastReconnection)
     {
         MiniDroneARNetworkConfig netConfig = new MiniDroneARNetworkConfig();
         
-        super.initialize ((ARNetworkConfig) netConfig, service, LOOP_INTERVAL);
-        
-        stateLock = new ReentrantLock ();
-        droneStateLock = new ReentrantLock ();
-        state = DEVICE_CONTROLER_STATE_ENUM.DEVICE_CONTROLLER_STATE_STOPPED;
-        
-        startCancelled = false;
+        this.fastReconnection = fastReconnection;
+        super.setConfigurations ((ARNetworkConfig) netConfig, service, LOOP_INTERVAL, null);
     }
     
     /** Method called in a dedicated thread on a configurable interval.
@@ -131,7 +156,7 @@ public class MiniDroneDeviceController extends MiniDroneDeviceControllerAndLibAR
      */
     public void start ()
     {
-        startThread();        
+        startThread();
     }
     
     /**
@@ -198,6 +223,35 @@ public class MiniDroneDeviceController extends MiniDroneDeviceControllerAndLibAR
     protected ControllerLooperThread createNewControllerLooperThread()
     {
     	return new MiniDroneControllerLooperThread();
+    }
+    
+    @Override
+    boolean doStart()
+    {
+        boolean failed = !super.doStart();
+        if (!failed)
+        {
+            photoRecordController = new MiniDronePhotoRecordController(this.getApplicationContext());
+            photoRecordController.setDeviceController(this);
+        }
+        return !failed;
+    }
+    
+    @Override
+    void doStop()
+    {
+        if (photoRecordController != null)
+        {
+            photoRecordController.setDelegate(null);
+            photoRecordController.setDeviceController(null);
+            photoRecordController = null;
+        }
+        super.doStop();
+    }
+    
+    public MiniDronePhotoRecordController getPhotoRecordController()
+    {
+        return photoRecordController;
     }
     
     public void userCommandsActivationChanged (boolean activated)
@@ -337,11 +391,18 @@ public class MiniDroneDeviceController extends MiniDroneDeviceControllerAndLibAR
     	@Override
         public void onloop()
         {
-            long lastTime = System.currentTimeMillis();
+            long lastTime = SystemClock.elapsedRealtime();
             
             controllerLoop();
+           
             
-            long sleepTime = (System.currentTimeMillis() + mCurrentLoopInterval) - lastTime;
+            if (mCurrentLoopInterval != loopInterval)
+            {
+            	mCurrentLoopInterval -= (mCurrentLoopInterval * MINI_DRONE_DEVICE_CONTROLLER_FLOOD_CONTROL_STEP);
+            	mCurrentLoopInterval = Math.max(mCurrentLoopInterval, loopInterval);
+            }
+            
+            long sleepTime = (SystemClock.elapsedRealtime() + mCurrentLoopInterval) - lastTime;
             
             try
             {

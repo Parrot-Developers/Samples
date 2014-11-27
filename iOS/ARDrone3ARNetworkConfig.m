@@ -29,22 +29,23 @@
     SUCH DAMAGE.
 */
 //
-//  JumpingSumoARNetworkConfig.m
+//  ARDrone3ARNetworkConfig.m
 //  ARFreeFlight
 //
-//  Created by Hugo Grostabussiat on 06/12/2013.
+//  Created by Hugo Grostabussiat on 09/12/2013.
 //  Copyright (c) 2013 Parrot SA. All rights reserved.
 //
 #import <libARNetwork/ARNetwork.h>
 #import <libARNetworkAL/ARNetworkAL.h>
 #import <libARStream/ARStream.h>
-#import "JumpingSumoARNetworkConfig.h"
+#import "ARDrone3ARNetworkConfig.h"
 
 static const int iobuffer_c2d_nack = 10;
 static const int iobuffer_c2d_ack = 11;
+static const int iobuffer_c2d_emergency = 12;
 static const int iobuffer_c2d_arstream_ack = 13;
-static const int iobuffer_d2c_nack = (ARNETWORKAL_MANAGER_WIFI_ID_MAX / 2) - 1;
-static const int iobuffer_d2c_ack = (ARNETWORKAL_MANAGER_WIFI_ID_MAX / 2) - 2;
+static const int iobuffer_d2c_navdata = (ARNETWORKAL_MANAGER_WIFI_ID_MAX / 2) - 1;
+static const int iobuffer_d2c_events = (ARNETWORKAL_MANAGER_WIFI_ID_MAX / 2) - 2;
 static const int iobuffer_d2c_arstream_data = (ARNETWORKAL_MANAGER_WIFI_ID_MAX / 2) - 3;
 
 static const int inbound_port = 54321;
@@ -54,12 +55,12 @@ static ARNETWORK_IOBufferParam_t c2d_params[] = {
     {
         .ID = iobuffer_c2d_nack,
         .dataType = ARNETWORKAL_FRAME_TYPE_DATA,
-        .sendingWaitTimeMs = 5,
+        .sendingWaitTimeMs = 1,
         .ackTimeoutMs = -1,
         .numberOfRetry = -1,
-        .numberOfCell = 10,
+        .numberOfCell = 2,
         .dataCopyMaxSize = 128,
-        .isOverwriting = 0,
+        .isOverwriting = 1,
     },
     {
         .ID = iobuffer_c2d_ack,
@@ -72,31 +73,35 @@ static ARNETWORK_IOBufferParam_t c2d_params[] = {
         .isOverwriting = 0,
     },
     {
-        .ID = iobuffer_c2d_arstream_ack,
-        .dataType = ARNETWORKAL_FRAME_TYPE_UNINITIALIZED,
-        .sendingWaitTimeMs = 0,
-        .ackTimeoutMs = 0,
-        .numberOfRetry = 0,
-        .numberOfCell = 0,
-        .dataCopyMaxSize = 0,
+        .ID = iobuffer_c2d_emergency,
+        .dataType = ARNETWORKAL_FRAME_TYPE_DATA_WITH_ACK,
+        .sendingWaitTimeMs = 1,
+        .ackTimeoutMs = 100,
+        .numberOfRetry = ARNETWORK_IOBUFFERPARAM_INFINITE_NUMBER,
+        .numberOfCell = 1,
+        .dataCopyMaxSize = 128,
         .isOverwriting = 0,
+    },
+    {
+        .ID = iobuffer_c2d_arstream_ack,
+        //Filled later
     }
 };
 static const size_t num_c2d_params = sizeof(c2d_params) / sizeof(ARNETWORK_IOBufferParam_t);
 
 static ARNETWORK_IOBufferParam_t d2c_params[] = {
     {
-        .ID = iobuffer_d2c_nack,
+        .ID = iobuffer_d2c_navdata,
         .dataType = ARNETWORKAL_FRAME_TYPE_DATA,
         .sendingWaitTimeMs = 20,
         .ackTimeoutMs = -1,
         .numberOfRetry = -1,
-        .numberOfCell = 10,
+        .numberOfCell = 20,
         .dataCopyMaxSize = 128,
         .isOverwriting = 0,
     },
     {
-        .ID = iobuffer_d2c_ack,
+        .ID = iobuffer_d2c_events,
         .dataType = ARNETWORKAL_FRAME_TYPE_DATA_WITH_ACK,
         .sendingWaitTimeMs = 20,
         .ackTimeoutMs = 500,
@@ -107,20 +112,14 @@ static ARNETWORK_IOBufferParam_t d2c_params[] = {
     },
     {
         .ID = iobuffer_d2c_arstream_data,
-        .dataType = ARNETWORKAL_FRAME_TYPE_UNINITIALIZED,
-        .sendingWaitTimeMs = 0,
-        .ackTimeoutMs = 0,
-        .numberOfRetry = 0,
-        .numberOfCell = 0,
-        .dataCopyMaxSize = 0,
-        .isOverwriting = 0,
+        // Filled later
     }
 };
 static const size_t num_d2c_params = sizeof(d2c_params) / sizeof(ARNETWORK_IOBufferParam_t);
 
 static int commands_buffers[] = {
-    iobuffer_d2c_nack,
-    iobuffer_d2c_ack,
+    iobuffer_d2c_navdata,
+    iobuffer_d2c_events,
 };
 static const size_t num_commands_buffers = sizeof(commands_buffers) / sizeof(int);
 
@@ -136,10 +135,7 @@ static int idToIndex(ARNETWORK_IOBufferParam_t* params, size_t num_params, int i
 
 
 
-@interface JumpingSumoARNetworkConfig ()
-@end
-
-@implementation JumpingSumoARNetworkConfig
+@implementation ARDrone3ARNetworkConfig
 
 + (int)c2dNackId
 {
@@ -151,19 +147,24 @@ static int idToIndex(ARNETWORK_IOBufferParam_t* params, size_t num_params, int i
     return iobuffer_c2d_ack;
 }
 
++ (int)c2dEmergencyId
+{
+    return iobuffer_c2d_emergency;
+}
+
 + (int)c2dArstreamAckId
 {
     return iobuffer_c2d_arstream_ack;
 }
 
-+ (int)d2cNackId
++ (int)d2cNavdataId
 {
-    return iobuffer_d2c_nack;
+    return iobuffer_d2c_navdata;
 }
 
-+ (int)d2cAckId
++ (int)d2cEventsId
 {
-    return iobuffer_d2c_ack;
+    return iobuffer_d2c_events;
 }
 
 + (int)d2cArstreamDataId
@@ -233,6 +234,7 @@ static int idToIndex(ARNETWORK_IOBufferParam_t* params, size_t num_params, int i
 
 - (BOOL) initStreamReadIOBuffer:(int) maxFragmentSize maxNumberOfFragment:(int) maxNumberOfFragment
 {
+    
     BOOL successful = YES;
     if ((idToIndex(c2d_params, num_c2d_params, iobuffer_c2d_arstream_ack) != -1) &&
         (idToIndex(d2c_params, num_d2c_params, iobuffer_d2c_arstream_data) != -1))
@@ -247,6 +249,7 @@ static int idToIndex(ARNETWORK_IOBufferParam_t* params, size_t num_params, int i
     }
     
     return successful;
+    
 }
 
 - (int *)bleNotificationIDs
@@ -261,8 +264,8 @@ static int idToIndex(ARNETWORK_IOBufferParam_t* params, size_t num_params, int i
 
 - (int32_t)defaultVideoMaxAckInterval
 {
-    // Disable all ARStream ACKs if no value given when connecting.
-    return -1;
+    // Use ARStream default if no value is given by the device.
+    return ARSTREAM_READER_MAX_ACK_INTERVAL_DEFAULT;
 }
 
 @end

@@ -77,11 +77,38 @@ NSString *const DeviceControllerCommonStateMassStorageInfoRemainingListChangedNo
 NSString *const DeviceControllerCommonStateMassStorageInfoRemainingListChangedNotificationFree_spaceKey = @"DeviceControllerCommonStateMassStorageInfoRemainingListChangedNotificationFree_spaceKey";
 NSString *const DeviceControllerCommonStateMassStorageInfoRemainingListChangedNotificationRec_timeKey = @"DeviceControllerCommonStateMassStorageInfoRemainingListChangedNotificationRec_timeKey";
 NSString *const DeviceControllerCommonStateMassStorageInfoRemainingListChangedNotificationPhoto_remainingKey = @"DeviceControllerCommonStateMassStorageInfoRemainingListChangedNotificationPhoto_remainingKey";
+NSString *const DeviceControllerCommonStateWifiSignalChangedNotification = @"DeviceControllerCommonStateWifiSignalChangedNotification";
+NSString *const DeviceControllerCommonStateWifiSignalChangedNotificationRssiKey = @"DeviceControllerCommonStateWifiSignalChangedNotificationRssiKey";
 NSString *const DeviceControllerOverHeatStateOverHeatChangedNotification = @"DeviceControllerOverHeatStateOverHeatChangedNotification";
 NSString *const DeviceControllerOverHeatStateOverHeatRegulationChangedNotification = @"DeviceControllerOverHeatStateOverHeatRegulationChangedNotification";
 NSString *const DeviceControllerOverHeatStateOverHeatRegulationChangedNotificationRegulationTypeKey = @"DeviceControllerOverHeatStateOverHeatRegulationChangedNotificationRegulationTypeKey";
 NSString *const DeviceControllerControllerStateIsPilotingChangedNotification = @"DeviceControllerControllerStateIsPilotingChangedNotification";
 NSString *const DeviceControllerControllerStateIsPilotingChangedNotificationPilotingKey = @"DeviceControllerControllerStateIsPilotingChangedNotificationPilotingKey";
+NSString *const DeviceControllerWifiSettingsStateOutdoorSettingsChangedNotification = @"DeviceControllerWifiSettingsStateOutdoorSettingsChangedNotification";
+NSString *const DeviceControllerWifiSettingsStateOutdoorSettingsChangedNotificationOutdoorKey = @"DeviceControllerWifiSettingsStateOutdoorSettingsChangedNotificationOutdoorKey";
+NSString *const DeviceControllerMavlinkStateMavlinkFilePlayingStateChangedNotification = @"DeviceControllerMavlinkStateMavlinkFilePlayingStateChangedNotification";
+NSString *const DeviceControllerMavlinkStateMavlinkFilePlayingStateChangedNotificationStateKey = @"DeviceControllerMavlinkStateMavlinkFilePlayingStateChangedNotificationStateKey";
+NSString *const DeviceControllerMavlinkStateMavlinkFilePlayingStateChangedNotificationFilepathKey = @"DeviceControllerMavlinkStateMavlinkFilePlayingStateChangedNotificationFilepathKey";
+NSString *const DeviceControllerMavlinkStateMavlinkFilePlayingStateChangedNotificationTypeKey = @"DeviceControllerMavlinkStateMavlinkFilePlayingStateChangedNotificationTypeKey";
+NSString *const DeviceControllerMavlinkStateMavlinkPlayErrorStateChangedNotification = @"DeviceControllerMavlinkStateMavlinkPlayErrorStateChangedNotification";
+NSString *const DeviceControllerMavlinkStateMavlinkPlayErrorStateChangedNotificationErrorKey = @"DeviceControllerMavlinkStateMavlinkPlayErrorStateChangedNotificationErrorKey";
+NSString *const DeviceControllerCalibrationStateMagnetoCalibrationStateChangedNotification = @"DeviceControllerCalibrationStateMagnetoCalibrationStateChangedNotification";
+NSString *const DeviceControllerCalibrationStateMagnetoCalibrationStateChangedNotificationXAxisCalibrationKey = @"DeviceControllerCalibrationStateMagnetoCalibrationStateChangedNotificationXAxisCalibrationKey";
+NSString *const DeviceControllerCalibrationStateMagnetoCalibrationStateChangedNotificationYAxisCalibrationKey = @"DeviceControllerCalibrationStateMagnetoCalibrationStateChangedNotificationYAxisCalibrationKey";
+NSString *const DeviceControllerCalibrationStateMagnetoCalibrationStateChangedNotificationZAxisCalibrationKey = @"DeviceControllerCalibrationStateMagnetoCalibrationStateChangedNotificationZAxisCalibrationKey";
+NSString *const DeviceControllerCalibrationStateMagnetoCalibrationStateChangedNotificationCalibrationFailedKey = @"DeviceControllerCalibrationStateMagnetoCalibrationStateChangedNotificationCalibrationFailedKey";
+NSString *const DeviceControllerCalibrationStateMagnetoCalibrationRequiredStateNotification = @"DeviceControllerCalibrationStateMagnetoCalibrationRequiredStateNotification";
+NSString *const DeviceControllerCalibrationStateMagnetoCalibrationRequiredStateNotificationRequiredKey = @"DeviceControllerCalibrationStateMagnetoCalibrationRequiredStateNotificationRequiredKey";
+NSString *const DeviceControllerCalibrationStateMagnetoCalibrationAxisToCalibrateChangedNotification = @"DeviceControllerCalibrationStateMagnetoCalibrationAxisToCalibrateChangedNotification";
+NSString *const DeviceControllerCalibrationStateMagnetoCalibrationAxisToCalibrateChangedNotificationAxisKey = @"DeviceControllerCalibrationStateMagnetoCalibrationAxisToCalibrateChangedNotificationAxisKey";
+NSString *const DeviceControllerCalibrationStateMagnetoCalibrationStartedChangedNotification = @"DeviceControllerCalibrationStateMagnetoCalibrationStartedChangedNotification";
+NSString *const DeviceControllerCalibrationStateMagnetoCalibrationStartedChangedNotificationStartedKey = @"DeviceControllerCalibrationStateMagnetoCalibrationStartedChangedNotificationStartedKey";
+NSString *const DeviceControllerCameraSettingsStateCameraSettingsChangedNotification = @"DeviceControllerCameraSettingsStateCameraSettingsChangedNotification";
+NSString *const DeviceControllerCameraSettingsStateCameraSettingsChangedNotificationFovKey = @"DeviceControllerCameraSettingsStateCameraSettingsChangedNotificationFovKey";
+NSString *const DeviceControllerCameraSettingsStateCameraSettingsChangedNotificationPanMaxKey = @"DeviceControllerCameraSettingsStateCameraSettingsChangedNotificationPanMaxKey";
+NSString *const DeviceControllerCameraSettingsStateCameraSettingsChangedNotificationPanMinKey = @"DeviceControllerCameraSettingsStateCameraSettingsChangedNotificationPanMinKey";
+NSString *const DeviceControllerCameraSettingsStateCameraSettingsChangedNotificationTiltMaxKey = @"DeviceControllerCameraSettingsStateCameraSettingsChangedNotificationTiltMaxKey";
+NSString *const DeviceControllerCameraSettingsStateCameraSettingsChangedNotificationTiltMinKey = @"DeviceControllerCameraSettingsStateCameraSettingsChangedNotificationTiltMinKey";
 
 @implementation DeviceController (libARCommands)
 const char *DeviceController_TAG = " DeviceController";
@@ -243,6 +270,15 @@ static void common_commonstate_massstorageinforemaininglistchanged_callback(uint
     [[NSNotificationCenter defaultCenter] postNotificationName:DeviceControllerCommonStateMassStorageInfoRemainingListChangedNotification object:self userInfo:dict];
 }
 
+static void common_commonstate_wifisignalchanged_callback(int16_t rssi, void *custom)
+{
+    DeviceController *self = (__bridge DeviceController*)custom;
+    NSDictionary* dict = [NSDictionary dictionaryWithObjects:@[[NSNumber numberWithShort:rssi]] forKeys:@[DeviceControllerCommonStateWifiSignalChangedNotificationRssiKey]];
+    [self.privateNotificationsDictionary setObject:dict forKey:DeviceControllerCommonStateWifiSignalChangedNotification];
+    [[NSNotificationCenter defaultCenter] postNotificationName:DeviceControllerNotificationsDictionaryChanged object:self userInfo:[NSDictionary dictionaryWithObject:dict forKey:DeviceControllerCommonStateWifiSignalChangedNotification]];
+    [[NSNotificationCenter defaultCenter] postNotificationName:DeviceControllerCommonStateWifiSignalChangedNotification object:self userInfo:dict];
+}
+
 static void common_overheatstate_overheatchanged_callback(void *custom)
 {
     DeviceController *self = (__bridge DeviceController*)custom;
@@ -270,6 +306,78 @@ static void common_controllerstate_ispilotingchanged_callback(uint8_t piloting, 
     [[NSNotificationCenter defaultCenter] postNotificationName:DeviceControllerControllerStateIsPilotingChangedNotification object:self userInfo:dict];
 }
 
+static void common_wifisettingsstate_outdoorsettingschanged_callback(uint8_t outdoor, void *custom)
+{
+    DeviceController *self = (__bridge DeviceController*)custom;
+    NSDictionary* dict = [NSDictionary dictionaryWithObjects:@[[NSNumber numberWithUnsignedChar:outdoor]] forKeys:@[DeviceControllerWifiSettingsStateOutdoorSettingsChangedNotificationOutdoorKey]];
+    [self.privateNotificationsDictionary setObject:dict forKey:DeviceControllerWifiSettingsStateOutdoorSettingsChangedNotification];
+    [[NSNotificationCenter defaultCenter] postNotificationName:DeviceControllerNotificationsDictionaryChanged object:self userInfo:[NSDictionary dictionaryWithObject:dict forKey:DeviceControllerWifiSettingsStateOutdoorSettingsChangedNotification]];
+    [[NSNotificationCenter defaultCenter] postNotificationName:DeviceControllerWifiSettingsStateOutdoorSettingsChangedNotification object:self userInfo:dict];
+}
+
+static void common_mavlinkstate_mavlinkfileplayingstatechanged_callback(eARCOMMANDS_COMMON_MAVLINKSTATE_MAVLINKFILEPLAYINGSTATECHANGED_STATE state, char * filepath, eARCOMMANDS_COMMON_MAVLINKSTATE_MAVLINKFILEPLAYINGSTATECHANGED_TYPE type, void *custom)
+{
+    DeviceController *self = (__bridge DeviceController*)custom;
+    NSDictionary* dict = [NSDictionary dictionaryWithObjects:@[[NSNumber numberWithInt:state], [NSString stringWithCString:filepath encoding:NSUTF8StringEncoding], [NSNumber numberWithInt:type]] forKeys:@[DeviceControllerMavlinkStateMavlinkFilePlayingStateChangedNotificationStateKey, DeviceControllerMavlinkStateMavlinkFilePlayingStateChangedNotificationFilepathKey, DeviceControllerMavlinkStateMavlinkFilePlayingStateChangedNotificationTypeKey]];
+    [self.privateNotificationsDictionary setObject:dict forKey:DeviceControllerMavlinkStateMavlinkFilePlayingStateChangedNotification];
+    [[NSNotificationCenter defaultCenter] postNotificationName:DeviceControllerNotificationsDictionaryChanged object:self userInfo:[NSDictionary dictionaryWithObject:dict forKey:DeviceControllerMavlinkStateMavlinkFilePlayingStateChangedNotification]];
+    [[NSNotificationCenter defaultCenter] postNotificationName:DeviceControllerMavlinkStateMavlinkFilePlayingStateChangedNotification object:self userInfo:dict];
+}
+
+static void common_mavlinkstate_mavlinkplayerrorstatechanged_callback(eARCOMMANDS_COMMON_MAVLINKSTATE_MAVLINKPLAYERRORSTATECHANGED_ERROR error, void *custom)
+{
+    DeviceController *self = (__bridge DeviceController*)custom;
+    NSDictionary* dict = [NSDictionary dictionaryWithObjects:@[[NSNumber numberWithInt:error]] forKeys:@[DeviceControllerMavlinkStateMavlinkPlayErrorStateChangedNotificationErrorKey]];
+    [self.privateNotificationsDictionary setObject:dict forKey:DeviceControllerMavlinkStateMavlinkPlayErrorStateChangedNotification];
+    [[NSNotificationCenter defaultCenter] postNotificationName:DeviceControllerNotificationsDictionaryChanged object:self userInfo:[NSDictionary dictionaryWithObject:dict forKey:DeviceControllerMavlinkStateMavlinkPlayErrorStateChangedNotification]];
+    [[NSNotificationCenter defaultCenter] postNotificationName:DeviceControllerMavlinkStateMavlinkPlayErrorStateChangedNotification object:self userInfo:dict];
+}
+
+static void common_calibrationstate_magnetocalibrationstatechanged_callback(uint8_t xAxisCalibration, uint8_t yAxisCalibration, uint8_t zAxisCalibration, uint8_t calibrationFailed, void *custom)
+{
+    DeviceController *self = (__bridge DeviceController*)custom;
+    NSDictionary* dict = [NSDictionary dictionaryWithObjects:@[[NSNumber numberWithUnsignedChar:xAxisCalibration], [NSNumber numberWithUnsignedChar:yAxisCalibration], [NSNumber numberWithUnsignedChar:zAxisCalibration], [NSNumber numberWithUnsignedChar:calibrationFailed]] forKeys:@[DeviceControllerCalibrationStateMagnetoCalibrationStateChangedNotificationXAxisCalibrationKey, DeviceControllerCalibrationStateMagnetoCalibrationStateChangedNotificationYAxisCalibrationKey, DeviceControllerCalibrationStateMagnetoCalibrationStateChangedNotificationZAxisCalibrationKey, DeviceControllerCalibrationStateMagnetoCalibrationStateChangedNotificationCalibrationFailedKey]];
+    [self.privateNotificationsDictionary setObject:dict forKey:DeviceControllerCalibrationStateMagnetoCalibrationStateChangedNotification];
+    [[NSNotificationCenter defaultCenter] postNotificationName:DeviceControllerNotificationsDictionaryChanged object:self userInfo:[NSDictionary dictionaryWithObject:dict forKey:DeviceControllerCalibrationStateMagnetoCalibrationStateChangedNotification]];
+    [[NSNotificationCenter defaultCenter] postNotificationName:DeviceControllerCalibrationStateMagnetoCalibrationStateChangedNotification object:self userInfo:dict];
+}
+
+static void common_calibrationstate_magnetocalibrationrequiredstate_callback(uint8_t required, void *custom)
+{
+    DeviceController *self = (__bridge DeviceController*)custom;
+    NSDictionary* dict = [NSDictionary dictionaryWithObjects:@[[NSNumber numberWithUnsignedChar:required]] forKeys:@[DeviceControllerCalibrationStateMagnetoCalibrationRequiredStateNotificationRequiredKey]];
+    [self.privateNotificationsDictionary setObject:dict forKey:DeviceControllerCalibrationStateMagnetoCalibrationRequiredStateNotification];
+    [[NSNotificationCenter defaultCenter] postNotificationName:DeviceControllerNotificationsDictionaryChanged object:self userInfo:[NSDictionary dictionaryWithObject:dict forKey:DeviceControllerCalibrationStateMagnetoCalibrationRequiredStateNotification]];
+    [[NSNotificationCenter defaultCenter] postNotificationName:DeviceControllerCalibrationStateMagnetoCalibrationRequiredStateNotification object:self userInfo:dict];
+}
+
+static void common_calibrationstate_magnetocalibrationaxistocalibratechanged_callback(eARCOMMANDS_COMMON_CALIBRATIONSTATE_MAGNETOCALIBRATIONAXISTOCALIBRATECHANGED_AXIS axis, void *custom)
+{
+    DeviceController *self = (__bridge DeviceController*)custom;
+    NSDictionary* dict = [NSDictionary dictionaryWithObjects:@[[NSNumber numberWithInt:axis]] forKeys:@[DeviceControllerCalibrationStateMagnetoCalibrationAxisToCalibrateChangedNotificationAxisKey]];
+    [self.privateNotificationsDictionary setObject:dict forKey:DeviceControllerCalibrationStateMagnetoCalibrationAxisToCalibrateChangedNotification];
+    [[NSNotificationCenter defaultCenter] postNotificationName:DeviceControllerNotificationsDictionaryChanged object:self userInfo:[NSDictionary dictionaryWithObject:dict forKey:DeviceControllerCalibrationStateMagnetoCalibrationAxisToCalibrateChangedNotification]];
+    [[NSNotificationCenter defaultCenter] postNotificationName:DeviceControllerCalibrationStateMagnetoCalibrationAxisToCalibrateChangedNotification object:self userInfo:dict];
+}
+
+static void common_calibrationstate_magnetocalibrationstartedchanged_callback(uint8_t started, void *custom)
+{
+    DeviceController *self = (__bridge DeviceController*)custom;
+    NSDictionary* dict = [NSDictionary dictionaryWithObjects:@[[NSNumber numberWithUnsignedChar:started]] forKeys:@[DeviceControllerCalibrationStateMagnetoCalibrationStartedChangedNotificationStartedKey]];
+    [self.privateNotificationsDictionary setObject:dict forKey:DeviceControllerCalibrationStateMagnetoCalibrationStartedChangedNotification];
+    [[NSNotificationCenter defaultCenter] postNotificationName:DeviceControllerNotificationsDictionaryChanged object:self userInfo:[NSDictionary dictionaryWithObject:dict forKey:DeviceControllerCalibrationStateMagnetoCalibrationStartedChangedNotification]];
+    [[NSNotificationCenter defaultCenter] postNotificationName:DeviceControllerCalibrationStateMagnetoCalibrationStartedChangedNotification object:self userInfo:dict];
+}
+
+static void common_camerasettingsstate_camerasettingschanged_callback(float fov, float panMax, float panMin, float tiltMax, float tiltMin, void *custom)
+{
+    DeviceController *self = (__bridge DeviceController*)custom;
+    NSDictionary* dict = [NSDictionary dictionaryWithObjects:@[[NSNumber numberWithFloat:fov], [NSNumber numberWithFloat:panMax], [NSNumber numberWithFloat:panMin], [NSNumber numberWithFloat:tiltMax], [NSNumber numberWithFloat:tiltMin]] forKeys:@[DeviceControllerCameraSettingsStateCameraSettingsChangedNotificationFovKey, DeviceControllerCameraSettingsStateCameraSettingsChangedNotificationPanMaxKey, DeviceControllerCameraSettingsStateCameraSettingsChangedNotificationPanMinKey, DeviceControllerCameraSettingsStateCameraSettingsChangedNotificationTiltMaxKey, DeviceControllerCameraSettingsStateCameraSettingsChangedNotificationTiltMinKey]];
+    [self.privateNotificationsDictionary setObject:dict forKey:DeviceControllerCameraSettingsStateCameraSettingsChangedNotification];
+    [[NSNotificationCenter defaultCenter] postNotificationName:DeviceControllerNotificationsDictionaryChanged object:self userInfo:[NSDictionary dictionaryWithObject:dict forKey:DeviceControllerCameraSettingsStateCameraSettingsChangedNotification]];
+    [[NSNotificationCenter defaultCenter] postNotificationName:DeviceControllerCameraSettingsStateCameraSettingsChangedNotification object:self userInfo:dict];
+}
+
 
 - (void)registerCommonARCommandsCallbacks
 {
@@ -291,11 +399,24 @@ static void common_controllerstate_ispilotingchanged_callback(uint8_t piloting, 
     ARCOMMANDS_Decoder_SetCommonCommonStateCurrentDateChangedCallback(common_commonstate_currentdatechanged_callback, (__bridge void *)(self));
     ARCOMMANDS_Decoder_SetCommonCommonStateCurrentTimeChangedCallback(common_commonstate_currenttimechanged_callback, (__bridge void *)(self));
     ARCOMMANDS_Decoder_SetCommonCommonStateMassStorageInfoRemainingListChangedCallback(common_commonstate_massstorageinforemaininglistchanged_callback, (__bridge void *)(self));
+    ARCOMMANDS_Decoder_SetCommonCommonStateWifiSignalChangedCallback(common_commonstate_wifisignalchanged_callback, (__bridge void *)(self));
     // Command class OverHeatState
     ARCOMMANDS_Decoder_SetCommonOverHeatStateOverHeatChangedCallback(common_overheatstate_overheatchanged_callback, (__bridge void *)(self));
     ARCOMMANDS_Decoder_SetCommonOverHeatStateOverHeatRegulationChangedCallback(common_overheatstate_overheatregulationchanged_callback, (__bridge void *)(self));
     // Command class ControllerState
     ARCOMMANDS_Decoder_SetCommonControllerStateIsPilotingChangedCallback(common_controllerstate_ispilotingchanged_callback, (__bridge void *)(self));
+    // Command class WifiSettingsState
+    ARCOMMANDS_Decoder_SetCommonWifiSettingsStateOutdoorSettingsChangedCallback(common_wifisettingsstate_outdoorsettingschanged_callback, (__bridge void *)(self));
+    // Command class MavlinkState
+    ARCOMMANDS_Decoder_SetCommonMavlinkStateMavlinkFilePlayingStateChangedCallback(common_mavlinkstate_mavlinkfileplayingstatechanged_callback, (__bridge void *)(self));
+    ARCOMMANDS_Decoder_SetCommonMavlinkStateMavlinkPlayErrorStateChangedCallback(common_mavlinkstate_mavlinkplayerrorstatechanged_callback, (__bridge void *)(self));
+    // Command class CalibrationState
+    ARCOMMANDS_Decoder_SetCommonCalibrationStateMagnetoCalibrationStateChangedCallback(common_calibrationstate_magnetocalibrationstatechanged_callback, (__bridge void *)(self));
+    ARCOMMANDS_Decoder_SetCommonCalibrationStateMagnetoCalibrationRequiredStateCallback(common_calibrationstate_magnetocalibrationrequiredstate_callback, (__bridge void *)(self));
+    ARCOMMANDS_Decoder_SetCommonCalibrationStateMagnetoCalibrationAxisToCalibrateChangedCallback(common_calibrationstate_magnetocalibrationaxistocalibratechanged_callback, (__bridge void *)(self));
+    ARCOMMANDS_Decoder_SetCommonCalibrationStateMagnetoCalibrationStartedChangedCallback(common_calibrationstate_magnetocalibrationstartedchanged_callback, (__bridge void *)(self));
+    // Command class CameraSettingsState
+    ARCOMMANDS_Decoder_SetCommonCameraSettingsStateCameraSettingsChangedCallback(common_camerasettingsstate_camerasettingschanged_callback, (__bridge void *)(self));
 }
 
 - (void)unregisterCommonARCommandsCallbacks
@@ -318,11 +439,24 @@ static void common_controllerstate_ispilotingchanged_callback(uint8_t piloting, 
     ARCOMMANDS_Decoder_SetCommonCommonStateCurrentDateChangedCallback(NULL, NULL);
     ARCOMMANDS_Decoder_SetCommonCommonStateCurrentTimeChangedCallback(NULL, NULL);
     ARCOMMANDS_Decoder_SetCommonCommonStateMassStorageInfoRemainingListChangedCallback(NULL, NULL);
+    ARCOMMANDS_Decoder_SetCommonCommonStateWifiSignalChangedCallback(NULL, NULL);
     // Command class OverHeatState
     ARCOMMANDS_Decoder_SetCommonOverHeatStateOverHeatChangedCallback(NULL, NULL);
     ARCOMMANDS_Decoder_SetCommonOverHeatStateOverHeatRegulationChangedCallback(NULL, NULL);
     // Command class ControllerState
     ARCOMMANDS_Decoder_SetCommonControllerStateIsPilotingChangedCallback(NULL, NULL);
+    // Command class WifiSettingsState
+    ARCOMMANDS_Decoder_SetCommonWifiSettingsStateOutdoorSettingsChangedCallback(NULL, NULL);
+    // Command class MavlinkState
+    ARCOMMANDS_Decoder_SetCommonMavlinkStateMavlinkFilePlayingStateChangedCallback(NULL, NULL);
+    ARCOMMANDS_Decoder_SetCommonMavlinkStateMavlinkPlayErrorStateChangedCallback(NULL, NULL);
+    // Command class CalibrationState
+    ARCOMMANDS_Decoder_SetCommonCalibrationStateMagnetoCalibrationStateChangedCallback(NULL, NULL);
+    ARCOMMANDS_Decoder_SetCommonCalibrationStateMagnetoCalibrationRequiredStateCallback(NULL, NULL);
+    ARCOMMANDS_Decoder_SetCommonCalibrationStateMagnetoCalibrationAxisToCalibrateChangedCallback(NULL, NULL);
+    ARCOMMANDS_Decoder_SetCommonCalibrationStateMagnetoCalibrationStartedChangedCallback(NULL, NULL);
+    // Command class CameraSettingsState
+    ARCOMMANDS_Decoder_SetCommonCameraSettingsStateCameraSettingsChangedCallback(NULL, NULL);
 }
 
 #pragma mark ARCommands sending function 
@@ -578,6 +712,114 @@ static void common_controllerstate_ispilotingchanged_callback(uint8_t piloting, 
     if (!sentStatus)
     {
         ARSAL_PRINT(ARSAL_PRINT_ERROR, DeviceController_TAG, "Failed to send Ventilate command.");
+    }
+
+    return sentStatus;
+}
+    // Command class WifiSettings
+- (BOOL)DeviceController_SendWifiSettingsOutdoorSetting:(int)bufferId withSendPolicy:(eARNETWORK_SEND_POLICY)policy withCompletionBlock:(DeviceControllerCompletionBlock)completionBlock withOutdoor:(uint8_t)outdoor
+{
+    u_int8_t cmdbuf[128];
+    int32_t actualSize = 0;
+    eARCOMMANDS_GENERATOR_ERROR cmdError;
+    BOOL sentStatus;
+
+    // Send OutdoorSetting command
+    sentStatus = NO;
+    cmdError = ARCOMMANDS_Generator_GenerateCommonWifiSettingsOutdoorSetting(cmdbuf, sizeof(cmdbuf), &actualSize, outdoor);
+    if (cmdError == ARCOMMANDS_GENERATOR_OK)
+    {
+        sentStatus = [self sendData:cmdbuf withSize:actualSize onBufferWithId:bufferId withSendPolicy:policy withCompletionBlock:completionBlock];
+    }
+    if (!sentStatus)
+    {
+        ARSAL_PRINT(ARSAL_PRINT_ERROR, DeviceController_TAG, "Failed to send OutdoorSetting command.");
+    }
+
+    return sentStatus;
+}
+    // Command class Mavlink
+- (BOOL)DeviceController_SendMavlinkStart:(int)bufferId withSendPolicy:(eARNETWORK_SEND_POLICY)policy withCompletionBlock:(DeviceControllerCompletionBlock)completionBlock withFilepath:(char *)filepath withType:(eARCOMMANDS_COMMON_MAVLINK_START_TYPE)type
+{
+    u_int8_t cmdbuf[128];
+    int32_t actualSize = 0;
+    eARCOMMANDS_GENERATOR_ERROR cmdError;
+    BOOL sentStatus;
+
+    // Send Start command
+    sentStatus = NO;
+    cmdError = ARCOMMANDS_Generator_GenerateCommonMavlinkStart(cmdbuf, sizeof(cmdbuf), &actualSize, filepath, type);
+    if (cmdError == ARCOMMANDS_GENERATOR_OK)
+    {
+        sentStatus = [self sendData:cmdbuf withSize:actualSize onBufferWithId:bufferId withSendPolicy:policy withCompletionBlock:completionBlock];
+    }
+    if (!sentStatus)
+    {
+        ARSAL_PRINT(ARSAL_PRINT_ERROR, DeviceController_TAG, "Failed to send Start command.");
+    }
+
+    return sentStatus;
+}
+- (BOOL)DeviceController_SendMavlinkPause:(int)bufferId withSendPolicy:(eARNETWORK_SEND_POLICY)policy withCompletionBlock:(DeviceControllerCompletionBlock)completionBlock
+{
+    u_int8_t cmdbuf[128];
+    int32_t actualSize = 0;
+    eARCOMMANDS_GENERATOR_ERROR cmdError;
+    BOOL sentStatus;
+
+    // Send Pause command
+    sentStatus = NO;
+    cmdError = ARCOMMANDS_Generator_GenerateCommonMavlinkPause(cmdbuf, sizeof(cmdbuf), &actualSize);
+    if (cmdError == ARCOMMANDS_GENERATOR_OK)
+    {
+        sentStatus = [self sendData:cmdbuf withSize:actualSize onBufferWithId:bufferId withSendPolicy:policy withCompletionBlock:completionBlock];
+    }
+    if (!sentStatus)
+    {
+        ARSAL_PRINT(ARSAL_PRINT_ERROR, DeviceController_TAG, "Failed to send Pause command.");
+    }
+
+    return sentStatus;
+}
+- (BOOL)DeviceController_SendMavlinkStop:(int)bufferId withSendPolicy:(eARNETWORK_SEND_POLICY)policy withCompletionBlock:(DeviceControllerCompletionBlock)completionBlock
+{
+    u_int8_t cmdbuf[128];
+    int32_t actualSize = 0;
+    eARCOMMANDS_GENERATOR_ERROR cmdError;
+    BOOL sentStatus;
+
+    // Send Stop command
+    sentStatus = NO;
+    cmdError = ARCOMMANDS_Generator_GenerateCommonMavlinkStop(cmdbuf, sizeof(cmdbuf), &actualSize);
+    if (cmdError == ARCOMMANDS_GENERATOR_OK)
+    {
+        sentStatus = [self sendData:cmdbuf withSize:actualSize onBufferWithId:bufferId withSendPolicy:policy withCompletionBlock:completionBlock];
+    }
+    if (!sentStatus)
+    {
+        ARSAL_PRINT(ARSAL_PRINT_ERROR, DeviceController_TAG, "Failed to send Stop command.");
+    }
+
+    return sentStatus;
+}
+    // Command class Calibration
+- (BOOL)DeviceController_SendCalibrationMagnetoCalibration:(int)bufferId withSendPolicy:(eARNETWORK_SEND_POLICY)policy withCompletionBlock:(DeviceControllerCompletionBlock)completionBlock withCalibrate:(uint8_t)calibrate
+{
+    u_int8_t cmdbuf[128];
+    int32_t actualSize = 0;
+    eARCOMMANDS_GENERATOR_ERROR cmdError;
+    BOOL sentStatus;
+
+    // Send MagnetoCalibration command
+    sentStatus = NO;
+    cmdError = ARCOMMANDS_Generator_GenerateCommonCalibrationMagnetoCalibration(cmdbuf, sizeof(cmdbuf), &actualSize, calibrate);
+    if (cmdError == ARCOMMANDS_GENERATOR_OK)
+    {
+        sentStatus = [self sendData:cmdbuf withSize:actualSize onBufferWithId:bufferId withSendPolicy:policy withCompletionBlock:completionBlock];
+    }
+    if (!sentStatus)
+    {
+        ARSAL_PRINT(ARSAL_PRINT_ERROR, DeviceController_TAG, "Failed to send MagnetoCalibration command.");
     }
 
     return sentStatus;

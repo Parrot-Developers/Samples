@@ -30,31 +30,33 @@
 */
 package com.parrot.freeflight3.devicecontrollers;
 
+import java.lang.reflect.Method;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.TimeZone;
 import java.util.concurrent.Semaphore;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.SharedPreferences;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.Binder;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v4.content.LocalBroadcastManager;
-import android.text.format.DateFormat;
 import android.util.Log;
 
+import com.parrot.arsdk.arcommands.ARCOMMANDS_COMMON_MAVLINK_START_TYPE_ENUM;
 import com.parrot.arsdk.arcommands.ARCOMMANDS_DECODER_ERROR_ENUM;
 import com.parrot.arsdk.arcommands.ARCommand;
 import com.parrot.arsdk.ardiscovery.ARDISCOVERY_ERROR_ENUM;
@@ -73,19 +75,19 @@ import com.parrot.arsdk.arrouter.ARRouter;
 import com.parrot.arsdk.arrouter.ARRouterDiscoveryConnection;
 import com.parrot.arsdk.arsal.ARNativeData;
 import com.parrot.arsdk.arsal.ARSALPrint;
-import com.parrot.freeflight3.menusmanager.MainARActivity;
 import com.parrot.freeflight3.utils.DataCollectionUtils;
 import com.parrot.freeflight3.utils.DeviceUtils;
 import com.parrot.freeflight3.video.ARFrame;
 import com.parrot.freeflight3.video.ARStreamManager;
+import android.os.SystemClock;
 
 public abstract class DeviceController extends DeviceControllerAndLibARCommands implements NetworkNotificationListener
 {
-    private final Object videoThreadLock = new Object();
     private static final boolean ENABLE_ARNETWORK_BANWIDTH_MEASURE = false;
     private static final String TAG = DeviceController.class.getSimpleName();
     private static final int DEFAULT_VIDEO_FRAGMENT_SIZE = 1000;
     private static final int DEFAULT_VIDEO_FRAGMENT_MAXIMUM_NUMBER = 128;
+    private static final int VIDEO_RECEIVE_TIMEOUT = 500;
     
     public static final String DEVICECONTROLLER_SHARED_PREFERENCES_KEY = "DEVICECONTROLLER_SHARED_PREFERENCES_KEY";
     
@@ -99,7 +101,9 @@ public abstract class DeviceController extends DeviceControllerAndLibARCommands 
     public static final String INTENT_EXTRA_DeviceControllerServiceName = "extra_DeviceControllerServiceName";
     public static final String DeviceControllerBLEStackKoNotification = "DeviceControllerBLEStackKoNotification";
     
-    public static final String DRONECONTROLESERVICE_EXTRA_DEVICESERVICE = "com.parrot.freeflight3.DeviceController.extra.deviceservice";
+    public static final String DEVICECONTROLLER_EXTRA_DEVICESERVICE = "com.parrot.freeflight3.DeviceController.extra.deviceservice";
+    public static final String DEVICECONTROLLER_EXTRA_FASTRECONNECTION = "com.parrot.freeflight3.DeviceController.extra.fastreconnection";
+    public static final String DEVICECONTROLLER_EXTRA_DEVICECONTROLER_BRIDGE = "com.parrot.freeflight3.DeviceController.extra.deviceController.bridge";
     
     private final IBinder binder = new LocalBinder();
     
@@ -107,20 +111,18 @@ public abstract class DeviceController extends DeviceControllerAndLibARCommands 
     private DeviceControllerVideoStreamListener videoStreamListener;
     private ARDiscoveryDeviceService deviceService;
     
+    private boolean initialized;
+    
     private boolean baseControllerStarted;
-    private boolean baseControllerCancelled;
+    protected boolean baseControllerCancelled;
     private boolean allowCommands;
     private ARNetworkConfig netConfig;
     private ARNetworkALManager alManager;
     private ARNetworkManager netManager;
-    //private ARStreamReader streamManager;
+    
     private LooperThread looperThread;
     private VideoThread videoThread;
-    /*
-    private Lock videoEndLock;
-    private Condition videoEndConditions;
-    */
-    //private boolean videoThreadRunning;
+    
     private List<ReaderThread> readerThreads;
     private Semaphore discoverSemaphore;
     private ARDiscoveryConnection discoveryData;
@@ -133,6 +135,7 @@ public abstract class DeviceController extends DeviceControllerAndLibARCommands 
     private boolean mediaOpened;
     private int videoFragmentSize;
     private int videoFragmentMaximumNumber;
+    private int videoMaxAckInterval;
     
     private Thread bwThread;
     //private boolean bwThreadCreated;
@@ -141,11 +144,63 @@ public abstract class DeviceController extends DeviceControllerAndLibARCommands 
     private Semaphore disconnectSent;
     
     private Semaphore cmdGetAllSettingsSent;
+    private boolean isWaitingAllSettings;
     private Semaphore cmdGetAllStatesSent;
+    private boolean isWaitingAllStates;
     private static long INITIAL_TIMEOUT_RETRIEVAL_MS = 5000;
     
     private HashMap<String, Intent> intentCache;
+
+    private boolean routerMustBeInitialized;
+    private Semaphore routerInitSem;
     
+    private ARRouter router;
+    protected ServiceConnection routerConnection = new ServiceConnection()
+    {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service)
+        {
+            router = ((ARRouter.ARBinder) service).getService();
+
+            if(router != null)
+            {
+                if(routerMustBeInitialized)
+                {
+                    initiliazeRouter();
+                }
+                
+                if (state == DEVICE_CONTROLER_STATE_ENUM.DEVICE_CONTROLLER_STATE_STARTED)
+                {
+                    router.onConnectionToDeviceCompleted();
+                }
+            }
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name)
+        {
+        }
+    };
+    
+    private boolean bridgeBound = false;
+    private Semaphore bridgeConnectionSem;
+    private DeviceController deviceControllerBridge;
+    protected Class<? extends DeviceController> deviceControllerBridgeClass;
+    protected ServiceConnection bridgeConnection = new ServiceConnection()
+    {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service)
+        {
+            deviceControllerBridge = ((DeviceController.LocalBinder) service).getService();
+            bridgeConnectionSem.release();
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name)
+        {
+            deviceControllerBridge = null;
+        }
+    };
     
     @Override
     public IBinder onBind(Intent intent)
@@ -176,13 +231,42 @@ public abstract class DeviceController extends DeviceControllerAndLibARCommands 
     /**
      * 
      */
-    protected void initialize (ARNetworkConfig netConfig, ARDiscoveryDeviceService service, double interval)
+    protected void initialize ()
     {
-        super.initialize();
+        if(!initialized)
+        {
+            super.initialize();
+            
+            stateLock = new ReentrantLock ();
+            initDeviceControllerIntents ();
+            
+            if (DeviceUtils.isSkycontroller())
+            {
+                bindRouterService();
+            }
+            
+            initialized = true;
+        }
+    }
+    
+    protected void setConfigurations (ARNetworkConfig netConfig, ARDiscoveryDeviceService service, double interval, Class<? extends DeviceController> dcBridgeClass)
+    {
+        //reset the configurations
+        state = DEVICE_CONTROLER_STATE_ENUM.DEVICE_CONTROLLER_STATE_STOPPED;
         
+        disconnectSent = new Semaphore (0);
+        cmdGetAllSettingsSent = new Semaphore (0);
+        cmdGetAllStatesSent = new Semaphore (0);
+        isWaitingAllSettings = false;
+        isWaitingAllStates = false;
+        
+        startCancelled = false;
         baseControllerStarted = false;
         baseControllerCancelled = false;
         allowCommands = false;
+        
+        routerInitSem = new Semaphore (0);
+        
         this.netConfig = netConfig;
         this.deviceService = service;
         this.loopInterval = (long) (interval * 1000.0); //TODO: see conversion sec to miliSec
@@ -191,18 +275,9 @@ public abstract class DeviceController extends DeviceControllerAndLibARCommands 
         
         videoFragmentSize = DEFAULT_VIDEO_FRAGMENT_SIZE;
         videoFragmentMaximumNumber = DEFAULT_VIDEO_FRAGMENT_MAXIMUM_NUMBER;
+        videoMaxAckInterval = netConfig.getDefaultVideoMaxAckInterval();
         
-        //videoEndLock = new ReentrantLock();
-        //videoEndConditions = videoEndLock.newCondition();
-        
-        //videoThreadRunning = false;
-        
-        //bwThreadCreated = false;
-        
-        disconnectSent = new Semaphore (0);
-        cmdGetAllSettingsSent = new Semaphore (0);
-        cmdGetAllStatesSent = new Semaphore (0);
-        initDeviceControllerIntents ();
+        deviceControllerBridgeClass = dcBridgeClass;
     }
     
     private void initDeviceControllerIntents ()
@@ -220,15 +295,15 @@ public abstract class DeviceController extends DeviceControllerAndLibARCommands 
     
     protected Intent getDeviceControllerIntent (String name)
     {
-    	Intent intent = intentCache.get(name);
-    	String serviceName = null;
-    	if (deviceService != null)
-    	{
-    		serviceName = deviceService.getName();
-    	}
-    	intent.putExtra(INTENT_EXTRA_DeviceControllerServiceName, serviceName);
+        Intent intent = intentCache.get(name);
+        String serviceName = null;
+        if (deviceService != null)
+        {
+            serviceName = deviceService.getName();
+        }
+        intent.putExtra(INTENT_EXTRA_DeviceControllerServiceName, serviceName);
         //return intentCache.get(name) ;
-    	return intent;
+        return intent;
     }
     
     /**
@@ -240,156 +315,41 @@ public abstract class DeviceController extends DeviceControllerAndLibARCommands 
     protected BASE_DEVICE_CONTROLLER_START_RETVAL_ENUM startBaseController ()
     {
         BASE_DEVICE_CONTROLLER_START_RETVAL_ENUM retval = BASE_DEVICE_CONTROLLER_START_RETVAL_ENUM.BASE_DEVICE_CONTROLLER_START_RETVAL_OK;
-        ARNETWORKAL_ERROR_ENUM netALError = ARNETWORKAL_ERROR_ENUM.ARNETWORKAL_OK;
         boolean failed = false;
-        int pingDelay = 0; /* 0 means default, -1 means no ping */
         
         if (baseControllerStarted == false)
         {
-            /* Create the reader threads */
-            for (int bufferId : netConfig.getCommandsIOBuffers())
+            if ((baseControllerCancelled == false)  )
             {
-                ReaderThread readerThread = new ReaderThread(bufferId);
-                readerThreads.add(readerThread);
-            }
-            
-            /* Create the looper thread */
-            looperThread = createNewControllerLooperThread();
-            
-            /* Create the looper ARNetworkALManager */
-            alManager = new ARNetworkALManager();
-
-            if (deviceService.getDevice()  instanceof ARDiscoveryDeviceNetService)
-            {
-                /* setup ARNetworkAL for wifi */
-                
-                Log.d(TAG, "alManager.ARDiscoveryDeviceNetService ");
-                
-                ARDiscoveryDeviceNetService netDevice = (ARDiscoveryDeviceNetService) deviceService.getDevice();
-                discoveryIp = netDevice.getIp();
-                discoveryPort = netDevice.getPort();
-                
-                /*  */
-                if (!ardiscoveryConnect()) 
+                if(deviceControllerBridgeClass == null)
                 {
-                    failed = true;
-                }
-                
-                // TODO :  if ardiscoveryConnect ok
-                netConfig.addStreamReaderIOBuffer(videoFragmentSize, videoFragmentMaximumNumber);
-                
-                /* setup ARNetworkAL for wifi */
-                netALError = alManager.initWifiNetwork(discoveryIp, c2dPort, d2cPort, 1);
-                
-                if (netALError == ARNETWORKAL_ERROR_ENUM.ARNETWORKAL_OK)
-                {
-                    mediaOpened = true;
+                    //Classic 
+                    failed = startNetwork();
                 }
                 else
                 {
-                    ARSALPrint.e(TAG, "error occured: " + netALError.toString());
-                    failed = true;
+                    //using bridge
+                    startBridge();
                 }
-                
-            }
-            else if (deviceService.getDevice()  instanceof ARDiscoveryDeviceBLEService)
-            {
-                /* setup ARNetworkAL for BLE */
-                
-                Log.d(TAG, "alManager.initBLENetwork netConfig.getBLENotificationIDs(): " +netConfig.getBLENotificationIDs());
-                
-                ARDiscoveryDeviceBLEService bleDevice = (ARDiscoveryDeviceBLEService) deviceService.getDevice();
-                
-                netALError = alManager.initBLENetwork(getApplicationContext(), bleDevice.getBluetoothDevice(), 1, netConfig.getBLENotificationIDs());
-                
-                if (netALError == ARNETWORKAL_ERROR_ENUM.ARNETWORKAL_OK)
-                {
-                    mediaOpened = true;
-                    pingDelay = -1; /* Disable ping for BLE networks */
-                }
-                else
-                {
-                    ARSALPrint.e(TAG, "error occured: " + netALError.toString());
-                    failed = true;
-                    
-                    if (netALError == ARNETWORKAL_ERROR_ENUM.ARNETWORKAL_ERROR_BLE_STACK)
-                    {
-                        LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(getDeviceControllerIntent(DeviceControllerBLEStackKoNotification));
-                    }
-                }
-            }
-            else
-            {
-                ARSALPrint.e (TAG, "Unknow network media type." );
-                failed = true;
             }
             
-            if ((ENABLE_ARNETWORK_BANWIDTH_MEASURE) && (failed == false) && (baseControllerCancelled == false))
+            if ((failed == false) && (baseControllerCancelled == false) && (deviceControllerBridgeClass == null))
             {
-                /* Create and start the bandwidth thread for ARNetworkAL */
-                bwThread = new Thread (new Runnable(){
-                    public void run()
-                    {
-                        //ARNetworkALManager.bandwidthThread();// TODO: add bandwidth JNI
-                    }
-                });
-                bwThread.start();
-                //bwThreadCreated = true;
+                /* start the reader threads */
+                startReadThreads();
+            }
+            
+            if ((failed == false) && (baseControllerCancelled == false) && (deviceControllerBridgeClass == null))
+            {
+                /* start video Thread */
+                startVideoThread();
             }
             
             if ((failed == false) && (baseControllerCancelled == false))
             {
-                /* Create the ARNetworkManager */
-                netManager = new ARNetworkManagerExtend(alManager, netConfig.getC2dParams(), netConfig.getD2cParams(), pingDelay);
+                /* start the looper thread */
+                startLooperThread();
                 
-                if (netManager.isCorrectlyInitialized() == false)
-                {
-                    ARSALPrint.e (TAG, "new ARNetworkManager failed");
-                    failed = true;
-                }
-            }
-            
-            if ((failed == false) && (baseControllerCancelled == false))
-            {
-                /* Create and start Tx and Rx threads */
-                rxThread = new Thread (netManager.m_receivingRunnable);
-                rxThread.start();
-                
-                txThread = new Thread (netManager.m_sendingRunnable);
-                txThread.start();
-            }
-            
-            /* Create an ARStreamReader and create the video thread if the target supports video streaming. */
-            if ((netConfig.hasVideo()) && (failed == false))
-            {
-                /* Reset the video listener to prevent forwarding frames to it before we return from this method.*/
-                //videoStreamListener = null; //TODO:see
-
-                synchronized (videoThreadLock) {
-                /* create the video thread */
-                    videoThread = new VideoThread ();
-                }
-            }
-            
-            if ((failed == false) && (baseControllerCancelled == false))
-            {
-                /* Mark all reader threads as started */
-                for (ReaderThread readerThread : readerThreads)
-                {
-                    readerThread.start();
-                }
-                
-                /* Start the looper thread. */
-                looperThread.start();
-                
-                /* Start the video thread. */
-                synchronized (videoThreadLock) {
-                    if (videoThread != null && videoThread.isRunning() == false)
-                    {
-                        videoThread.start();
-                    }
-                }
-
                 registerARCommandsListener();
             }
         }
@@ -415,18 +375,231 @@ public abstract class DeviceController extends DeviceControllerAndLibARCommands 
         {
             retval = BASE_DEVICE_CONTROLLER_START_RETVAL_ENUM.BASE_DEVICE_CONTROLLER_START_RETVAL_CANCELED;
         }
-        else if (DeviceUtils.isSkycontroller())
-        {
-            ARRouter router = ARRouter.getInstance();
-            router.setARNetworkControllerToRouterParams(netConfig.getC2dParamsList(), netConfig.getVideoAckIOBuffer());
-            router.setARNetworkRouterToControllerParams(netConfig.getD2cParamsList(), netConfig.getVideoDataIOBuffer());
-            if (!router.connect())
-            {
-                Log.e(TAG, "Failed to start ARRouter");
-            }
-        }
+        
         return retval;
     }
+    
+    private boolean startNetwork()
+    {
+        ARNETWORKAL_ERROR_ENUM netALError = ARNETWORKAL_ERROR_ENUM.ARNETWORKAL_OK;
+        boolean failed = false;
+        int pingDelay = 0; /* 0 means default, -1 means no ping */
+        
+        /* Create the looper ARNetworkALManager */
+        alManager = new ARNetworkALManager();
+
+        if (deviceService.getDevice()  instanceof ARDiscoveryDeviceNetService)
+        {
+            /* setup ARNetworkAL for wifi */
+            
+            Log.d(TAG, "alManager.ARDiscoveryDeviceNetService ");
+            
+            ARDiscoveryDeviceNetService netDevice = (ARDiscoveryDeviceNetService) deviceService.getDevice();
+            discoveryIp = netDevice.getIp();
+            discoveryPort = netDevice.getPort();
+            
+            /*  */
+            if (!ardiscoveryConnect()) 
+            {
+                failed = true;
+            }
+            
+            // TODO :  if ardiscoveryConnect ok
+            netConfig.addStreamReaderIOBuffer(videoFragmentSize, videoFragmentMaximumNumber);
+            
+            /* setup ARNetworkAL for wifi */
+            netALError = alManager.initWifiNetwork(discoveryIp, c2dPort, d2cPort, 1);
+            
+            if (netALError == ARNETWORKAL_ERROR_ENUM.ARNETWORKAL_OK)
+            {
+                mediaOpened = true;
+            }
+            else
+            {
+                ARSALPrint.e(TAG, "error occured: " + netALError.toString());
+                failed = true;
+            }
+            
+        }
+        else if (deviceService.getDevice()  instanceof ARDiscoveryDeviceBLEService)
+        {
+            /* setup ARNetworkAL for BLE */
+            
+            Log.d(TAG, "alManager.initBLENetwork netConfig.getBLENotificationIDs(): " +netConfig.getBLENotificationIDs());
+            
+            ARDiscoveryDeviceBLEService bleDevice = (ARDiscoveryDeviceBLEService) deviceService.getDevice();
+            
+            netALError = alManager.initBLENetwork(getApplicationContext(), bleDevice.getBluetoothDevice(), 1, netConfig.getBLENotificationIDs());
+            
+            if (netALError == ARNETWORKAL_ERROR_ENUM.ARNETWORKAL_OK)
+            {
+                mediaOpened = true;
+                pingDelay = -1; /* Disable ping for BLE networks */
+            }
+            else
+            {
+                ARSALPrint.e(TAG, "error occured: " + netALError.toString());
+                failed = true;
+                
+                if (netALError == ARNETWORKAL_ERROR_ENUM.ARNETWORKAL_ERROR_BLE_STACK)
+                {
+                    LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(getDeviceControllerIntent(DeviceControllerBLEStackKoNotification));
+                }
+            }
+        }
+        else
+        {
+            ARSALPrint.e (TAG, "Unknow network media type." );
+            failed = true;
+        }
+        
+        if ((ENABLE_ARNETWORK_BANWIDTH_MEASURE) && (failed == false) && (baseControllerCancelled == false))
+        {
+            /* Create and start the bandwidth thread for ARNetworkAL */
+            bwThread = new Thread (new Runnable(){
+                public void run()
+                {
+                    //ARNetworkALManager.bandwidthThread();// TODO: add bandwidth JNI
+                }
+            });
+            bwThread.start();
+            //bwThreadCreated = true;
+        }
+        
+        if ((failed == false) && (baseControllerCancelled == false))
+        {
+            /* Create the ARNetworkManager */
+            netManager = new ARNetworkManagerExtend(alManager, netConfig.getC2dParams(), netConfig.getD2cParams(), pingDelay);
+            
+            if (netManager.isCorrectlyInitialized() == false)
+            {
+                ARSALPrint.e (TAG, "new ARNetworkManager failed");
+                failed = true;
+            }
+        }
+        
+        if ((failed == false) && (baseControllerCancelled == false))
+        {
+            /* Create and start Tx and Rx threads */
+            rxThread = new Thread (netManager.m_receivingRunnable);
+            rxThread.start();
+            
+            txThread = new Thread (netManager.m_sendingRunnable);
+            txThread.start();
+        }
+        
+        /* start rooter for the SkyController */
+        if ((failed == false) && (DeviceUtils.isSkycontroller()))
+        {
+            if(router != null)
+            {
+                initiliazeRouter();
+            }
+            else
+            {
+                routerMustBeInitialized = true;
+            }
+            
+            try
+            {
+                Boolean routerInitialized = routerInitSem.tryAcquire(INITIAL_TIMEOUT_RETRIEVAL_MS, TimeUnit.MILLISECONDS);
+                
+                if(!routerInitialized)
+                {
+                    Log.e(TAG, "failed to initialize router (timeout)" );
+                    failed = true;
+                }
+            }
+            catch (InterruptedException e)
+            {
+                Log.e(TAG, "failed to initialize router" );
+                failed = true;
+            }
+        }
+        
+        return failed;
+    }
+    
+    private void startReadThreads()
+    {
+        /* Create the reader threads */
+        for (int bufferId : netConfig.getCommandsIOBuffers())
+        {
+            ReaderThread readerThread = new ReaderThread(bufferId);
+            readerThreads.add(readerThread);
+        }
+        
+        /* Mark all reader threads as started */
+        for (ReaderThread readerThread : readerThreads)
+        {
+            readerThread.start();
+        }
+    }
+    
+    private void startVideoThread()
+    {
+        /* Create an ARStreamReader and create the video thread if the target supports video streaming. */
+        if (netConfig.hasVideo())
+        {
+            /* Reset the video listener to prevent forwarding frames to it before we return from this method.*/
+            //videoStreamListener = null; //TODO:see
+            
+            /* create the video thread */
+            videoThread = new VideoThread ();
+            
+            /* Start the video thread. */
+            videoThread.start();
+        }
+    }
+    
+    private void startLooperThread()
+    {
+        /* Create the looper thread */
+        looperThread = createNewControllerLooperThread();
+        
+        /* Start the looper thread. */
+        looperThread.start();
+    }
+    
+    private void startBridge()
+    {
+        bridgeConnectionSem = new Semaphore(0);
+        
+        getApplicationContext().bindService(new Intent(getApplicationContext(), deviceControllerBridgeClass), bridgeConnection, Context.BIND_AUTO_CREATE);
+        bridgeBound = true;
+        
+        try
+        {
+            //TODO tryAcquire
+            bridgeConnectionSem.acquire();
+        }
+        catch (InterruptedException e)
+        {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
+    
+    private void initiliazeRouter()
+    {
+        router.setARNetworkControllerToRouterParams(netConfig.getC2dParamsList(), netConfig.getVideoAckIOBuffer());
+        router.setARNetworkRouterToControllerParams(netConfig.getD2cParamsList(), netConfig.getVideoDataIOBuffer());
+        
+        if (router.connect(deviceService))
+        {
+            routerInitSem.release();
+        }
+        else
+        {
+            Log.e(TAG, "Failed to start ARRouter");
+        }
+    }
+     
+    public void bindRouterService()
+    {
+        getApplicationContext().bindService(new Intent(getApplicationContext(), ARRouter.class), routerConnection, Context.BIND_AUTO_CREATE);
+    }
+
     
     /**
      * Stop the base DeviceController.
@@ -438,6 +611,26 @@ public abstract class DeviceController extends DeviceControllerAndLibARCommands 
         
         unregisterARCommandsListener();
         
+        /* Cancel the looper thread and block until it is stopped. */
+        stopLooperThread();
+        
+        allowCommands = false;
+        
+        /* cancel all reader threads and block until they are all stopped. */
+        stopReaderThreads();
+        
+        /* Stop the video streamer */
+        stopVideoThread();
+        
+        /* ARNetwork cleanup */
+        stopNetwork();
+        
+        stopBridge();
+        
+    }
+    
+    private void stopLooperThread()
+    {
         /* Cancel the looper thread and block until it is stopped. */
         if (null != looperThread)
         {
@@ -451,43 +644,56 @@ public abstract class DeviceController extends DeviceControllerAndLibARCommands 
                 e.printStackTrace();
             }
         }
-        
-        allowCommands = false;
-        
-        /* cancel all reader threads and block until they are all stopped. */
-        for (ReaderThread thread : readerThreads)
+    }
+    
+    private void stopReaderThreads()
+    {
+        if(readerThreads != null)
         {
-            thread.stopThread();
-        }
-        for (ReaderThread thread : readerThreads)
-        {
-            try
+            /* cancel all reader threads and block until they are all stopped. */
+            for (ReaderThread thread : readerThreads)
             {
-                thread.join();
+                thread.stopThread();
             }
-            catch (InterruptedException e)
+            for (ReaderThread thread : readerThreads)
             {
-                e.printStackTrace();
-            }
-        }
-        readerThreads.clear();
-        
-        /* Stop the video streamer */
-        synchronized (videoThreadLock) {
-            if (videoThread != null)
-            {
-                videoThread.stopThread();
                 try
                 {
-                    videoThread.join();
+                    thread.join();
                 }
                 catch (InterruptedException e)
                 {
                     e.printStackTrace();
                 }
             }
+            readerThreads.clear();
         }
-        /* ARNetwork cleanup */
+    }
+    
+    private void stopVideoThread()
+    {
+        /* Stop the video streamer */
+        if (videoThread != null)
+        {
+            videoThread.stopThread();
+            try
+            {
+                videoThread.join();
+            }
+            catch (InterruptedException e)
+            {
+                e.printStackTrace();
+            }
+        }
+    }
+    
+    private void stopNetwork()
+    {
+        if (router != null)
+        {
+            router.disconnect();
+        }
+        
         if(netManager != null)
         {
             netManager.stop();
@@ -533,9 +739,14 @@ public abstract class DeviceController extends DeviceControllerAndLibARCommands 
             mediaOpened = false;
             alManager.dispose();
         }
-        if (DeviceUtils.isSkycontroller())
+    }
+    
+    private void stopBridge()
+    {
+        if(bridgeBound)
         {
-            ARRouter.getInstance().disconnect();
+            getApplicationContext().unbindService(this.bridgeConnection);
+            bridgeBound = false;
         }
     }
     
@@ -548,13 +759,14 @@ public abstract class DeviceController extends DeviceControllerAndLibARCommands 
         d2cPort = netConfig.getInboundPort();
         if (DeviceUtils.isSkycontroller())
         {
-            discoveryData = new ARRouterDiscoveryConnection() {
-                
+            discoveryData = new ARRouterDiscoveryConnection(getApplicationContext())
+            {
                 @Override
-                protected JSONObject onSendJsonToRouter() {
+                protected JSONObject onSendJsonToRouter()
+                {
                     /* send a json with the Device to controller port */
                     JSONObject jsonObject = new JSONObject();
-
+                    
                     try
                     {
                         jsonObject.put(ARDiscoveryConnection.ARDISCOVERY_CONNECTION_JSON_D2CPORT_KEY, d2cPort);
@@ -567,7 +779,7 @@ public abstract class DeviceController extends DeviceControllerAndLibARCommands 
                     try
                     {
                         Log.i(TAG, "android.os.Build.MODEL: "+android.os.Build.MODEL);
-                        jsonObject.put(ARDiscoveryConnection.ARDISCOVERY_CONNECTION_JSON_CONTROLLER_NAME_KEY, android.os.Build.MODEL);
+                        jsonObject.put(ARDiscoveryConnection.ARDISCOVERY_CONNECTION_JSON_CONTROLLER_NAME_KEY, android.os.Build.DEVICE);
                     }
                     catch (JSONException e)
                     {
@@ -577,19 +789,20 @@ public abstract class DeviceController extends DeviceControllerAndLibARCommands 
                     try
                     {
                         Log.i(TAG, "android.os.Build.DEVICE: "+android.os.Build.DEVICE);
-                        jsonObject.put(ARDiscoveryConnection.ARDISCOVERY_CONNECTION_JSON_CONTROLLER_TYPE_KEY, android.os.Build.DEVICE);
+                        jsonObject.put(ARDiscoveryConnection.ARDISCOVERY_CONNECTION_JSON_CONTROLLER_TYPE_KEY, android.os.Build.MODEL);
                     }
                     catch (JSONException e)
                     {
                         e.printStackTrace();
                     }
-
+                    Log.i(TAG, "end onSendJsonToRouter");
                     return jsonObject;
                 }
                 
                 @Override
-                protected ARDISCOVERY_ERROR_ENUM onReceiveJsonFromRouter(
-                        JSONObject receivedData, String ip) {
+                protected ARDISCOVERY_ERROR_ENUM onReceiveJsonFromRouter(JSONObject receivedData, String ip)
+                {
+                    Log.i(TAG, "onReceiveJsonFromRouter");
                     /* Receive a json with the controller to Device port */
                     discoveryIp = ip;
                     ARDISCOVERY_ERROR_ENUM error = ARDISCOVERY_ERROR_ENUM.ARDISCOVERY_OK;
@@ -614,20 +827,27 @@ public abstract class DeviceController extends DeviceControllerAndLibARCommands 
                             videoFragmentMaximumNumber = jsonObject.getInt(ARDiscoveryConnection.ARDISCOVERY_CONNECTION_JSON_ARSTREAM_FRAGMENT_MAXIMUM_NUMBER_KEY);
                         }
                         /* Else: leave it to the default value. */
+
+                        if (!jsonObject.isNull(ARDiscoveryConnection.ARDISCOVERY_CONNECTION_JSON_ARSTREAM_MAX_ACK_INTERVAL_KEY))
+                        {
+                            videoMaxAckInterval = jsonObject.getInt(ARDiscoveryConnection.ARDISCOVERY_CONNECTION_JSON_ARSTREAM_MAX_ACK_INTERVAL_KEY);
+                        }
+                        /* Else: leave it to the default value. */
                     }
                     catch (JSONException e)
                     {
                         e.printStackTrace();
                         error = ARDISCOVERY_ERROR_ENUM.ARDISCOVERY_ERROR;
                     }
-
+                    Log.i(TAG, "end onReceiveJsonFromRouter");
                     return error;
                 }
             };
         }
         else
         {
-            discoveryData = new ARDiscoveryConnection(){
+            discoveryData = new ARDiscoveryConnection()
+            {
                 @Override
                 public String onSendJson ()
                 {
@@ -687,6 +907,11 @@ public abstract class DeviceController extends DeviceControllerAndLibARCommands 
                             videoFragmentMaximumNumber = jsonObject.getInt(ARDiscoveryConnection.ARDISCOVERY_CONNECTION_JSON_ARSTREAM_FRAGMENT_MAXIMUM_NUMBER_KEY);
                         }
                         /* Else: leave it to the default value. */
+                        if (!jsonObject.isNull(ARDiscoveryConnection.ARDISCOVERY_CONNECTION_JSON_ARSTREAM_MAX_ACK_INTERVAL_KEY))
+                        {
+                            videoMaxAckInterval = jsonObject.getInt(ARDiscoveryConnection.ARDISCOVERY_CONNECTION_JSON_ARSTREAM_MAX_ACK_INTERVAL_KEY);
+                        }
+                        /* Else: leave it to the default value. */
                     }
                     catch (JSONException e)
                     {
@@ -697,6 +922,7 @@ public abstract class DeviceController extends DeviceControllerAndLibARCommands 
                 }
             };
         }
+        
         if (ok == true)
         {
             /* open the discovery connection data in another thread */
@@ -712,10 +938,12 @@ public abstract class DeviceController extends DeviceControllerAndLibARCommands 
             {
                 e.printStackTrace();
             }
+            
             /* dispose discoveryData it not needed more */
             discoveryData.dispose();
             discoveryData = null;
         }
+        
         return ok && (error == ARDISCOVERY_ERROR_ENUM.ARDISCOVERY_OK);
     }
     
@@ -735,7 +963,17 @@ public abstract class DeviceController extends DeviceControllerAndLibARCommands 
      */
     public void setVideoListener  (DeviceControllerVideoStreamListener listener)
     {
-        videoStreamListener = listener;
+        if (deviceControllerBridgeClass == null)
+        {
+            videoStreamListener = listener;
+        }
+        else
+        {
+            if(deviceControllerBridge != null)
+            {
+                deviceControllerBridge.setVideoListener(listener);
+            }
+        }
     }
     
     /**
@@ -746,18 +984,34 @@ public abstract class DeviceController extends DeviceControllerAndLibARCommands 
     protected boolean sendData (ARNativeData data, int bufferId, ARNETWORK_MANAGER_CALLBACK_RETURN_ENUM timeoutPolicy, NetworkNotificationData notificationData)
     {
         boolean retVal = true;
+        
         if (allowCommands)
         {
-            /* prepare sendInfo */
-            ARNetworkSendInfo sendInfo = new ARNetworkSendInfo (timeoutPolicy, this, notificationData, this);
-            
-            /* Send data with ARNetwork */
-            ARNETWORK_ERROR_ENUM netError = netManager.sendData (bufferId, data, sendInfo, true); 
-            
-            if (netError != ARNETWORK_ERROR_ENUM.ARNETWORK_OK)
+            if(deviceControllerBridgeClass != null)
             {
-                ARSALPrint.e(TAG, "netManager.sendData() failed. " + netError.toString());
-                retVal = false;
+                if(deviceControllerBridge != null)
+                {
+                    retVal = deviceControllerBridge.sendData (data, bufferId, timeoutPolicy, notificationData);
+                }
+                else
+                {
+                    Log.e(TAG, "deviceControllerBridge == null");
+                    retVal = false;
+                }
+            }
+            else
+            {
+                /* prepare sendInfo */
+                ARNetworkSendInfo sendInfo = new ARNetworkSendInfo (timeoutPolicy, this, notificationData, this);
+                
+                /* Send data with ARNetwork */
+                ARNETWORK_ERROR_ENUM netError = netManager.sendData (bufferId, data, sendInfo, true);
+                
+                if (netError != ARNETWORK_ERROR_ENUM.ARNETWORK_OK)
+                {
+                    ARSALPrint.e(TAG, "netManager.sendData() failed. " + netError.toString());
+                    retVal = false;
+                }
             }
         }
         else
@@ -810,6 +1064,7 @@ public abstract class DeviceController extends DeviceControllerAndLibARCommands 
         /* Attempt to get initial settings */
         boolean successful = true;
         
+        isWaitingAllSettings = true;
         if (DeviceController_SendSettingsAllSettings(getNetConfig().getC2dAckId(), ARNETWORK_MANAGER_CALLBACK_RETURN_ENUM.ARNETWORK_MANAGER_CALLBACK_RETURN_RETRY, null))
         {
             try
@@ -828,6 +1083,8 @@ public abstract class DeviceController extends DeviceControllerAndLibARCommands 
             successful = false;
         }
         
+        isWaitingAllSettings = false;
+        
         return successful;
     }
     
@@ -836,6 +1093,7 @@ public abstract class DeviceController extends DeviceControllerAndLibARCommands 
         /* Attempt to get initial states */
         boolean successful = true;
         
+        isWaitingAllStates = true;
         if (DeviceController_SendCommonAllStates(getNetConfig().getC2dAckId(), ARNETWORK_MANAGER_CALLBACK_RETURN_ENUM.ARNETWORK_MANAGER_CALLBACK_RETURN_RETRY, null))
         {
             try
@@ -853,6 +1111,7 @@ public abstract class DeviceController extends DeviceControllerAndLibARCommands 
         {
             successful = false;
         }
+        isWaitingAllStates = false;
         
         return successful;
     }
@@ -873,21 +1132,27 @@ public abstract class DeviceController extends DeviceControllerAndLibARCommands 
     
     protected ControllerLooperThread createNewControllerLooperThread()
     {
-    	return new ControllerLooperThread();
+        return new ControllerLooperThread();
     }
     
     @Override
     public void onCommonSettingsStateAllSettingsChangedUpdate ()
     {
         super.onCommonSettingsStateAllSettingsChangedUpdate();
-        cmdGetAllSettingsSent.release();
+        if(isWaitingAllSettings)
+        {
+            cmdGetAllSettingsSent.release();
+        }
     }
     
     @Override
     public void onCommonCommonStateAllStatesChangedUpdate ()
     {
         super.onCommonCommonStateAllStatesChangedUpdate();
-        cmdGetAllStatesSent.release();
+        if(isWaitingAllStates)
+        {
+            cmdGetAllStatesSent.release();
+        }
     }
     
     public void userRequestedSettingsReset()
@@ -902,13 +1167,33 @@ public abstract class DeviceController extends DeviceControllerAndLibARCommands 
     
     public void userRequestReboot() 
     {
-    	DeviceController_SendCommonReboot(getNetConfig().getC2dAckId(), ARNETWORK_MANAGER_CALLBACK_RETURN_ENUM.ARNETWORK_MANAGER_CALLBACK_RETURN_DATA_POP, null);
+        DeviceController_SendCommonReboot(getNetConfig().getC2dAckId(), ARNETWORK_MANAGER_CALLBACK_RETURN_ENUM.ARNETWORK_MANAGER_CALLBACK_RETURN_DATA_POP, null);
     }
 
-    private void registerCurrentProduct()
+    public void userRequestCalibration(byte calibrate)
+    {
+        DeviceController_SendCalibrationMagnetoCalibration(getNetConfig().getC2dAckId(), ARNETWORK_MANAGER_CALLBACK_RETURN_ENUM.ARNETWORK_MANAGER_CALLBACK_RETURN_DATA_POP, null, calibrate);
+    }
+    
+    public void userRequestMavlinkPlay(String filepath, ARCOMMANDS_COMMON_MAVLINK_START_TYPE_ENUM type)
+    {
+        DeviceController_SendMavlinkStart(getNetConfig().getC2dAckId(), ARNETWORK_MANAGER_CALLBACK_RETURN_ENUM.ARNETWORK_MANAGER_CALLBACK_RETURN_DATA_POP, null, filepath, type);
+    }
+    
+    public void userRequestMavlinkPause()
+    {
+    	DeviceController_SendMavlinkPause(getNetConfig().getC2dAckId(), ARNETWORK_MANAGER_CALLBACK_RETURN_ENUM.ARNETWORK_MANAGER_CALLBACK_RETURN_DATA_POP, null);
+    }
+    
+    public void userRequestMavlinkStop()
+    {
+    	DeviceController_SendMavlinkStop(getNetConfig().getC2dAckId(), ARNETWORK_MANAGER_CALLBACK_RETURN_ENUM.ARNETWORK_MANAGER_CALLBACK_RETURN_DATA_POP, null);
+    }
+
+    protected void registerCurrentProduct()
     {
         SharedPreferences preferences = getSharedPreferences(DEVICECONTROLLER_SHARED_PREFERENCES_KEY, Context.MODE_PRIVATE);
-        Bundle bundle = this.getNotificationDictionary();
+        ARBundle bundle = this.getNotificationDictionary();
         if(bundle != null)
         {
             if (bundle.containsKey(DeviceControllerAndLibARCommands.DeviceControllerSettingsStateProductSerialHighChangedNotification) &&
@@ -1055,8 +1340,7 @@ public abstract class DeviceController extends DeviceControllerAndLibARCommands 
         @Override
         public void onDisconnect(ARNetworkALManager alManager)
         {
-            Log.d (TAG, "onDisconnect ...");
-            
+            Log.w(TAG, "onDisconnect !!!!!");
             DeviceController.this.stop();
         }
     }
@@ -1147,11 +1431,11 @@ public abstract class DeviceController extends DeviceControllerAndLibARCommands 
         @Override
         public void onloop()
         {
-            long lastTime = System.currentTimeMillis();
+            long lastTime = SystemClock.elapsedRealtime();
             
             controllerLoop();
-        
-            long sleepTime = (System.currentTimeMillis() + loopInterval) - lastTime;
+            
+            long sleepTime = (SystemClock.elapsedRealtime() + loopInterval) - lastTime;
             
             try
             {
@@ -1170,7 +1454,7 @@ public abstract class DeviceController extends DeviceControllerAndLibARCommands 
         
         public VideoThread ()
         {
-            streamManager = new ARStreamManager (netManager, netConfig.getVideoDataIOBuffer(), netConfig.getVideoAckIOBuffer(), videoFragmentSize);
+            streamManager = new ARStreamManager (netManager, netConfig.getVideoDataIOBuffer(), netConfig.getVideoAckIOBuffer(), videoFragmentSize, videoMaxAckInterval);
         }
         
         @Override
@@ -1185,11 +1469,7 @@ public abstract class DeviceController extends DeviceControllerAndLibARCommands 
         @Override
         public void onloop()
         {
-            /* We need the autorelease pool here to prevent a memory leak in the
-             * video delegate.
-             * TODO: This is kinda old code. Make sure it is still needed. */
-            
-            ARFrame frame = streamManager.getFrameWithTimeout (500); //TODO define
+            ARFrame frame = streamManager.getFrameWithTimeout(VIDEO_RECEIVE_TIMEOUT);
             
             if (frame != null)
             {
@@ -1322,6 +1602,7 @@ public abstract class DeviceController extends DeviceControllerAndLibARCommands 
 
     boolean startCancelled;
     abstract void initDeviceState();
+    boolean fastReconnection;
 
     boolean doStart()
     {
@@ -1330,7 +1611,7 @@ public abstract class DeviceController extends DeviceControllerAndLibARCommands 
         /* Initialize initial commands state. */
         initDeviceState();
 
-        if (!failed && !startCancelled)
+        if ((!failed) && (!startCancelled))
         {
             failed = (startBaseController() != BASE_DEVICE_CONTROLLER_START_RETVAL_ENUM.BASE_DEVICE_CONTROLLER_START_RETVAL_OK);
 
@@ -1347,7 +1628,7 @@ public abstract class DeviceController extends DeviceControllerAndLibARCommands 
             sendInitialTime(currentDate);
         }
 
-        if ((!failed) && (!startCancelled))
+        if ((!failed) && (!startCancelled) && (!fastReconnection))
         {
             LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(getDeviceControllerIntent(DeviceControllerAllSettingsDidStartNotification));
             if (!getInitialSettings())
@@ -1380,7 +1661,7 @@ public abstract class DeviceController extends DeviceControllerAndLibARCommands 
         stopBaseController();
     }
 
-    DEVICE_CONTROLER_STATE_ENUM state;
+    DEVICE_CONTROLER_STATE_ENUM state = DEVICE_CONTROLER_STATE_ENUM.DEVICE_CONTROLLER_STATE_STOPPED;
     Lock stateLock;
 
     /**
@@ -1389,6 +1670,7 @@ public abstract class DeviceController extends DeviceControllerAndLibARCommands 
     public final void startThread()
     {
         stateLock.lock();
+        
         if (state == DEVICE_CONTROLER_STATE_ENUM.DEVICE_CONTROLLER_STATE_STOPPED)
         {
             state = DEVICE_CONTROLER_STATE_ENUM.DEVICE_CONTROLLER_STATE_STARTING;
@@ -1413,6 +1695,7 @@ public abstract class DeviceController extends DeviceControllerAndLibARCommands 
                     {
                         /* Go to the STARTED state and notify. */
                         stateLock.lock();
+                        
                         state = DEVICE_CONTROLER_STATE_ENUM.DEVICE_CONTROLLER_STATE_STARTED;
                         /*
                          * broadcast the new state of the connection ;
@@ -1420,6 +1703,11 @@ public abstract class DeviceController extends DeviceControllerAndLibARCommands 
                          */
                         LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(getDeviceControllerIntent(DeviceControllerDidStartNotification));
                         stateLock.unlock();
+                        
+                        if(router != null)
+                        {
+                            router.onConnectionToDeviceCompleted();
+                        }
                     }
                     else
                     {
@@ -1429,8 +1717,8 @@ public abstract class DeviceController extends DeviceControllerAndLibARCommands 
                          * in the background.
                          */
                         stateLock.lock();
+                        
                         state = DEVICE_CONTROLER_STATE_ENUM.DEVICE_CONTROLLER_STATE_STOPPING;
-
                         if (failed)
                         {
                             /*
@@ -1447,6 +1735,7 @@ public abstract class DeviceController extends DeviceControllerAndLibARCommands 
                         /* Go to the STOPPED state and notify. */
                         stateLock.lock();
                         state = DEVICE_CONTROLER_STATE_ENUM.DEVICE_CONTROLLER_STATE_STOPPED;
+                        
                         /*
                          * broadcast the new state of the connection ;
                          * DidStopNotification
@@ -1458,6 +1747,7 @@ public abstract class DeviceController extends DeviceControllerAndLibARCommands 
                 }
             }).start();
         }
+        
         stateLock.unlock();
     }
 
@@ -1484,6 +1774,7 @@ public abstract class DeviceController extends DeviceControllerAndLibARCommands 
                     /* Go to the STOPPED state and notify. */
                     stateLock.lock();
                     state = DEVICE_CONTROLER_STATE_ENUM.DEVICE_CONTROLLER_STATE_STOPPED;
+                    
                     /*
                      * broadcast the new state of the connection ;
                      * DidStopNotification
@@ -1497,6 +1788,7 @@ public abstract class DeviceController extends DeviceControllerAndLibARCommands 
         {
             /* Go to the stopping state and request cancellation. */
             state = DEVICE_CONTROLER_STATE_ENUM.DEVICE_CONTROLLER_STATE_STOPPING;
+            
             startCancelled = true;
 
             /* Do the actual stop process in the background. */
@@ -1512,5 +1804,15 @@ public abstract class DeviceController extends DeviceControllerAndLibARCommands 
 
         }
         stateLock.unlock();
+    }
+    
+    protected ARDiscoveryDeviceService getDeviceService()
+    {
+        return deviceService;
+    }
+    
+    protected boolean isInitialized()
+    {
+        return initialized;
     }
 }

@@ -41,6 +41,8 @@
 #import "JumpingSumoDeviceController+libARCommandsDebug.h"
 #import "JumpingSumoARNetworkConfig.h"
 #import "DeviceControllerProtected.h"
+#import "JumpingSumoVideoRecordController.h"
+#import "JumpingSumoPhotoRecordController.h"
 
 static const char* TAG = "JumpingSumoDeviceController";
 static const NSTimeInterval LOOP_INTERVAL = 0.05;
@@ -75,7 +77,7 @@ typedef struct
 - (id)initWithService:(ARService *)service
 {
     JumpingSumoARNetworkConfig *netConfig = [[JumpingSumoARNetworkConfig alloc] init];
-    self = [super initWithARNetworkConfig:netConfig withARService:service withLoopInterval:LOOP_INTERVAL];
+    self = [super initWithARNetworkConfig:netConfig withARService:service withBridgeDeviceController:nil withLoopInterval:LOOP_INTERVAL];
     if (self != nil) {
         _stateLock = [[NSRecursiveLock alloc] init];
         _state = DEVICE_CONTROLLER_STATE_STOPPED;
@@ -395,12 +397,6 @@ typedef struct
     [self JumpingSumoDeviceController_SendAudioSettingsTheme:[JumpingSumoARNetworkConfig c2dAckId] withSendPolicy:ARNETWORK_SEND_POLICY_DROP withCompletionBlock:nil withTheme:theme];
 }
 
-
-- (void)userRequestedSettingsOutdoor:(int)outdoor
-{
-    [self JumpingSumoDeviceController_SendSpeedSettingsOutdoor:[JumpingSumoARNetworkConfig c2dAckId] withSendPolicy:ARNETWORK_SEND_POLICY_DROP withCompletionBlock:nil withOutdoor:outdoor];
-}
-
 - (void)userRequestedReboot
 {
     [self DeviceController_SendCommonReboot:[JumpingSumoARNetworkConfig c2dAckId] withSendPolicy:ARNETWORK_SEND_POLICY_DROP withCompletionBlock:nil];
@@ -561,6 +557,10 @@ typedef struct
     if (!failed && !_startCancelled)
     {
         [self registerCurrentProduct];
+        _videoRecordController = [[JumpingSumoVideoRecordController alloc] init];
+        _videoRecordController.deviceController = self;
+        _photoRecordController = [[JumpingSumoPhotoRecordController alloc] init];
+        _photoRecordController.deviceController = self;
     }
 
     return (failed == NO);
@@ -568,6 +568,8 @@ typedef struct
 
 - (void)privateStop
 {
+    _videoRecordController = nil;
+    _photoRecordController = nil;
     [self unregisterJumpingSumoARCommandsCallbacks];
 #ifdef ARCOMMANDS_HAS_DEBUG_COMMANDS
     [self unregisterJumpingSumoDebugARCommandsCallbacks];

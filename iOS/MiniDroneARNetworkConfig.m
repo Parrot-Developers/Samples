@@ -223,4 +223,10 @@ static const size_t num_commands_buffers = sizeof(commands_buffers) / sizeof(int
     return num_bleNotificationIDs;
 }
 
+- (int32_t)defaultVideoMaxAckInterval
+{
+    // This method makes no sense for the RollingSpider since video streaming isn't supported.
+    return -1;
+}
+
 @end

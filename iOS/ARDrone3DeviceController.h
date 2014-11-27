@@ -29,7 +29,7 @@
     SUCH DAMAGE.
 */
 //
-//  MiniDroneDeviceController.h
+//  ARDrone3DeviceController.h
 //  ARFreeFlight
 //
 //  Created by Hugo Grostabussiat on 09/12/2013.
@@ -37,22 +37,19 @@
 //
 #import <Foundation/Foundation.h>
 #import <libARCommands/ARCommands.h>
+#import <CoreLocation/CoreLocation.h>
 #import "DeviceController.h"
 
 /* Notification posted when the Drone flying state changes.
  * userInfo keys:
  * - flyingState: Boolean encoded as a NSNumber containing the new flying state. */
-extern NSString* MiniDroneDeviceControllerFlyingStateChangedNotification;
+extern NSString* ARDrone3DeviceControllerFlyingStateChangedNotification;
 /* Notification posted when the Drone emergency state changes.
  * userInfo keys:
  * - emergencyState: Boolean encoded as a NSNumber containing the new emergency state. */
-extern NSString* MiniDroneDeviceControllerEmergencyStateChangedNotification;
-/* Notification posted when the MiniDrone receives debug command. */
-extern NSString* MiniDroneDeviceControllerDebug1ReceivedNotification;
-extern NSString* MiniDroneDeviceControllerDebug2ReceivedNotification;
-extern NSString* MiniDroneDeviceControllerDebug3ReceivedNotification;
+extern NSString* ARDrone3DeviceControllerEmergencyStateChangedNotification;
 
-typedef struct MiniDronePilotingData_t
+typedef struct ARDrone3PilotingData_t
 {
     BOOL active;
     float roll;
@@ -60,14 +57,23 @@ typedef struct MiniDronePilotingData_t
     float yaw;
     float gaz;
     float heading;
-} MiniDronePilotingData_t;
+} ARDrone3PilotingData_t;
 
-@class MiniDronePhotoRecordController;
+typedef struct _ARDrone3CameraData_t_
+{
+    float tilt;
+    float pan;
+} ARDrone3CameraData_t;
 
-@interface MiniDroneDeviceController : DeviceController
-@property (nonatomic, strong, readonly) MiniDronePhotoRecordController *photoRecordController;
+@class ARDrone3VideoRecordController;
+@class ARDrone3PhotoRecordController;
+
+@interface ARDrone3DeviceController : DeviceController <DeviceControllerVideoStreamControlProtocol>
+@property (nonatomic, strong, readonly) ARDrone3VideoRecordController *videoRecordController;
+@property (nonatomic, strong, readonly) ARDrone3PhotoRecordController *photoRecordController;
 
 - (id)initWithService:(ARService*)service;
+- (id)initWithService:(ARService*)service withBridgeDeviceController:(DeviceController*)bridgeService;
 
 /* User-generated events. */
 - (void)userCommandsActivationChanged:(BOOL)activated;
@@ -79,21 +85,36 @@ typedef struct MiniDronePilotingData_t
 - (void)userRequestedTakeOff;
 - (void)userRequestedLanding;
 - (void)userRequestedEmergency;
+- (void)userRequestedNavigateHome:(BOOL)start;
 - (void)userRequestedFlatTrim;
 - (void)userRequestedRecordPicture:(int)massStorageId;
-- (void)userRequestFlip:(eARCOMMANDS_MINIDRONE_ANIMATIONS_FLIP_DIRECTION)flipDirection;
-- (void)userRequestCap:(int16_t)offset;
-- (void)userRequestSetAutoTakeOffMode:(uint8_t)state;
-- (BOOL)userSetDebug1Value:(int8_t)value;
-- (BOOL)userSetDebug2Value:(int8_t)value;
-- (BOOL)userSetDebug3Value:(int8_t)value;
-
+- (void)userRequestedRecordVideoStart:(int)massStorageId;
+- (void)userRequestedRecordVideoStop:(int)massStorageId;
+- (void)userRequestFlip:(eARCOMMANDS_ARDRONE3_ANIMATIONS_FLIP_DIRECTION)flipDirection;
+- (void)userCameraTiltChanged:(float)tilt;
+- (void)userCameraPanChanged:(float)pan;
+- (void)userRequestedSettingsReset;
+- (void)userRequestedSettingsCountry:(NSString *)country;
+- (void)userRequestedSettingsProductName:(NSString *)productName;
 - (void)userRequestedPilotingSettingsMaxAltitude:(float)maxAltitude;
 - (void)userRequestedPilotingSettingsMaxTilt:(float)maxTilt;
+- (void)userRequestedPilotingSettingsAbsolutControl:(BOOL)on;
 - (void)userRequestedSpeedSettingsMaxRotationSpeed:(float)maxRotationSpeed;
 - (void)userRequestedSpeedSettingsMaxVerticalSpeed:(float)maxVerticalSpeed;
-- (void)userRequestedSpeedSettingsWheels:(BOOL)present;
-- (void)userRequestedSpeedSettingsCutOut:(BOOL)enable;
-- (void)userRequestedSettingsReset;
-- (void)userRequestedSettingsProductName:(NSString *)productName;
+- (void)userRequestedSettingsNetworkWifiType:(eARCOMMANDS_ARDRONE3_NETWORKSETTINGS_WIFISELECTION_TYPE)type band:(eARCOMMANDS_ARDRONE3_NETWORKSETTINGS_WIFISELECTION_BAND)band channel:(int) channel;
+- (void)userRequestedSettingsNetworkWifiScan:(eARCOMMANDS_ARDRONE3_NETWORK_WIFISCAN_BAND)band;
+- (void)userRequestedSettingsNetworkWifiAuthChannel;
+- (void)userRequestedSpeedSettingsHullProtection:(BOOL)present;
+- (void)userRequestedSpeedSettingsOutdoor:(BOOL)outdoor;
+- (void)userRequestedWithBalance;
+- (void)ardrone3_networkstate_wifiscanlist_clean;
+- (void)ardrone3_networkstate_wifiauthchannellist_clean;
+- (void)userRequestedPictureSettingsPictureFormat:(eARCOMMANDS_ARDRONE3_PICTURESETTINGS_PICTUREFORMATSELECTION_TYPE)photoFormat;
+- (void)userRequestedPictureSettingsWhiteBalance:(eARCOMMANDS_ARDRONE3_PICTURESETTINGS_AUTOWHITEBALANCESELECTION_TYPE)awbMode;
+- (void)userRequestedPictureSettingsExposition:(float)expositionValue;
+- (void)userRequestedPictureSettingsSaturation:(float)saturationValue;
+- (void)userRequestedPictureSettingsTimelapseMode:(BOOL)enabled withInterval:(float)interval;
+- (void)userRequestedPictureSettingsAutorecordVideo:(BOOL)autorecordMode massStorage:(int)massStorageId;
+- (void)userRequestedDebugDrone2Battery:(BOOL)useDrone2Battery;
+- (void)gpsSettingsSetHome:(CLLocationCoordinate2D)home andAltitude:(float)altitude;
 @end

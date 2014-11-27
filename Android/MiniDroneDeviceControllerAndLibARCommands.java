@@ -113,10 +113,19 @@ public abstract class MiniDroneDeviceControllerAndLibARCommands extends DeviceCo
     public final static String MiniDroneDeviceControllerFloodControlStateFloodControlChangedNotification = "MiniDroneDeviceControllerFloodControlStateFloodControlChangedNotification";
     public final static String MiniDroneDeviceControllerFloodControlStateFloodControlChangedNotificationDelayKey = "MiniDroneDeviceControllerFloodControlStateFloodControlChangedNotificationDelayKey";
 
-    protected void initialize (ARNetworkConfig netConfig, ARDiscoveryDeviceService service, double interval)
+    protected void initialize ()
     {
-        super.initialize (netConfig, service, interval);
-        initMiniDroneDeviceControllerAndLibARCommandsIntents ();
+        if(!isInitialized())
+        {
+            initMiniDroneDeviceControllerAndLibARCommandsIntents ();
+            super.initialize ();
+        }
+    }
+    
+    @Override
+    protected void setConfigurations (ARNetworkConfig netConfig, ARDiscoveryDeviceService service, double interval, Class<? extends DeviceController> dcBridgeClass)
+    {
+        super.setConfigurations (netConfig, service, interval, dcBridgeClass);
     }
     
     @Override
@@ -212,7 +221,7 @@ public abstract class MiniDroneDeviceControllerAndLibARCommands extends DeviceCo
      * Called when a command <code>FlatTrimChanged</code> of class <code>PilotingState</code> in project <code>MiniDrone</code> is decoded
      */
     @Override
-    public void onMiniDronePilotingStateFlatTrimChangedUpdate ()
+    public synchronized void onMiniDronePilotingStateFlatTrimChangedUpdate ()
     {
         /* dictionary of update */
         Bundle updateDictionary = new Bundle();
@@ -238,12 +247,16 @@ public abstract class MiniDroneDeviceControllerAndLibARCommands extends DeviceCo
      * @param state Drone flying state
      */
     @Override
-    public void onMiniDronePilotingStateFlyingStateChangedUpdate (ARCOMMANDS_MINIDRONE_PILOTINGSTATE_FLYINGSTATECHANGED_STATE_ENUM state)
+    public synchronized void onMiniDronePilotingStateFlyingStateChangedUpdate (ARCOMMANDS_MINIDRONE_PILOTINGSTATE_FLYINGSTATECHANGED_STATE_ENUM state)
     {
         /* dictionary of update */
         Bundle updateDictionary = new Bundle();
         Bundle notificationBundle = new Bundle();
-        notificationBundle.putInt(MiniDroneDeviceControllerPilotingStateFlyingStateChangedNotificationStateKey, state.getValue());
+        notificationBundle.putInt(MiniDroneDeviceControllerPilotingStateFlyingStateChangedNotificationStateKey, (state != null) ? state.getValue() : ARCOMMANDS_MINIDRONE_PILOTINGSTATE_FLYINGSTATECHANGED_STATE_ENUM.ARCOMMANDS_MINIDRONE_PILOTINGSTATE_FLYINGSTATECHANGED_STATE_MAX.getValue());
+        if (state == null)
+        {
+            ARSALPrint.e(MINIDRONEDEVICECONTROLLERANDLIBARCOMMANDS_TAG, "Bad value for argument `state` in FlyingStateChanged command from the device.");
+        }
         
         updateDictionary.putBundle(MiniDroneDeviceControllerPilotingStateFlyingStateChangedNotification, notificationBundle);
         
@@ -266,12 +279,16 @@ public abstract class MiniDroneDeviceControllerAndLibARCommands extends DeviceCo
      * @param state Drone alert state
      */
     @Override
-    public void onMiniDronePilotingStateAlertStateChangedUpdate (ARCOMMANDS_MINIDRONE_PILOTINGSTATE_ALERTSTATECHANGED_STATE_ENUM state)
+    public synchronized void onMiniDronePilotingStateAlertStateChangedUpdate (ARCOMMANDS_MINIDRONE_PILOTINGSTATE_ALERTSTATECHANGED_STATE_ENUM state)
     {
         /* dictionary of update */
         Bundle updateDictionary = new Bundle();
         Bundle notificationBundle = new Bundle();
-        notificationBundle.putInt(MiniDroneDeviceControllerPilotingStateAlertStateChangedNotificationStateKey, state.getValue());
+        notificationBundle.putInt(MiniDroneDeviceControllerPilotingStateAlertStateChangedNotificationStateKey, (state != null) ? state.getValue() : ARCOMMANDS_MINIDRONE_PILOTINGSTATE_ALERTSTATECHANGED_STATE_ENUM.ARCOMMANDS_MINIDRONE_PILOTINGSTATE_ALERTSTATECHANGED_STATE_MAX.getValue());
+        if (state == null)
+        {
+            ARSALPrint.e(MINIDRONEDEVICECONTROLLERANDLIBARCOMMANDS_TAG, "Bad value for argument `state` in AlertStateChanged command from the device.");
+        }
         
         updateDictionary.putBundle(MiniDroneDeviceControllerPilotingStateAlertStateChangedNotification, notificationBundle);
         
@@ -294,7 +311,7 @@ public abstract class MiniDroneDeviceControllerAndLibARCommands extends DeviceCo
      * @param state State of automatic take off mode
      */
     @Override
-    public void onMiniDronePilotingStateAutoTakeOffModeChangedUpdate (byte state)
+    public synchronized void onMiniDronePilotingStateAutoTakeOffModeChangedUpdate (byte state)
     {
         /* dictionary of update */
         Bundle updateDictionary = new Bundle();
@@ -323,7 +340,7 @@ public abstract class MiniDroneDeviceControllerAndLibARCommands extends DeviceCo
      * @param mass_storage_id Mass storage id to record
      */
     @Override
-    public void onMiniDroneMediaRecordStatePictureStateChangedUpdate (byte state, byte mass_storage_id)
+    public synchronized void onMiniDroneMediaRecordStatePictureStateChangedUpdate (byte state, byte mass_storage_id)
     {
         /* dictionary of update */
         Bundle updateDictionary = new Bundle();
@@ -354,7 +371,7 @@ public abstract class MiniDroneDeviceControllerAndLibARCommands extends DeviceCo
      * @param max Range max of altitude
      */
     @Override
-    public void onMiniDronePilotingSettingsStateMaxAltitudeChangedUpdate (float current, float min, float max)
+    public synchronized void onMiniDronePilotingSettingsStateMaxAltitudeChangedUpdate (float current, float min, float max)
     {
         /* dictionary of update */
         Bundle updateDictionary = new Bundle();
@@ -386,7 +403,7 @@ public abstract class MiniDroneDeviceControllerAndLibARCommands extends DeviceCo
      * @param max Range max of tilt
      */
     @Override
-    public void onMiniDronePilotingSettingsStateMaxTiltChangedUpdate (float current, float min, float max)
+    public synchronized void onMiniDronePilotingSettingsStateMaxTiltChangedUpdate (float current, float min, float max)
     {
         /* dictionary of update */
         Bundle updateDictionary = new Bundle();
@@ -418,7 +435,7 @@ public abstract class MiniDroneDeviceControllerAndLibARCommands extends DeviceCo
      * @param max Range max of vertical speed
      */
     @Override
-    public void onMiniDroneSpeedSettingsStateMaxVerticalSpeedChangedUpdate (float current, float min, float max)
+    public synchronized void onMiniDroneSpeedSettingsStateMaxVerticalSpeedChangedUpdate (float current, float min, float max)
     {
         /* dictionary of update */
         Bundle updateDictionary = new Bundle();
@@ -450,7 +467,7 @@ public abstract class MiniDroneDeviceControllerAndLibARCommands extends DeviceCo
      * @param max Range max of rotation speed
      */
     @Override
-    public void onMiniDroneSpeedSettingsStateMaxRotationSpeedChangedUpdate (float current, float min, float max)
+    public synchronized void onMiniDroneSpeedSettingsStateMaxRotationSpeedChangedUpdate (float current, float min, float max)
     {
         /* dictionary of update */
         Bundle updateDictionary = new Bundle();
@@ -480,7 +497,7 @@ public abstract class MiniDroneDeviceControllerAndLibARCommands extends DeviceCo
      * @param present 1 if present, 0 if not present
      */
     @Override
-    public void onMiniDroneSpeedSettingsStateWheelsChangedUpdate (byte present)
+    public synchronized void onMiniDroneSpeedSettingsStateWheelsChangedUpdate (byte present)
     {
         /* dictionary of update */
         Bundle updateDictionary = new Bundle();
@@ -511,7 +528,7 @@ public abstract class MiniDroneDeviceControllerAndLibARCommands extends DeviceCo
      * @param hardware Product Motors hardware version
      */
     @Override
-    public void onMiniDroneSettingsStateProductMotorsVersionChangedUpdate (byte motor, String type, String software, String hardware)
+    public synchronized void onMiniDroneSettingsStateProductMotorsVersionChangedUpdate (byte motor, String type, String software, String hardware)
     {
         /* dictionary of update */
         Bundle updateDictionary = new Bundle();
@@ -543,7 +560,7 @@ public abstract class MiniDroneDeviceControllerAndLibARCommands extends DeviceCo
      * @param hardware Product Inertial hardware version
      */
     @Override
-    public void onMiniDroneSettingsStateProductInertialVersionChangedUpdate (String software, String hardware)
+    public synchronized void onMiniDroneSettingsStateProductInertialVersionChangedUpdate (String software, String hardware)
     {
         /* dictionary of update */
         Bundle updateDictionary = new Bundle();
@@ -572,7 +589,7 @@ public abstract class MiniDroneDeviceControllerAndLibARCommands extends DeviceCo
      * @param enable State of cut out mode (1 if is activate, 0 otherwise)
      */
     @Override
-    public void onMiniDroneSettingsStateCutOutModeChangedUpdate (byte enable)
+    public synchronized void onMiniDroneSettingsStateCutOutModeChangedUpdate (byte enable)
     {
         /* dictionary of update */
         Bundle updateDictionary = new Bundle();
@@ -600,7 +617,7 @@ public abstract class MiniDroneDeviceControllerAndLibARCommands extends DeviceCo
      * @param delay Delay (in ms) between two PCMD
      */
     @Override
-    public void onMiniDroneFloodControlStateFloodControlChangedUpdate (short delay)
+    public synchronized void onMiniDroneFloodControlStateFloodControlChangedUpdate (short delay)
     {
         /* dictionary of update */
         Bundle updateDictionary = new Bundle();

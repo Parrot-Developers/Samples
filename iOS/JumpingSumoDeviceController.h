@@ -39,8 +39,13 @@
 #import <libARCommands/ARCommands.h>
 #import "DeviceController.h"
 
+@class JumpingSumoVideoRecordController;
+@class JumpingSumoPhotoRecordController;
+
 @interface JumpingSumoDeviceController : DeviceController <DeviceControllerVideoStreamControlProtocol>
 @property (atomic, readonly) eDEVICE_CONTROLLER_STATE state;
+@property (nonatomic, strong, readonly) JumpingSumoVideoRecordController *videoRecordController;
+@property (nonatomic, strong, readonly) JumpingSumoPhotoRecordController *photoRecordController;
 
 - (id)initWithService:(ARService*)service;
 
@@ -67,7 +72,6 @@
 - (void)userRequestedSettingsNetworkWifiAuthChannel; 
 - (void)userRequestedSettingsAudioMasterVolume:(uint8_t)volume;
 - (void)userRequestedSettingsAudioTheme:(eARCOMMANDS_JUMPINGSUMO_AUDIOSETTINGS_THEME_THEME)theme;
-- (void)userRequestedSettingsOutdoor:(int)outdoor; 
 
 - (void)userUploadedScript:(NSUUID*)uuid withMd5:(NSString*)md5Hash;
 - (void)userRequestedScriptDeletion:(NSUUID*)uuid;

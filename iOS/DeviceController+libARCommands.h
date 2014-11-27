@@ -124,6 +124,11 @@ extern NSString *const DeviceControllerCommonStateMassStorageInfoRemainingListCh
 extern NSString *const DeviceControllerCommonStateMassStorageInfoRemainingListChangedNotificationRec_timeKey; /* Mass storage record time reamining in minute */
 extern NSString *const DeviceControllerCommonStateMassStorageInfoRemainingListChangedNotificationPhoto_remainingKey; /* Mass storage photo remaining */
 /*
+ * Wifi Signal between controller and product state
+ */
+extern NSString *const DeviceControllerCommonStateWifiSignalChangedNotification;
+extern NSString *const DeviceControllerCommonStateWifiSignalChangedNotificationRssiKey; /* RSSI of the signal between controller and the product (in dbm) */
+/*
  * Overheat temperature reached
  */
 extern NSString *const DeviceControllerOverHeatStateOverHeatChangedNotification;
@@ -137,6 +142,55 @@ extern NSString *const DeviceControllerOverHeatStateOverHeatRegulationChangedNot
  */
 extern NSString *const DeviceControllerControllerStateIsPilotingChangedNotification;
 extern NSString *const DeviceControllerControllerStateIsPilotingChangedNotificationPilotingKey; /* 0 when the application is not in the piloting HUD, 1 when it enters the HUD. */
+/*
+ * Status of the wifi config : either indoor or outdoor
+ */
+extern NSString *const DeviceControllerWifiSettingsStateOutdoorSettingsChangedNotification;
+extern NSString *const DeviceControllerWifiSettingsStateOutdoorSettingsChangedNotificationOutdoorKey; /* 1 if it should use outdoor wifi settings, 0 otherwise */
+/*
+ * Playing state of a mavlink flight plan
+ */
+extern NSString *const DeviceControllerMavlinkStateMavlinkFilePlayingStateChangedNotification;
+extern NSString *const DeviceControllerMavlinkStateMavlinkFilePlayingStateChangedNotificationStateKey; /* State of the mavlink */
+extern NSString *const DeviceControllerMavlinkStateMavlinkFilePlayingStateChangedNotificationFilepathKey; /* flight plan file path from the mavlink ftp root */
+extern NSString *const DeviceControllerMavlinkStateMavlinkFilePlayingStateChangedNotificationTypeKey; /* type of the played mavlink file */
+/*
+ * FlightPlan play state error
+ */
+extern NSString *const DeviceControllerMavlinkStateMavlinkPlayErrorStateChangedNotification;
+extern NSString *const DeviceControllerMavlinkStateMavlinkPlayErrorStateChangedNotificationErrorKey; /* State of play error */
+/*
+ * Sent when the state of the magneto calibration has changed
+ */
+extern NSString *const DeviceControllerCalibrationStateMagnetoCalibrationStateChangedNotification;
+extern NSString *const DeviceControllerCalibrationStateMagnetoCalibrationStateChangedNotificationXAxisCalibrationKey; /* State of the x axis (roll) calibration : 1 if calibration is done, 0 otherwise */
+extern NSString *const DeviceControllerCalibrationStateMagnetoCalibrationStateChangedNotificationYAxisCalibrationKey; /* State of the y axis (pitch) calibration : 1 if calibration is done, 0 otherwise */
+extern NSString *const DeviceControllerCalibrationStateMagnetoCalibrationStateChangedNotificationZAxisCalibrationKey; /* State of the z axis (yaw) calibration : 1 if calibration is done, 0 otherwise */
+extern NSString *const DeviceControllerCalibrationStateMagnetoCalibrationStateChangedNotificationCalibrationFailedKey; /* 1 if calibration has failed, 0 otherwise. If this arg is 1, consider all previous arg as 0 */
+/*
+ * Status of the calibration requirement
+ */
+extern NSString *const DeviceControllerCalibrationStateMagnetoCalibrationRequiredStateNotification;
+extern NSString *const DeviceControllerCalibrationStateMagnetoCalibrationRequiredStateNotificationRequiredKey; /* 1 if calibration is required, 0 if current calibration is still valid */
+/*
+ * Event sent by a product to inform about the axis to calibrate
+ */
+extern NSString *const DeviceControllerCalibrationStateMagnetoCalibrationAxisToCalibrateChangedNotification;
+extern NSString *const DeviceControllerCalibrationStateMagnetoCalibrationAxisToCalibrateChangedNotificationAxisKey; /* The axis to calibrate */
+/*
+ * Status of the calibration process
+ */
+extern NSString *const DeviceControllerCalibrationStateMagnetoCalibrationStartedChangedNotification;
+extern NSString *const DeviceControllerCalibrationStateMagnetoCalibrationStartedChangedNotificationStartedKey; /* 1 if calibration has started, 0 otherwise */
+/*
+ * Status of the camera settings
+ */
+extern NSString *const DeviceControllerCameraSettingsStateCameraSettingsChangedNotification;
+extern NSString *const DeviceControllerCameraSettingsStateCameraSettingsChangedNotificationFovKey; /* Value of the camera horizontal fov (in degree) */
+extern NSString *const DeviceControllerCameraSettingsStateCameraSettingsChangedNotificationPanMaxKey; /* Value of max pan (right pan) (in degree) */
+extern NSString *const DeviceControllerCameraSettingsStateCameraSettingsChangedNotificationPanMinKey; /* Value of min pan (left pan) (in degree) */
+extern NSString *const DeviceControllerCameraSettingsStateCameraSettingsChangedNotificationTiltMaxKey; /* Value of max tilt (top tilt) (in degree) */
+extern NSString *const DeviceControllerCameraSettingsStateCameraSettingsChangedNotificationTiltMinKey; /* Value of min tilt (bottom tilt) (in degree) */
 
 @class DeviceController;
 
@@ -192,6 +246,26 @@ extern NSString *const DeviceControllerControllerStateIsPilotingChangedNotificat
  * Ventilate the drone when a overheat appeared
  */
 - (BOOL)DeviceController_SendOverHeatVentilate:(int)bufferId withSendPolicy:(eARNETWORK_SEND_POLICY)policy withCompletionBlock:(DeviceControllerCompletionBlock)completionBlock;
+/* 
+ * Send to product if it should use its outdoor wifi config, or indoor
+ */
+- (BOOL)DeviceController_SendWifiSettingsOutdoorSetting:(int)bufferId withSendPolicy:(eARNETWORK_SEND_POLICY)policy withCompletionBlock:(DeviceControllerCompletionBlock)completionBlock withOutdoor:(uint8_t)outdoor;
+/* 
+ * Start the flight plan
+ */
+- (BOOL)DeviceController_SendMavlinkStart:(int)bufferId withSendPolicy:(eARNETWORK_SEND_POLICY)policy withCompletionBlock:(DeviceControllerCompletionBlock)completionBlock withFilepath:(char *)filepath withType:(eARCOMMANDS_COMMON_MAVLINK_START_TYPE)type;
+/* 
+ * Pause the flightplan (can be restarted with a start)
+ */
+- (BOOL)DeviceController_SendMavlinkPause:(int)bufferId withSendPolicy:(eARNETWORK_SEND_POLICY)policy withCompletionBlock:(DeviceControllerCompletionBlock)completionBlock;
+/* 
+ * Stop the flightplan
+ */
+- (BOOL)DeviceController_SendMavlinkStop:(int)bufferId withSendPolicy:(eARNETWORK_SEND_POLICY)policy withCompletionBlock:(DeviceControllerCompletionBlock)completionBlock;
+/* 
+ * Sent when a calibration of the magnetometer is asked or is aborted
+ */
+- (BOOL)DeviceController_SendCalibrationMagnetoCalibration:(int)bufferId withSendPolicy:(eARNETWORK_SEND_POLICY)policy withCompletionBlock:(DeviceControllerCompletionBlock)completionBlock withCalibrate:(uint8_t)calibrate;
 @end
 
 // END GENERATED CODE

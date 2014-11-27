@@ -99,4 +99,7 @@
 /** Get the number of elements in the array returned by bleNotificationIDs. */
 - (size_t)numBLENotificationIDs;
 
+/** Get the default ARStream maxAckInteval value to use if the remote device does not specify one. */
+- (int32_t)defaultVideoMaxAckInterval;
+
 @end

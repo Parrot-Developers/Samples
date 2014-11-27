@@ -29,111 +29,21 @@
     SUCH DAMAGE.
 */
 //
-//  ARNetworkConfig.m
+//  ARDrone3ARNetworkConfig.h
 //  ARFreeFlight
 //
-//  Created by Hugo Grostabussiat on 05/12/2013.
+//  Created by Hugo Grostabussiat on 09/12/2013.
 //  Copyright (c) 2013 Parrot SA. All rights reserved.
 //
-#import <ARUtils/ARUtils.h>
+#import <Foundation/Foundation.h>
 #import "ARNetworkConfig.h"
 
-@implementation ARNetworkConfig
-
-- (BOOL)hasVideo
-{
-    AbstractMethodRaiseException;
-    return NO;
-}
-
-- (ARNETWORK_IOBufferParam_t*)c2dParams
-{
-    AbstractMethodRaiseException;
-    return NULL;
-}
-
-- (ARNETWORK_IOBufferParam_t*)d2cParams
-{
-    AbstractMethodRaiseException;
-    return NULL;
-}
-
-- (size_t)numC2dParams
-{
-    AbstractMethodRaiseException;
-    return 0;
-}
-
-- (size_t)numD2cParams
-{
-    AbstractMethodRaiseException;
-    return 0;
-}
-
-- (int*)commandsIOBuffers
-{
-    AbstractMethodRaiseException;
-    return NULL;
-}
-
-- (size_t)numCommandsIOBuffers
-{
-    AbstractMethodRaiseException;
-    return 0;
-}
-
-- (int)videoDataIOBuffer
-{
-    AbstractMethodRaiseException;
-    return -1;
-}
-
-- (int)videoAckIOBuffer
-{
-    AbstractMethodRaiseException;
-    return -1;
-}
-
-- (int)commonCommandsAckedIOBuffer
-{
-    AbstractMethodRaiseException;
-    return -1;
-}
-
-- (int)inboundPort
-{
-    AbstractMethodRaiseException;
-    return -1;
-}
-
-- (int)outboundPort
-{
-    AbstractMethodRaiseException;
-    return -1;
-}
-
-- (BOOL) initStreamReadIOBuffer:(int) maxFragmentSize maxNumberOfFragment:(int) maxNumberOfFragment
-{
-    AbstractMethodRaiseException;
-    return NO;
-}
-
-- (int *) bleNotificationIDs
-{
-    AbstractMethodRaiseException;
-    return NULL;
-}
-
-- (size_t)numBLENotificationIDs
-{
-    AbstractMethodRaiseException;
-    return -1;
-}
-
-- (int32_t)defaultVideoMaxAckInterval
-{
-    AbstractMethodRaiseException;
-    return -1;
-}
-
+@interface ARDrone3ARNetworkConfig : ARNetworkConfig
++ (int)c2dNackId;
++ (int)c2dAckId;
++ (int)c2dEmergencyId;
++ (int)c2dArstreamAckId;
++ (int)d2cNavdataId;
++ (int)d2cEventsId;
++ (int)d2cArstreamDataId;
 @end

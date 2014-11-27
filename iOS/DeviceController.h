@@ -38,6 +38,7 @@
 #import <Foundation/Foundation.h>
 #import <libARDiscovery/ARDiscovery.h>
 #import <libARDiscovery/ARDISCOVERY_BonjourDiscovery.h>
+#import <libARCommands/ARCommands.h>
 
 #import <ARUtils/ARFrame.h>
 
@@ -90,6 +91,9 @@ typedef void (^DeviceControllerCompletionBlock)(void);
 @required
 /** Method called for each newly-received frame. */
 - (void)didReceiveFrame:(ARFrame *)frame;
+@optional
+/** Method called when no video frame is received for a device-specific time. */
+- (void)didTimedOutReceivingFrame;
 @end
 
 @class DeviceController;
@@ -122,7 +126,7 @@ typedef void (^DeviceControllerCompletionBlock)(void);
 
 @interface DeviceController : NSObject
 /** Get/set the video delegate object. New video frames will be forwarded to it. */
-@property (atomic, weak) id<DeviceControllerVideoStreamDelegate> videoStreamDelegate;
+@property (nonatomic, weak) id<DeviceControllerVideoStreamDelegate> videoStreamDelegate;
 
 /** Set by device controller. DO NOT USE DIRECTLY - USE notificationDictionary to have a copy. */
 @property (nonatomic, strong) NSMutableDictionary *privateNotificationsDictionary;
@@ -132,6 +136,14 @@ typedef void (^DeviceControllerCompletionBlock)(void);
 
 /** Get the ARService instance associated with this controller. */
 @property (readonly, nonatomic, strong) ARService* service;
+
+/** Get the ARService instance used like bridge. */
+@property (readonly, nonatomic, strong) DeviceController* bridgeDeviceController;
+
+/** Get the SkyController software version. */
+@property (readonly, nonatomic, strong) NSString* skyControllerSoftVersion;
+
+@property (nonatomic, assign) BOOL fastReconnection;
 
 /** Request a stopped controller to start.
  * @note This is an abstract method.
@@ -170,10 +182,19 @@ typedef void (^DeviceControllerCompletionBlock)(void);
  */
 - (void)userRequestAutoCountry:(int)automatic;
 
+/** Set outdoor wifi
+ */
+- (void)userRequestedOutdoorWifi:(BOOL)outdoor;
+
 /** Notify the drone that we entered/left the piloting HUD.
  * @arg inHud YES when entering the HUD, NO when leaving the HUD.
  * @note This is an abstract method.
  */
 - (void)userEnteredPilotingHud:(BOOL)inHud;
 
+- (void)userRequestMavlinkPlay:(NSString*)filename type:(eARCOMMANDS_COMMON_MAVLINK_START_TYPE)type;
+- (void)userRequestMavlinkPause;
+- (void)userRequestMavlinkStop;
+
+- (void)userRequestedCalibrate:(BOOL)startProcess;
 @end

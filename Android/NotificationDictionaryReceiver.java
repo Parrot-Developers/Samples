@@ -30,29 +30,70 @@
 */
 package com.parrot.freeflight3.devicecontrollers;
 
+import java.util.LinkedList;
+
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
+import android.os.Handler;
+import android.os.HandlerThread;
 
 public class NotificationDictionaryReceiver extends BroadcastReceiver 
 {
-    private NotificationDictionaryReceiverDelegate delegate;
+
+    private static final HandlerThread NOTIFICATION_HANDLER_THREAD = new HandlerThread("NotificationDictionaryReceiver");
+
+    private static final Handler NOTIFICATION_HANDLER = initHandler();
+
+    private static final Handler initHandler()
+    {
+        NOTIFICATION_HANDLER_THREAD.start();
+        Handler handler = new Handler(NOTIFICATION_HANDLER_THREAD.getLooper());
+        return handler;
+    }
+
+    private final UpdateRunnable mUpdateRunnable;
     
     public NotificationDictionaryReceiver(NotificationDictionaryReceiverDelegate delegate)
     {
-        this.delegate = delegate;
+        this.mUpdateRunnable = new UpdateRunnable(delegate);
     }
 
     @Override
     public void onReceive(Context context, Intent intent)
     {
         Bundle dictionary = intent.getExtras();
-        
-        if (delegate != null)
+        synchronized (this.mUpdateRunnable)
         {
-            delegate.onNotificationDictionaryChanged(dictionary);
+        	this.mUpdateRunnable.dictionaryQueue.add(dictionary);
+        }
+        NOTIFICATION_HANDLER.post(this.mUpdateRunnable);
+    }
+
+    private static class UpdateRunnable implements Runnable
+    {
+
+        private LinkedList<Bundle> dictionaryQueue;
+
+        private final NotificationDictionaryReceiverDelegate delegate;
+
+        private UpdateRunnable(NotificationDictionaryReceiverDelegate delegate)
+        {
+            this.delegate = delegate;
+            this.dictionaryQueue = new LinkedList<Bundle>();
+        }
+
+        @Override
+        public void run()
+        {
+            if (delegate != null)
+            {
+                synchronized (this)
+                {
+                    delegate.onNotificationDictionaryChanged( dictionaryQueue.poll());
+                }
+            }
         }
     }
 }

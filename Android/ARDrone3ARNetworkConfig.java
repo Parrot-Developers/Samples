@@ -37,32 +37,36 @@ import com.parrot.arsdk.arnetworkal.ARNETWORKAL_FRAME_TYPE_ENUM;
 import com.parrot.arsdk.arnetworkal.ARNetworkALManager;
 import com.parrot.arsdk.arstream.ARStreamReader;
 
-public final class MiniDroneARNetworkConfig extends ARNetworkConfig
+public final class ARDrone3ARNetworkConfig extends ARNetworkConfig
 {
-    private static final String TAG = MiniDroneARNetworkConfig.class.getSimpleName();
+    private static final String TAG = ARDrone3ARNetworkConfig.class.getSimpleName();
     
     static
     {
         iobufferC2dNack = 10;
         iobufferC2dAck = 11;
         iobufferC2dEmergency = 12;
-        iobufferD2cNavdata = (ARNetworkALManager.ARNETWORKAL_MANAGER_BLE_ID_MAX / 2) - 1;
-        iobufferD2cEvents = (ARNetworkALManager.ARNETWORKAL_MANAGER_BLE_ID_MAX / 2) - 2;
+        iobufferC2dArstreamAck = 13;
+        iobufferD2cNavdata = (ARNetworkALManager.ARNETWORKAL_MANAGER_WIFI_ID_MAX / 2) - 1;
+        iobufferD2cEvents = (ARNetworkALManager.ARNETWORKAL_MANAGER_WIFI_ID_MAX / 2) - 2;
+        iobufferD2cArstreamData = (ARNetworkALManager.ARNETWORKAL_MANAGER_WIFI_ID_MAX / 2) - 3;
         
-        hasVideo = false;
-        videoMaxAckInterval = -1;
+        inboundPort = 54321;
+        outboundPort = 43210;
         
-        int ackOffset = (ARNetworkALManager.ARNETWORKAL_MANAGER_BLE_ID_MAX / 2);
-        bleNotificationIDs = new int[]{iobufferD2cNavdata, iobufferD2cEvents, (iobufferC2dAck + ackOffset) ,(iobufferC2dEmergency + ackOffset) };
+        hasVideo = true;
+        videoMaxAckInterval = ARStreamReader.DEFAULT_MAX_ACK_INTERVAL;
+        
+        bleNotificationIDs = null;
         
         c2dParams.clear();
         c2dParams.add (new ARNetworkIOBufferParam (iobufferC2dNack,
                             ARNETWORKAL_FRAME_TYPE_ENUM.ARNETWORKAL_FRAME_TYPE_DATA,
-                            20,
-                            ARNetworkIOBufferParam.ARNETWORK_IOBUFFERPARAM_INFINITE_NUMBER,
-                            ARNetworkIOBufferParam.ARNETWORK_IOBUFFERPARAM_INFINITE_NUMBER,
                             1,
-                            ARNetworkIOBufferParam.ARNETWORK_IOBUFFERPARAM_DATACOPYMAXSIZE_USE_MAX,
+                            ARNetworkIOBufferParam.ARNETWORK_IOBUFFERPARAM_INFINITE_NUMBER,
+                            ARNetworkIOBufferParam.ARNETWORK_IOBUFFERPARAM_INFINITE_NUMBER,
+                            2,
+                            128,
                             true));
         c2dParams.add (new ARNetworkIOBufferParam (iobufferC2dAck,
                             ARNETWORKAL_FRAME_TYPE_ENUM.ARNETWORKAL_FRAME_TYPE_DATA_WITH_ACK,
@@ -70,7 +74,7 @@ public final class MiniDroneARNetworkConfig extends ARNetworkConfig
                             500,
                             3,
                             20,
-                            ARNetworkIOBufferParam.ARNETWORK_IOBUFFERPARAM_DATACOPYMAXSIZE_USE_MAX,
+                            128,
                             false));
         c2dParams.add (new ARNetworkIOBufferParam (iobufferC2dEmergency,
                             ARNETWORKAL_FRAME_TYPE_ENUM.ARNETWORKAL_FRAME_TYPE_DATA_WITH_ACK,
@@ -78,7 +82,7 @@ public final class MiniDroneARNetworkConfig extends ARNetworkConfig
                             100,
                             ARNetworkIOBufferParam.ARNETWORK_IOBUFFERPARAM_INFINITE_NUMBER,
                             1,
-                            ARNetworkIOBufferParam.ARNETWORK_IOBUFFERPARAM_DATACOPYMAXSIZE_USE_MAX,
+                            128,
                             false));
         
         d2cParams.clear();
@@ -88,7 +92,7 @@ public final class MiniDroneARNetworkConfig extends ARNetworkConfig
                             ARNetworkIOBufferParam.ARNETWORK_IOBUFFERPARAM_INFINITE_NUMBER,
                             ARNetworkIOBufferParam.ARNETWORK_IOBUFFERPARAM_INFINITE_NUMBER,
                             20,
-                            ARNetworkIOBufferParam.ARNETWORK_IOBUFFERPARAM_DATACOPYMAXSIZE_USE_MAX,
+                            128,
                             false));
         d2cParams.add (new ARNetworkIOBufferParam (iobufferD2cEvents,
                             ARNETWORKAL_FRAME_TYPE_ENUM.ARNETWORKAL_FRAME_TYPE_DATA_WITH_ACK,
@@ -96,7 +100,7 @@ public final class MiniDroneARNetworkConfig extends ARNetworkConfig
                             500,
                             3,
                             20,
-                            ARNetworkIOBufferParam.ARNETWORK_IOBUFFERPARAM_DATACOPYMAXSIZE_USE_MAX,
+                            128,
                             false));
         
         commandsBuffers = new int[] {
@@ -104,4 +108,5 @@ public final class MiniDroneARNetworkConfig extends ARNetworkConfig
             iobufferD2cEvents,
         };
     }
+    
 }

@@ -56,6 +56,7 @@ public abstract class ARNetworkConfig
     protected static int commandsBuffers[] = {};
     
     protected static boolean hasVideo = false;
+    protected static int videoMaxAckInterval = -1;
     
     protected static int bleNotificationIDs[] = null;
     
@@ -178,6 +179,11 @@ public abstract class ARNetworkConfig
         return bleNotificationIDs;
     }
     
+    public int getDefaultVideoMaxAckInterval()
+    {
+    	return videoMaxAckInterval;
+    }
+    
     /** 
      * Add a StreamReader IOBuffer
      * @param maxFragmentSize Maximum size of the fragment to send
@@ -185,7 +191,32 @@ public abstract class ARNetworkConfig
      */
     public void addStreamReaderIOBuffer (int maxFragmentSize, int maxNumberOfFragment)
     {
-        c2dParams.add (ARStreamReader.newAckARNetworkIOBufferParam (iobufferC2dArstreamAck));
-        d2cParams.add (ARStreamReader.newDataARNetworkIOBufferParam (iobufferD2cArstreamData, maxFragmentSize, maxNumberOfFragment));
+        if ((iobufferC2dArstreamAck != -1) && (iobufferD2cArstreamData != -1))
+        {
+            /*remove the Stream parameters of the last connection*/
+            for(ARNetworkIOBufferParam param : c2dParams)
+            {
+                if(param.getId() == iobufferC2dArstreamAck)
+                {
+                    c2dParams.remove(param);
+                    
+                    break;
+                }
+            }
+            
+            for(ARNetworkIOBufferParam param : d2cParams)
+            {
+                if(param.getId() == iobufferD2cArstreamData)
+                {
+                    d2cParams.remove(param);
+                    
+                    break;
+                }
+            }
+            
+            /* add the Stream parameters for the new connection */
+            c2dParams.add (ARStreamReader.newAckARNetworkIOBufferParam (iobufferC2dArstreamAck));
+            d2cParams.add (ARStreamReader.newDataARNetworkIOBufferParam (iobufferD2cArstreamData, maxFragmentSize, maxNumberOfFragment));
+        }
     }
 }

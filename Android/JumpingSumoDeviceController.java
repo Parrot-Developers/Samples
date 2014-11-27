@@ -54,6 +54,10 @@ import com.parrot.arsdk.arcommands.ARCommand;
 import com.parrot.arsdk.ardiscovery.ARDiscoveryDeviceService;
 import com.parrot.arsdk.arnetwork.ARNETWORK_MANAGER_CALLBACK_RETURN_ENUM;
 import com.parrot.arsdk.arsal.ARSALPrint;
+import com.parrot.freeflight3.recordcontrollers.ARDrone3PhotoRecordController;
+import com.parrot.freeflight3.recordcontrollers.ARDrone3VideoRecordController;
+import com.parrot.freeflight3.recordcontrollers.JumpingSumoPhotoRecordController;
+import com.parrot.freeflight3.recordcontrollers.JumpingSumoVideoRecordController;
 
 public class JumpingSumoDeviceController extends JumpingSumoDeviceControllerAndLibARCommands implements DeviceControllerVideoStreamControl
 {
@@ -70,33 +74,57 @@ public class JumpingSumoDeviceController extends JumpingSumoDeviceControllerAndL
     private JumpingSumoState jsState; // Current JumpingSumo state. Lock before use.
     private Lock jsStateLock; // Lock for the JumpingSumo state.
     
+    private JumpingSumoVideoRecordController videoRecordController;
+    private JumpingSumoPhotoRecordController photoRecordController;
+    
     @Override
     public int onStartCommand(Intent intent, int flags, int startId)
     {
-    	if (intent != null)
-    	{
-	        /** get the deviceService */
-	        ARDiscoveryDeviceService extraService = (ARDiscoveryDeviceService) intent.getParcelableExtra(DRONECONTROLESERVICE_EXTRA_DEVICESERVICE);
-	        
-	        initialize (extraService);
-	        
-	        start ();
-    	}
+        if(!isInitialized())
+        {
+            initialize();
+        }
+        
+        stateLock.lock();
+        
+        if(intent != null)
+        {
+            if (state == DEVICE_CONTROLER_STATE_ENUM.DEVICE_CONTROLLER_STATE_STOPPED)
+            {
+                /** get the deviceService */
+                ARDiscoveryDeviceService extraService = (ARDiscoveryDeviceService) intent.getParcelableExtra(DEVICECONTROLLER_EXTRA_DEVICESERVICE);
+                boolean fastReconnection = intent.getBooleanExtra(DEVICECONTROLLER_EXTRA_FASTRECONNECTION, false);
+                
+                setConfigurations (extraService, fastReconnection);
+                
+                start ();
+            }
+            else
+            {
+                Log.w(TAG, "onStartCommand not effective because device controller is not stopped");
+            }
+        }
+        
+        stateLock.unlock();
         
         return super.onStartCommand (intent, flags, startId);
     }
     
-    public void initialize (ARDiscoveryDeviceService service)
+    public void initialize ()
+    {
+        if (!isInitialized())
+        {
+            jsStateLock = new ReentrantLock ();
+            super.initialize ();
+        }
+    }
+    
+    public void setConfigurations (ARDiscoveryDeviceService service, boolean fastReconnection)
     {
         JumpingSumoARNetworkConfig netConfig = new JumpingSumoARNetworkConfig();
         
-        super.initialize ((ARNetworkConfig) netConfig, service, LOOP_INTERVAL);
-        
-        stateLock = new ReentrantLock ();
-        jsStateLock = new ReentrantLock ();
-        state = DEVICE_CONTROLER_STATE_ENUM.DEVICE_CONTROLLER_STATE_STOPPED;
-        
-        startCancelled = false;
+        this.fastReconnection = fastReconnection;
+        super.setConfigurations ((ARNetworkConfig) netConfig, service, LOOP_INTERVAL, null);
     }
 
     /** Method called in a dedicated thread on a configurable interval.
@@ -198,6 +226,48 @@ public class JumpingSumoDeviceController extends JumpingSumoDeviceControllerAndL
         
     }
     
+    @Override
+    boolean doStart()
+    {
+        boolean failed = !super.doStart();
+        if (!failed)
+        {
+            videoRecordController = new JumpingSumoVideoRecordController(this.getApplicationContext());
+            videoRecordController.setDeviceController(this);
+            photoRecordController = new JumpingSumoPhotoRecordController(this.getApplicationContext());
+            photoRecordController.setDeviceController(this);
+        }
+        return !failed;
+    }
+    
+    @Override
+    void doStop()
+    {
+        if (videoRecordController != null)
+        {
+            videoRecordController.setDelegate(null);
+            videoRecordController.setDeviceController(null);
+            videoRecordController = null;
+        }
+        if (photoRecordController != null)
+        {
+            photoRecordController.setDelegate(null);
+            photoRecordController.setDeviceController(null);
+            photoRecordController = null;
+        }
+        super.doStop();
+    }
+    
+    public JumpingSumoVideoRecordController getVideoRecordController()
+    {
+        return videoRecordController;
+    }
+    
+    public JumpingSumoPhotoRecordController getPhotoRecordController()
+    {
+        return photoRecordController;
+    }
+    
     /***********************
     /* HUD-called methods.
      ***********************/
@@ -292,12 +362,12 @@ public class JumpingSumoDeviceController extends JumpingSumoDeviceControllerAndL
         JumpingSumoDeviceController_SendAnimationAddCapOffset (getNetConfig().getC2dAckId(), ARNETWORK_MANAGER_CALLBACK_RETURN_ENUM.ARNETWORK_MANAGER_CALLBACK_RETURN_DATA_POP, null, (float) PI_2);
     }
     
-    public void userRequestTurnBack ()
+    public void userRequestTurnBackLeft ()
     {
         JumpingSumoDeviceController_SendAnimationAddCapOffset (getNetConfig().getC2dAckId(), ARNETWORK_MANAGER_CALLBACK_RETURN_ENUM.ARNETWORK_MANAGER_CALLBACK_RETURN_DATA_POP, null, (float) Math.PI);
     }
     
-    public void userRequestTurnForward ()
+    public void userRequestTurnBackRight ()
     {
         JumpingSumoDeviceController_SendAnimationAddCapOffset (getNetConfig().getC2dAckId(), ARNETWORK_MANAGER_CALLBACK_RETURN_ENUM.ARNETWORK_MANAGER_CALLBACK_RETURN_DATA_POP, null, (float) -Math.PI);
     }
@@ -334,7 +404,7 @@ public class JumpingSumoDeviceController extends JumpingSumoDeviceControllerAndL
             
             if (sentStatus == false)
             {
-                ARSALPrint.e(TAG, "Failed to send Picture command.");
+                ARSALPrint.e(TAG, "Failed to send isPilotingChanged command.");
             }
             
 
@@ -355,7 +425,7 @@ public class JumpingSumoDeviceController extends JumpingSumoDeviceControllerAndL
         JumpingSumoDeviceController_SendNetworkWifiScan(getNetConfig().getC2dAckId(), ARNETWORK_MANAGER_CALLBACK_RETURN_ENUM.ARNETWORK_MANAGER_CALLBACK_RETURN_DATA_POP, null, band);
     }
     
-    public void userRequestedSettingsAutoCountry(boolean isAutomatic)
+    public void userRequestedSettingsWifiAutoCountry(boolean isAutomatic)
     {
         byte automatic = (byte) (isAutomatic ? 1 : 0);
         DeviceController_SendSettingsAutoCountry(getNetConfig().getC2dAckId(), ARNETWORK_MANAGER_CALLBACK_RETURN_ENUM.ARNETWORK_MANAGER_CALLBACK_RETURN_DATA_POP, null, automatic);
@@ -366,15 +436,15 @@ public class JumpingSumoDeviceController extends JumpingSumoDeviceControllerAndL
         JumpingSumoDeviceController_SendNetworkWifiAuthChannel(getNetConfig().getC2dAckId(), ARNETWORK_MANAGER_CALLBACK_RETURN_ENUM.ARNETWORK_MANAGER_CALLBACK_RETURN_DATA_POP, null);
     }
     
-    public void userRequestedSettingsCountry(String country)
+    public void userRequestedSettingsWifiCountry(String country)
     {
         DeviceController_SendSettingsCountry(getNetConfig().getC2dAckId(), ARNETWORK_MANAGER_CALLBACK_RETURN_ENUM.ARNETWORK_MANAGER_CALLBACK_RETURN_DATA_POP, null, country);
     }
     
-    public void userRequestedSettingsOutdoor(boolean isOutdoor)
+    public void userRequestedSettingsWifiOutdoor(boolean isOutdoor)
     {
         byte outdoor = (byte) (isOutdoor ? 1 : 0);
-        JumpingSumoDeviceController_SendSpeedSettingsOutdoor(getNetConfig().getC2dAckId(), ARNETWORK_MANAGER_CALLBACK_RETURN_ENUM.ARNETWORK_MANAGER_CALLBACK_RETURN_DATA_POP, null, outdoor);
+        DeviceController_SendWifiSettingsOutdoorSetting(getNetConfig().getC2dAckId(), ARNETWORK_MANAGER_CALLBACK_RETURN_ENUM.ARNETWORK_MANAGER_CALLBACK_RETURN_DATA_POP, null, outdoor);
     }
 
     public void userRequestAskAllScriptsMetadata()
@@ -566,7 +636,7 @@ public class JumpingSumoDeviceController extends JumpingSumoDeviceControllerAndL
 	public boolean supportsVideoStreamingControl()
 	{
 		boolean retval = false;
-		Bundle dict = this.getNotificationDictionary();
+		ARBundle dict = this.getNotificationDictionary();
 		if (dict.containsKey(JumpingSumoDeviceControllerMediaStreamingStateVideoEnableChangedNotificationEnabledKey))
 		{
 			retval = true;
@@ -579,7 +649,7 @@ public class JumpingSumoDeviceController extends JumpingSumoDeviceControllerAndL
 	public boolean isVideoStreamingEnabled()
 	{
 		boolean retval = true;
-		Bundle dict = this.getNotificationDictionary();
+		ARBundle dict = this.getNotificationDictionary();
 		if (dict.containsKey(JumpingSumoDeviceControllerMediaStreamingStateVideoEnableChangedNotificationEnabledKey))
 		{
 			retval = dict.getBoolean(JumpingSumoDeviceControllerMediaStreamingStateVideoEnableChangedNotificationEnabledKey);
