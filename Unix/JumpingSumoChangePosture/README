@@ -1,0 +1,20 @@
+==================
+To compile SDK Example JumpingSumoChangePosture
+==================
+
+On Linux and MacOS X platform :
+&make
+
+==================
+To run SDK Example JumpingSumoChangePosture
+==================
+
+On Linux and MacOS X platform :
+&make run
+
+==================
+To clean the compilation of JumpingSumoChangePosture
+==================
+
+On Linux and MacOS X platform :
+&make clean
