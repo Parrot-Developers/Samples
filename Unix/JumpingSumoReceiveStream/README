@@ -1,0 +1,31 @@
+==================
+To compile SDK Example JumpingSumoReceiveStream
+==================
+
+On Linux and MacOS X platform :
+&make
+
+==================
+To run SDK Example JumpingSumoReceiveStream
+==================
+
+On Linux and MacOS X platform :
+&make run
+
+You will need ffplay to use the DISPLAY_WITH_AVPLAY
+On Mac Os X you can get ffplay with brew : brew install ffmpeg --with-ffplay
+
+==================
+To clean the compilation of JumpingSumoReceiveStream
+==================
+
+On Linux and MacOS X platform :
+&make clean
+
+==================
+Purpose of JumpingSumoReceiveStream
+==================
+This sample shows how to receive video stream from a Parrot drone. The example is based on the Jumping Sumo stream.
+The stream can be handled :
+* with ffplay to display in a window the video stream (DISPLAY_WITH_AVPLAY = 1)
+* write frames as jpeg files on file system (DISPLAY_WITH_AVPLAY = 0)
