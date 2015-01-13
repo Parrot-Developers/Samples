@@ -5,10 +5,10 @@ This repo contains sample files to show you how to use the SDK.
 Runnable samples
 ---------------
 
-### JumpingSumoChangePosture (https://github.com/ARDroneSDK3/Samples/tree/master/Unix/JumpingSumoChangePosture)
+#### [JumpingSumoChangePosture](https://github.com/ARDroneSDK3/Samples/tree/master/Unix/JumpingSumoChangePosture)
 This example enables you to **connect** to a JumpingSumo and **send a command** to change its posture.
 
-### JumpingSumoReceiveStream(https://github.com/ARDroneSDK3/Samples/tree/master/Unix/JumpingSumoReceiveStream)
+#### [JumpingSumoReceiveStream](https://github.com/ARDroneSDK3/Samples/tree/master/Unix/JumpingSumoReceiveStream)
 This example enables you to **connect** to a JumpingSumo and **receive the video stream**.
 Two options are available : either display the stream (using ffplay) or store frames on the file system.
 
