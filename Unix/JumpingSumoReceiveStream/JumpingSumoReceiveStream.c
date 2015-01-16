@@ -361,7 +361,7 @@ int startNetwork (JS_MANAGER_t *jsManager)
     }
 
     // Print net error
-    if (!failed)
+    if (failed)
     {
         if (netAlError != ARNETWORKAL_OK)
         {
