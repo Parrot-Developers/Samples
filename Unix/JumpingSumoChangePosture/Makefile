@@ -29,6 +29,7 @@ $(EXEC_NAME): $(OBJ)
 clean:
 	@ rm -f $(OBJDIR)/*.o *~ core $(INCDIR)/*~
 	@ rm -rf $(OBJDIR)
+	@ rm -r $(EXEC_NAME)
 
 run:
 	LD_LIBRARY_PATH=$(LDIR) ./$(EXEC_NAME)
