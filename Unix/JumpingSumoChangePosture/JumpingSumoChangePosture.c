@@ -29,7 +29,7 @@
     SUCH DAMAGE.
 */
 /**
- * @file main.c
+ * @file JumpingSumoChangePosture.c
  * @brief This file contains sources about basic arsdk example sending commands to a JumpingSumo for change his posture
  * @date 08/01/2015
  */
@@ -173,11 +173,14 @@ int main (int argc, char *argv[])
         sleep(2);
     }
 
-
     if (jsManager != NULL)
     {
         /* stop */
         stopNetwork (jsManager);
+        
+        /* free jsManager */
+        free (jsManager);
+        jsManager = NULL;
     }
 
     ARSAL_PRINT(ARSAL_PRINT_INFO, TAG, "-- END --");
