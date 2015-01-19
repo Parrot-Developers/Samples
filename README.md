@@ -12,6 +12,9 @@ This example enables you to **connect** to a JumpingSumo and **send a command** 
 This example enables you to **connect** to a JumpingSumo and **receive the video stream**.
 Two options are available : either display the stream (using ffplay) or store frames on the file system.
 
+#### [JumpingSumoPiloting](https://github.com/ARDroneSDK3/Samples/tree/master/Unix/JumpingSumoPiloting)
+This example enables you to **connect** to a JumpingSumo and **send and receive commands** to pilot it and get its battery level.
+
 Non runnable samples
 -------------------
 They are located in the Android and iOS folders.
