@@ -168,7 +168,7 @@ int main (int argc, char *argv[])
         // fork the process to launch ffplay
         if ((child = fork()) == 0)
         {
-            execlp("ffplay", "-i", "video_fifo", "-f", "mjpeg", NULL);
+            execlp("ffplay", "ffplay", "-i", "video_fifo", "-f", "mjpeg", NULL);
             ARSAL_PRINT(ARSAL_PRINT_ERROR, TAG, "Missing avplay, you will not see the video. Please install avplay.");
             return -1;
         }
