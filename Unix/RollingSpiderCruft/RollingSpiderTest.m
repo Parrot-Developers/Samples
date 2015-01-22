@@ -19,8 +19,8 @@ void discover_drone() {
       if ([obj.service isKindOfClass:[ARBLEService class]]) {
 	ARBLEService *serviceIdx = (ARBLEService *)obj.service;
 	NSLog(@"%@", serviceIdx.peripheral.name);
-	NSString *NAME = @"RS_B";
-	NSString *PREFIX = [serviceIdx.peripheral.name substringToIndex:4];
+	NSString *NAME = @"RS_";
+	NSString *PREFIX = [serviceIdx.peripheral.name substringToIndex:3];
 	if ([PREFIX isEqualToString:NAME]) {
       NSLog(@"Found a Rolling Spider!");
 	  NSLog(@"%@", serviceIdx.peripheral);
