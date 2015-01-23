@@ -25,3 +25,9 @@ The device controllers are used as an interface between the products and the con
 * MiniDroneDeviceController is used to control the RollingSpider
 * JumpingSumoDeviceController is used to control the JumpingSumo
 * Drone3DeviceController is used to control the Bebop drone
+ 
+
+External contributions
+----------------------
+Contributions from external developers are located in the `Contributions` folder, then sorted again by OS.
+The name of the contributors/authors for each samples are written in the `Contributions/CONTRIBUTORS.txt` file.
