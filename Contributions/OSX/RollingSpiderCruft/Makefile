@@ -1,4 +1,4 @@
-LIBAR=../../../ARSDKBuildUtils/Targets/Unix/Install
+LIBAR=../../../../ARSDKBuildUtils/Targets/Unix/Install
 
 FRAMEWORKS=-framework Foundation -framework CoreBluetooth
 INCLUDES=-I$(LIBAR)/include
