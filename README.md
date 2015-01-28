@@ -5,6 +5,7 @@ This repo contains sample files to show you how to use the SDK.
 Runnable samples
 ---------------
 
+### Unix
 #### [JumpingSumoChangePosture](https://github.com/ARDroneSDK3/Samples/tree/master/Unix/JumpingSumoChangePosture)
 This example enables you to **connect** to a JumpingSumo and **send a command** to change its posture.
 
@@ -14,6 +15,10 @@ Two options are available : either display the stream (using ffplay) or store fr
 
 #### [JumpingSumoPiloting](https://github.com/ARDroneSDK3/Samples/tree/master/Unix/JumpingSumoPiloting)
 This example enables you to **connect** to a JumpingSumo and **send and receive commands** to pilot it and get its battery level.
+
+### iOS
+#### [RollingSpiderPiloting](https://github.com/ARDroneSDK3/Samples/tree/master/iOS/RollingSpiderPiloting)
+This example enables you to **connect** to a RollingSpider and **send and receive commands** to pilot it and get its battery level.
 
 Non runnable samples
 -------------------
