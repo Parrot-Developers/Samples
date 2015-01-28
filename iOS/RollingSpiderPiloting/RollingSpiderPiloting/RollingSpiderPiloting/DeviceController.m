@@ -137,6 +137,7 @@ static const size_t NUM_OF_COMMANDS_BUFFER_IDS = sizeof(COMMAND_BUFFER_IDS) / si
 @property (nonatomic) READER_THREAD_DATA_t *readerThreadsData;
 
 @property (nonatomic) BOOL run;
+@property (nonatomic) BOOL alManagerInitialized;
 
 @property (nonatomic) RS_PCMD_t dataPCMD;
 
@@ -162,6 +163,7 @@ static const size_t NUM_OF_COMMANDS_BUFFER_IDS = sizeof(COMMAND_BUFFER_IDS) / si
         _readerThreadsData = NULL;
         
         _run = YES;
+        _alManagerInitialized = NO;
         
         _dataPCMD.flag = 0;
         _dataPCMD.roll = 0;
@@ -273,6 +275,7 @@ static const size_t NUM_OF_COMMANDS_BUFFER_IDS = sizeof(COMMAND_BUFFER_IDS) / si
         }
         else
         {
+            _alManagerInitialized = YES;
             pingDelay = -1; // Disable ping for BLE networks
         }
     }
@@ -389,7 +392,7 @@ static const size_t NUM_OF_COMMANDS_BUFFER_IDS = sizeof(COMMAND_BUFFER_IDS) / si
         }
     }
     
-    if (_alManager != NULL)
+    if ((_alManager != NULL) && (_alManagerInitialized == YES))
     {
         ARNETWORKAL_Manager_Unlock(_alManager);
         
