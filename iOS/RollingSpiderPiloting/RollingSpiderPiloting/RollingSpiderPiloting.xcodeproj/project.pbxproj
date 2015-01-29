@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		1D151CB71A7640AE00B00257 /* libARCommands.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D151CB21A7640AE00B00257 /* libARCommands.framework */; };
-		1D151CB81A7640AE00B00257 /* libARDataTransfer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D151CB31A7640AE00B00257 /* libARDataTransfer.framework */; };
 		1D151CB91A7640AE00B00257 /* libARNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D151CB41A7640AE00B00257 /* libARNetwork.framework */; };
 		1D151CBA1A7640AE00B00257 /* libARNetworkAL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D151CB51A7640AE00B00257 /* libARNetworkAL.framework */; };
 		1D151CBB1A7640AE00B00257 /* libARSAL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D151CB61A7640AE00B00257 /* libARSAL.framework */; };
@@ -25,7 +24,6 @@
 
 /* Begin PBXFileReference section */
 		1D151CB21A7640AE00B00257 /* libARCommands.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = libARCommands.framework; path = ../../../../ARSDKBuildUtils/Targets/iOS/Install/Frameworks/libARCommands.framework; sourceTree = "<group>"; };
-		1D151CB31A7640AE00B00257 /* libARDataTransfer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = libARDataTransfer.framework; path = ../../../../ARSDKBuildUtils/Targets/iOS/Install/Frameworks/libARDataTransfer.framework; sourceTree = "<group>"; };
 		1D151CB41A7640AE00B00257 /* libARNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = libARNetwork.framework; path = ../../../../ARSDKBuildUtils/Targets/iOS/Install/Frameworks/libARNetwork.framework; sourceTree = "<group>"; };
 		1D151CB51A7640AE00B00257 /* libARNetworkAL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = libARNetworkAL.framework; path = ../../../../ARSDKBuildUtils/Targets/iOS/Install/Frameworks/libARNetworkAL.framework; sourceTree = "<group>"; };
 		1D151CB61A7640AE00B00257 /* libARSAL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = libARSAL.framework; path = ../../../../ARSDKBuildUtils/Targets/iOS/Install/Frameworks/libARSAL.framework; sourceTree = "<group>"; };
@@ -56,7 +54,6 @@
 				1D151CB71A7640AE00B00257 /* libARCommands.framework in Frameworks */,
 				1D151CB91A7640AE00B00257 /* libARNetwork.framework in Frameworks */,
 				1D151CBD1A7643B600B00257 /* libARDiscovery.framework in Frameworks */,
-				1D151CB81A7640AE00B00257 /* libARDataTransfer.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -113,7 +110,6 @@
 			children = (
 				1D151CBC1A7643B600B00257 /* libARDiscovery.framework */,
 				1D151CB21A7640AE00B00257 /* libARCommands.framework */,
-				1D151CB31A7640AE00B00257 /* libARDataTransfer.framework */,
 				1D151CB41A7640AE00B00257 /* libARNetwork.framework */,
 				1D151CB51A7640AE00B00257 /* libARNetworkAL.framework */,
 				1D151CB61A7640AE00B00257 /* libARSAL.framework */,
