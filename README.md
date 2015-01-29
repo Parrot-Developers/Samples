@@ -20,10 +20,11 @@ This example enables you to **connect** to a JumpingSumo and **send and receive 
 #### [RollingSpiderPiloting](https://github.com/ARDroneSDK3/Samples/tree/master/iOS/RollingSpiderPiloting)
 This example enables you to **connect** to a RollingSpider and **send and receive commands** to pilot it and get its battery level.
 
-Non runnable samples
+Non runnable samples extracted from FreeFlight3
 -------------------
-They are located in the Android and iOS folders.
-You can't compile them because of missing files. They are here to give you a full example on how to create the interface between drones and the controllers.
+
+They are located in the Android/FeeFlight3Extract/ and iOS/FeeFlight3Extract/ folders.
+You can't compile them because of missing files due to closed sources copyright. They are here to give you a full example on how to create the interface between drones and the controllers.
 
 The device controllers are used as an interface between the products and the controller.
 
