@@ -495,13 +495,12 @@ static void common_camerasettingsstate_camerasettingschanged_callback(float fov,
     cmdError = ARCOMMANDS_Generator_GenerateCommonSettingsAllSettings(cmdbuf, sizeof(cmdbuf), &actualSize);
     if (cmdError == ARCOMMANDS_GENERATOR_OK)
     {
-        sentStatus = [self sendData:cmdbuf withSize:actualSize onBufferWithId:bufferId withSendPolicy:policy withCompletionBlock:completionBlock];
+      sentStatus = [self sendData:cmdbuf withSize:actualSize onBufferWithId:bufferId withSendPolicy:policy withCompletionBlock:completionBlock];
     }
     if (!sentStatus)
     {
         ARSAL_PRINT(ARSAL_PRINT_ERROR, DeviceController_TAG, "Failed to send AllSettings command.");
     }
-
     return sentStatus;
 }
 - (BOOL)DeviceController_SendSettingsReset:(int)bufferId withSendPolicy:(eARNETWORK_SEND_POLICY)policy withCompletionBlock:(DeviceControllerCompletionBlock)completionBlock
