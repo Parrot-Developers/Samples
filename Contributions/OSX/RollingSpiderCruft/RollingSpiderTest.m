@@ -83,7 +83,7 @@ void discover_drone() {
   [MDDC userRequestSetAutoTakeOffMode:1];
   [NSThread sleepForTimeInterval:0.3];
 
-  float speed = 0.50;
+  float speed = 0.30;
   
   int commandFound = 0;
   while(1) {
