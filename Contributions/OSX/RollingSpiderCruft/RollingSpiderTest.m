@@ -79,13 +79,16 @@ void discover_drone() {
   [MDDC userRequestedFlatTrim];
   [NSThread sleepForTimeInterval:0.3];
  
-  NSLog(@"Blink Blink");
-  [MDDC userRequestSetAutoTakeOffMode:1];
-  [NSThread sleepForTimeInterval:0.3];
+  //NSLog(@"Blink Blink");
+  //[MDDC userRequestSetAutoTakeOffMode:1];
+  //[NSThread sleepForTimeInterval:0.3];
 
-  float speed = 0.30;
+  float speed = 0.50;
+  int land = 0;
   
   int commandFound = 0;
+
+  NSLog(@"Rolling Spider ready for commands");
   while(1) {
     //escape
     if (CGEventSourceKeyState(kCGEventSourceStateCombinedSessionState,53)) {
@@ -93,7 +96,13 @@ void discover_drone() {
       NSLog(@"Landing");
       break;
     }
-    //faster
+    //F - flat trim
+    if (CGEventSourceKeyState(kCGEventSourceStateCombinedSessionState,3)) {
+      NSLog(@"Flat trim");
+      [MDDC userRequestedFlatTrim];
+      [NSThread sleepForTimeInterval:0.25];
+    }
+    //+ - faster
     if (CGEventSourceKeyState(kCGEventSourceStateCombinedSessionState,24)) {
       if(speed < 1.0) {
 	speed += 0.1;
@@ -101,7 +110,7 @@ void discover_drone() {
       }
       [NSThread sleepForTimeInterval:0.25];
     }
-    //slower
+    //- - slower
     if (CGEventSourceKeyState(kCGEventSourceStateCombinedSessionState,27)) {
       if(speed >= 0.1) {
 	speed -= 0.1;
@@ -109,54 +118,76 @@ void discover_drone() {
       }
       [NSThread sleepForTimeInterval:0.25];
     }
-    //up
+    //space - land or takeoff
+    if (CGEventSourceKeyState(kCGEventSourceStateCombinedSessionState,49)) {
+      if(land == 1) {
+	NSLog(@"Landing");
+	[MDDC userRequestedLanding];
+	[NSThread sleepForTimeInterval:1];
+	land = 0;
+      } else {
+	NSLog(@"Taking Off");
+	[MDDC userRequestedTakeOff];
+	[NSThread sleepForTimeInterval:1];
+	[MDDC userRequestedFlatTrim];
+	[NSThread sleepForTimeInterval:0.25];
+	land = 1;
+      }
+    }
+    //enter key - photo
+    if (CGEventSourceKeyState(kCGEventSourceStateCombinedSessionState,36)) {
+      NSLog(@"Taking Photo");
+      [MDDC userRequestedRecordPicture:1];
+      [NSThread sleepForTimeInterval:1.0];
+    }
+    //up arrow - tilt forward
     if (CGEventSourceKeyState(kCGEventSourceStateCombinedSessionState,126)) {
       commandFound = 1;
-      NSLog(@"Going Up");
-      [MDDC userGazChanged:speed];
+      NSLog(@"Tilting Forwards");
+      [MDDC userPitchChanged:speed*0.5];
     }
-    //down
+    //back arrow - tilt backwards
     if (CGEventSourceKeyState(kCGEventSourceStateCombinedSessionState,125)) {
       commandFound = 1;
-      NSLog(@"Going Down");
-      [MDDC userGazChanged:-speed];
+      NSLog(@"Tilting Backwards");
+      [MDDC userPitchChanged:-speed*0.5];
     }
-    //rotate right
-    if (CGEventSourceKeyState(kCGEventSourceStateCombinedSessionState,2)) {
+    //right arrow - rotate right
+    if (CGEventSourceKeyState(kCGEventSourceStateCombinedSessionState,124)) {
       commandFound = 1;
       NSLog(@"Rotating Right");
       [MDDC userYawChanged:speed];
     }
-    //rotate left
-    if (CGEventSourceKeyState(kCGEventSourceStateCombinedSessionState,0)) {
+    //left arrow - rotate left
+    if (CGEventSourceKeyState(kCGEventSourceStateCombinedSessionState,123)) {
       commandFound = 1;
       NSLog(@"Rotating Left");
       [MDDC userYawChanged:-speed];
     }
 
-    //tilt forward
+    //W - up
     if (CGEventSourceKeyState(kCGEventSourceStateCombinedSessionState,13)) {
       commandFound = 1;
-      NSLog(@"Tilting Forwards");
-      [MDDC userPitchChanged:speed];
+      NSLog(@"Going Up");
+      [MDDC userGazChanged:speed*0.5];
     }
-    //tilt backwards
+    //S - down
     if (CGEventSourceKeyState(kCGEventSourceStateCombinedSessionState,1)) {
       commandFound = 1;
-      NSLog(@"Tilting Backwards");
-      [MDDC userPitchChanged:-speed];
+      NSLog(@"Going Down");
+      [MDDC userGazChanged:-speed*0.5];
     }
-    //roll right
-    if (CGEventSourceKeyState(kCGEventSourceStateCombinedSessionState,124)) {
+    //D - roll right
+    if (CGEventSourceKeyState(kCGEventSourceStateCombinedSessionState,2)) {
       commandFound = 1;
       NSLog(@"Rolling Right");
-      [MDDC userRollChanged:speed];
+      [MDDC userRollChanged:speed*0.5];
     }
-    //roll left
-    if (CGEventSourceKeyState(kCGEventSourceStateCombinedSessionState,123)) {
+    //A - roll left
+    if (CGEventSourceKeyState(kCGEventSourceStateCombinedSessionState,0)) {
       commandFound = 1;
       NSLog(@"Rolling Left");
-      [MDDC userRollChanged:-speed];
+      [MDDC userRollChanged:-speed*0.5];
     }
     
     if(commandFound) {
@@ -168,7 +199,7 @@ void discover_drone() {
       [MDDC userPitchChanged:0];
       [MDDC userRollChanged:0];
     }
-    [NSThread sleepForTimeInterval:0.1];
+    [NSThread sleepForTimeInterval:0.15];
   }
   
   [MDDC userRequestedLanding];
