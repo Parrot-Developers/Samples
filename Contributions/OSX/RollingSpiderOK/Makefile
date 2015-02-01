@@ -10,5 +10,8 @@ RSLIB=DeviceController.m
 RollingSpiderTest: RollingSpiderTest.m Makefile $(RSLIB)
 	clang -g -fobjc-arc $(LIBDIR) $(INCLUDES) $(LIBS) $(FRAMEWORKS) $(RSLIB) $< -o $@
 
+run: RollingSpiderTest
+	./RollingSpiderTest
+
 clean:
 	rm -rf RollingSpiderTest *.dSYM *~
