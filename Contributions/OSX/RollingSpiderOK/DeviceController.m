@@ -421,12 +421,8 @@ static const size_t NUM_OF_COMMANDS_BUFFER_IDS = sizeof(COMMAND_BUFFER_IDS) / si
     eARCOMMANDS_GENERATOR_ERROR cmdError;
     eARNETWORK_ERROR netError = ARNETWORK_ERROR;
     
-    if(_dataPCMD.roll != 0 ||
-       _dataPCMD.pitch != 0 ||
-       _dataPCMD.yaw != 0 ||
-       _dataPCMD.gaz != 0) {
     /*
-    NSLog(@"====> %d, %d, %d, %d, %d, %f",
+      NSLog(@"====> %d, %d, %d, %d, %d, %f",
 	  (uint8_t)(_dataPCMD.flag),
 	  (int8_t)(_dataPCMD.roll * 100.f),
 	  (int8_t)(_dataPCMD.pitch * 100.f),
@@ -436,19 +432,18 @@ static const size_t NUM_OF_COMMANDS_BUFFER_IDS = sizeof(COMMAND_BUFFER_IDS) / si
     */
     
     // Send Posture command
-      cmdError = ARCOMMANDS_Generator_GenerateMiniDronePilotingPCMD(cmdBuffer, sizeof(cmdBuffer), &cmdSize, _dataPCMD.flag, _dataPCMD.roll*100.f, _dataPCMD.pitch*100.f, _dataPCMD.yaw*100.f, _dataPCMD.gaz*100.f, _dataPCMD.psi);
-      if (cmdError == ARCOMMANDS_GENERATOR_OK)
-	{
-	  // The commands sent in loop should be sent to a buffer not acknowledged ; here JS_NET_CD_NONACK_ID
-	  netError = ARNETWORK_Manager_SendData(_netManager, RS_NET_C2D_NONACK, cmdBuffer, cmdSize, NULL, &(arnetworkCmdCallback), 1);
-	}
-      
-      if ((cmdError != ARCOMMANDS_GENERATOR_OK) || (netError != ARNETWORK_OK))
-	{
-	  sentStatus = NO;
-	}
-    }
+    cmdError = ARCOMMANDS_Generator_GenerateMiniDronePilotingPCMD(cmdBuffer, sizeof(cmdBuffer), &cmdSize, _dataPCMD.flag, _dataPCMD.roll*100.f, _dataPCMD.pitch*100.f, _dataPCMD.yaw*100.f, _dataPCMD.gaz*100.f, _dataPCMD.psi);
+    if (cmdError == ARCOMMANDS_GENERATOR_OK)
+      {
+	// The commands sent in loop should be sent to a buffer not acknowledged ; here JS_NET_CD_NONACK_ID
+	netError = ARNETWORK_Manager_SendData(_netManager, RS_NET_C2D_NONACK, cmdBuffer, cmdSize, NULL, &(arnetworkCmdCallback), 1);
+      }
     
+    if ((cmdError != ARCOMMANDS_GENERATOR_OK) || (netError != ARNETWORK_OK))
+      {
+	sentStatus = NO;
+      }
+
     return sentStatus;
 }
 
