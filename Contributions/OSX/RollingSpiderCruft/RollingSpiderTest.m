@@ -76,9 +76,6 @@ void discover_drone() {
   [MDDC controllerLoop];
   [NSThread sleepForTimeInterval:0.3];
   
-  [MDDC userRequestedFlatTrim];
-  [NSThread sleepForTimeInterval:0.3];
- 
   //NSLog(@"Blink Blink");
   //[MDDC userRequestSetAutoTakeOffMode:1];
   //[NSThread sleepForTimeInterval:0.3];
@@ -127,6 +124,8 @@ void discover_drone() {
 	land = 0;
       } else {
 	NSLog(@"Taking Off");
+	[MDDC userRequestedFlatTrim];
+	[NSThread sleepForTimeInterval:0.25];
 	[MDDC userRequestedTakeOff];
 	[NSThread sleepForTimeInterval:1];
 	[MDDC userRequestedFlatTrim];
@@ -137,6 +136,7 @@ void discover_drone() {
     //enter key - photo
     if (CGEventSourceKeyState(kCGEventSourceStateCombinedSessionState,36)) {
       NSLog(@"Taking Photo");
+      [NSThread sleepForTimeInterval:0.25];
       [MDDC userRequestedRecordPicture:1];
       [NSThread sleepForTimeInterval:1.0];
     }
