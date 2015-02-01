@@ -212,9 +212,18 @@ static void minidrone_floodcontrolstate_floodcontrolchanged_callback(uint16_t de
     [[NSNotificationCenter defaultCenter] postNotificationName:MiniDroneDeviceControllerFloodControlStateFloodControlChangedNotification object:self userInfo:dict];
 }
 
+void batteryStateChangedCallback (uint8_t percent, void *custom)
+{
+    // callback of changing of battery level
+    DeviceController *deviceController = (__bridge MiniDroneDeviceController*)custom;
+    
+    NSLog(@"batteryStateChangedCallback ... %d  ; %@", percent, deviceController);
+}
 
 - (void)registerMiniDroneARCommandsCallbacks
 {
+    // Battery state
+    ARCOMMANDS_Decoder_SetCommonCommonStateBatteryStateChangedCallback(batteryStateChangedCallback, (__bridge void *)self);
     // Command class PilotingState
     ARCOMMANDS_Decoder_SetMiniDronePilotingStateFlatTrimChangedCallback(minidrone_pilotingstate_flattrimchanged_callback, (__bridge void *)(self));
     ARCOMMANDS_Decoder_SetMiniDronePilotingStateFlyingStateChangedCallback(minidrone_pilotingstate_flyingstatechanged_callback, (__bridge void *)(self));
@@ -240,6 +249,8 @@ static void minidrone_floodcontrolstate_floodcontrolchanged_callback(uint16_t de
 
 - (void)unregisterMiniDroneARCommandsCallbacks
 {
+    // Battery state
+    ARCOMMANDS_Decoder_SetCommonCommonStateBatteryStateChangedCallback (NULL, NULL);
     // Command class PilotingState
     ARCOMMANDS_Decoder_SetMiniDronePilotingStateFlatTrimChangedCallback(NULL, NULL);
     ARCOMMANDS_Decoder_SetMiniDronePilotingStateFlyingStateChangedCallback(NULL, NULL);

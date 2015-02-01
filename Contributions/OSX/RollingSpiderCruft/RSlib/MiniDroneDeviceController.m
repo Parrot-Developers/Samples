@@ -225,29 +225,28 @@ typedef struct
     
     if (isRunning)
     {
-      //switch(currentState)
-      //{
-      //case DEVICE_CONTROLLER_STATE_STARTED:
-                // Make a copy of the drone state.
-                [_droneStateLock lock];
-                localState = _droneState;
-                [_droneStateLock unlock];
-                NSLog(@"====> %d, %d, %d, %d, %d, %f", (uint8_t)(localState.pilotingData.active ? 1 : 0),
-                 (int8_t)(localState.pilotingData.roll * 100.f),
-                 (int8_t)(localState.pilotingData.pitch * 100.f),
-                 (int8_t)(localState.pilotingData.yaw * 100.f),
-                 (int8_t)(localState.pilotingData.gaz * 100.f),
-                 localState.pilotingData.heading);
-                [self MiniDroneDeviceController_SendPilotingPCMD:[MiniDroneARNetworkConfig c2dNackId] withSendPolicy:ARNETWORK_SEND_POLICY_DROP withCompletionBlock:nil withFlag:(uint8_t)(localState.pilotingData.active ? 1 : 0) withRoll:(int8_t)(localState.pilotingData.roll * 100.f) withPitch:(int8_t)(localState.pilotingData.pitch * 100.f) withYaw:(int8_t)(localState.pilotingData.yaw * 100.f) withGaz:(int8_t)(localState.pilotingData.gaz * 100.f) withPsi:localState.pilotingData.heading];
-                //break;
+      switch(currentState) {
+        case DEVICE_CONTROLLER_STATE_STARTED:
+	  // Make a copy of the drone state.
+	  [_droneStateLock lock];
+	  localState = _droneState;
+	  [_droneStateLock unlock];
+	  NSLog(@"====> %d, %d, %d, %d, %d, %f", (uint8_t)(localState.pilotingData.active ? 1 : 0),
+		(int8_t)(localState.pilotingData.roll * 100.f),
+		(int8_t)(localState.pilotingData.pitch * 100.f),
+		(int8_t)(localState.pilotingData.yaw * 100.f),
+		(int8_t)(localState.pilotingData.gaz * 100.f),
+		localState.pilotingData.heading);
+	  [self MiniDroneDeviceController_SendPilotingPCMD:[MiniDroneARNetworkConfig c2dNackId] withSendPolicy:ARNETWORK_SEND_POLICY_DROP withCompletionBlock:nil withFlag:(uint8_t)(localState.pilotingData.active ? 1 : 0) withRoll:(int8_t)(localState.pilotingData.roll * 100.f) withPitch:(int8_t)(localState.pilotingData.pitch * 100.f) withYaw:(int8_t)(localState.pilotingData.yaw * 100.f) withGaz:(int8_t)(localState.pilotingData.gaz * 100.f) withPsi:localState.pilotingData.heading];
+	  break;
                 
-		//case DEVICE_CONTROLLER_STATE_STOPPING:
-		//case DEVICE_CONTROLLER_STATE_STARTING:
-		//case DEVICE_CONTROLLER_STATE_STOPPED:
-		//default:
-                // DO NOT SEND DATA
-                //break;
-		//}
+        case DEVICE_CONTROLLER_STATE_STOPPING:
+        case DEVICE_CONTROLLER_STATE_STARTING:
+        case DEVICE_CONTROLLER_STATE_STOPPED:
+        default:
+	  //DO NOT SEND DATA
+	  break;
+      }
     }
 }
 
