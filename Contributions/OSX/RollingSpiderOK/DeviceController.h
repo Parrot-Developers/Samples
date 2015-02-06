@@ -75,8 +75,10 @@ typedef struct
 @property (nonatomic, weak) id <DeviceControllerDelegate> delegate;
 /** Get the ARService instance associated with this controller. */
 @property (readonly, nonatomic, strong) ARService* service;
-
-- (id)initWithARService:(ARService*)service;
+@property (readonly, nonatomic, strong) CBPeripheral* peripheral;
+@property (readonly, nonatomic, strong) ARDiscovery *ARD;
+					
+- (id)init;
 - (BOOL)start;
 - (void)stop;
 

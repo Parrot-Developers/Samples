@@ -10,10 +10,8 @@
 
 #import "DeviceController.h"
 
-void discover_drone() {
-  ARService *foundService = nil;
-  ARDiscovery *ARD = [ARDiscovery sharedInstance];
-
+void discover_and_fly_drone() {
+  
   /*
   int j;
   while(1) {
@@ -25,30 +23,13 @@ void discover_drone() {
     }
   }
   */
-
-  while(foundService == nil) {
-    [NSThread sleepForTimeInterval:1];
-    for (ARService *obj in [ARD getCurrentListOfDevicesServices]) {
-      NSLog(@"Found Something!");
-      if ([obj.service isKindOfClass:[ARBLEService class]]) {
-	ARBLEService *serviceIdx = (ARBLEService *)obj.service;
-	NSLog(@"%@", serviceIdx.peripheral.name);
-	NSString *NAME = @"RS_";
-	NSString *PREFIX = [serviceIdx.peripheral.name substringToIndex:3];
-	if ([PREFIX isEqualToString:NAME]) {
-	  NSLog(@"Found a Rolling Spider!");
-	  NSLog(@"%@", serviceIdx.peripheral);
-	  foundService = obj;
-	  break;
-	}
-      }
-    }
-  }
   
-  [ARD stop];
+  DeviceController *MDDC = [[DeviceController alloc] init];
 
-  DeviceController *MDDC = [[DeviceController alloc] initWithARService:foundService];
-  NSLog(@"Initialized MiniDroneDeviceController");
+  while(MDDC.service == nil) {
+    [NSThread sleepForTimeInterval:0.3];
+  }
+
   BOOL connectError = [MDDC start];
   if(connectError) {
     NSLog(@"connectError = %d", connectError);
@@ -58,7 +39,7 @@ void discover_drone() {
     NSLog(@"MDDC Started");
   }
   
-  // meter/sec - min: 0.5, max: 2.5
+  //meter/sec - min: 0.5, max: 2.5
   [MDDC sendMaxVerticalSpeed:1.0];
   [NSThread sleepForTimeInterval:0.3];
  
@@ -78,17 +59,32 @@ void discover_drone() {
   [MDDC sendWheelsOn:0];
   [NSThread sleepForTimeInterval:0.3];
 
-  //NSLog(@"Blink Blink");
-  //[MDDC sendAutoTakeoff:1];
-  //[NSThread sleepForTimeInterval:0.3];
-
   float speed = 0.50;
   int land = 0;
+  int autoTakeoff = 0;
   
   int commandFound = 0;
 
   NSLog(@"Rolling Spider ready for commands");
 
+  /* Keys:
+     escape key - lands and ends session
+     f - sends flat trim command
+     t - auto takeoff toggle
+     + - speed up
+     - - slow down
+     space bar - land / takeoff toggle
+     enter key - take a photo
+     up arrow - tilt forward
+     back arrow - tilt backwards
+     right arrow - rotate right
+     left arrow - rotate left
+     w - ascend
+     s - descend
+     d - roll right
+     a - roll left
+   */  
+  
   while(1) {
     //escape
     if (CGEventSourceKeyState(kCGEventSourceStateCombinedSessionState,53)) {
@@ -101,6 +97,20 @@ void discover_drone() {
       NSLog(@"Flat trim");
       [MDDC sendFlatTrim];
       [NSThread sleepForTimeInterval:0.10];
+    }
+    //T - auto takeoff toggle
+    if (CGEventSourceKeyState(kCGEventSourceStateCombinedSessionState,17)) {
+      [MDDC setFlag:0];
+      if(autoTakeoff == 0) {
+	NSLog(@"Auto Takeoff Enabled");
+	[MDDC sendAutoTakeoff:1];
+	autoTakeoff = 1;
+      } else {
+	NSLog(@"Auto Takeoff Disabled");
+	[MDDC sendAutoTakeoff:0];
+	autoTakeoff = 0;
+      }
+      [NSThread sleepForTimeInterval:0.25];
     }
     //+ - faster
     if (CGEventSourceKeyState(kCGEventSourceStateCombinedSessionState,24)) {
@@ -134,9 +144,6 @@ void discover_drone() {
 	[MDDC sendTakeoff];
 	[NSThread sleepForTimeInterval:0.5];
 	[MDDC sendFlatTrim];
-	[NSThread sleepForTimeInterval:0.25];
-	//Reactiviate ability to tilt
-	[MDDC setFlag:1];
 	land = 1;
       }
     }
@@ -150,9 +157,11 @@ void discover_drone() {
 
     if (CGEventSourceKeyState(kCGEventSourceStateCombinedSessionState,126)) {
       //up arrow - tilt forward
+      [MDDC setFlag:1];
       [MDDC setPitch:speed*0.5];
     } else if (CGEventSourceKeyState(kCGEventSourceStateCombinedSessionState,125)) {
       //back arrow - tilt backwards
+      [MDDC setFlag:1];
       [MDDC setPitch:-speed*0.5];
     } else {
       [MDDC setPitch:0];
@@ -180,16 +189,17 @@ void discover_drone() {
     
     if (CGEventSourceKeyState(kCGEventSourceStateCombinedSessionState,2)) {
       //D - roll right
+      [MDDC setFlag:1];
       [MDDC setRoll:speed*0.5];
     } else if (CGEventSourceKeyState(kCGEventSourceStateCombinedSessionState,0)) {
       //A - roll left
+      [MDDC setFlag:1];
       [MDDC setRoll:-speed*0.5];
     } else {
       [MDDC setRoll:0];
     }
-    tcflush(STDOUT_FILENO, TCIOFLUSH); //Gets most of the stray characters
   }
-  
+
   [MDDC sendLanding];
   [NSThread sleepForTimeInterval:2];
   
@@ -202,10 +212,8 @@ int main() {
     dispatch_queue_t my_main_thread = dispatch_queue_create("MyMainThread", NULL);
     
     dispatch_async(my_main_thread,^{
-	ARDiscovery *ARD = [ARDiscovery sharedInstance];
-	[ARD start];
-	discover_drone();
-	[ARD stop];
+	discover_and_fly_drone();
+	tcflush(STDOUT_FILENO, TCIOFLUSH);
 	exit(0);
       });
 

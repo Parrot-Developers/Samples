@@ -145,12 +145,13 @@ static const size_t NUM_OF_COMMANDS_BUFFER_IDS = sizeof(COMMAND_BUFFER_IDS) / si
 
 @implementation DeviceController
 
-- (id)initWithARService:(ARService*)service
+- (id)init
 {
     self = [super init];
     if (self)
     {
-        _service = service;
+        _service = nil;
+        _peripheral = nil;
         
         // initialize deviceManager
         _alManager = NULL;
@@ -171,9 +172,19 @@ static const size_t NUM_OF_COMMANDS_BUFFER_IDS = sizeof(COMMAND_BUFFER_IDS) / si
         _dataPCMD.yaw = 0;
         _dataPCMD.gaz = 0;
         _dataPCMD.psi = 0;
-        
+
+        [[NSNotificationCenter defaultCenter]
+          addObserver:self
+          selector:@selector(receiveDroneNotification:)
+          name:kARDiscoveryNotificationServicesDevicesListUpdated
+          object:nil];
+
+	_ARD = [ARDiscovery sharedInstance];
+        [_ARD start]; //Start discovery
+
+	NSLog(@"Searching for a Rolling Spider...");
     }
-    
+   
     return self;
 }
 
@@ -182,9 +193,33 @@ static const size_t NUM_OF_COMMANDS_BUFFER_IDS = sizeof(COMMAND_BUFFER_IDS) / si
 
 }
 
+- (void) receiveDroneNotification:(NSNotification *)notification
+{
+  ARDiscovery *ARD = notification.object;
+  
+  for (ARService *obj in [ARD getCurrentListOfDevicesServices]) {
+    NSLog(@"Found Something!");
+    if ([obj.service isKindOfClass:[ARBLEService class]]) {
+      ARBLEService *serviceIdx = (ARBLEService *)obj.service;
+      NSLog(@"Found %@", serviceIdx.peripheral.name);
+
+      if(ARDISCOVERY_getProductID(obj.product) == ARDISCOVERY_getProductID(ARDISCOVERY_PRODUCT_MINIDRONE)) {
+	NSLog(@"Device is a Rolling Spider");
+	_service = obj;
+	_peripheral = ((ARBLEService *) _service.service).peripheral;
+
+	[[NSNotificationCenter defaultCenter] removeObserver:self];	
+	[ARD stop];
+	break;
+      }
+    }
+  }
+}
+
 - (BOOL)start
 {
-    NSLog(@"start ...");
+    ARBLEService *serviceIdx = (ARBLEService *)_service.service;
+    NSLog(@"Connecting to Rolling Spider %@...", serviceIdx.peripheral.name);
     
     BOOL failed = NO;
     
