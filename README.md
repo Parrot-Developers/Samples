@@ -16,6 +16,9 @@ Two options are available : either display the stream (using ffplay) or store fr
 #### [JumpingSumoPiloting](https://github.com/ARDroneSDK3/Samples/tree/master/Unix/JumpingSumoPiloting)
 This example enables you to **connect** to a JumpingSumo and **send and receive commands** to pilot it and get its battery level.
 
+#### [BebopDroneReceiveStream](https://github.com/ARDroneSDK3/Samples/tree/master/Unix/BebopDroneReceiveStream)
+This example enables you to **connect** to a Bebop drone and **receive the h264 video stream**.
+
 ### iOS
 #### [RollingSpiderPiloting](https://github.com/ARDroneSDK3/Samples/tree/master/iOS/RollingSpiderPiloting)
 This example enables you to **discover** and **connect** to a RollingSpider and **send and receive commands** to pilot it and get its battery level.
