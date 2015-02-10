@@ -6,3 +6,6 @@ OSX/RollingSpiderCruft
 ----------------------
 Author : Sean Weaver <weaversa@gmail.com>
 
+OSX/RollingSpiderOK
+----------------------
+Author : Sean Weaver <weaversa@gmail.com>
