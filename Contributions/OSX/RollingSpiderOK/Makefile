@@ -1,17 +1,17 @@
 LIBAR=../../../../ARSDKBuildUtils/Targets/Unix/Install
 
 FRAMEWORKS=-framework Foundation -framework CoreBluetooth -framework CoreGraphics
-INCLUDES=-I$(LIBAR)/include
+INCLUDES=-I$(LIBAR)/include -I.
 LIBDIR=-L$(LIBAR)/lib
 LIBS=-lardiscovery -larnetworkal -larsal -larnetwork -larcommands
 
-RSLIB=RSlib/MiniDroneARNetworkConfig.m RSlib/ARNetworkConfig.m	\
-RSlib/DeviceController.m RSlib/DeviceController+libARCommands.m	\
-RSlib/MiniDroneDeviceController.m				\
-RSlib/MiniDroneDeviceController+libARCommands.m
+RSLIB=DeviceController.m
 
-RollingSpiderTest: RollingSpiderTest.m Makefile
+RollingSpiderTest: RollingSpiderTest.m Makefile $(RSLIB)
 	clang -g -fobjc-arc $(LIBDIR) $(INCLUDES) $(LIBS) $(FRAMEWORKS) $(RSLIB) $< -o $@
+
+run: RollingSpiderTest
+	./RollingSpiderTest
 
 clean:
 	rm -rf RollingSpiderTest *.dSYM *~

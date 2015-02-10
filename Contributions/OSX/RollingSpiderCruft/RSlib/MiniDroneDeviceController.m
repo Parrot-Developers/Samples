@@ -102,47 +102,41 @@ typedef struct
     [_stateLock lock];
     if (_state == DEVICE_CONTROLLER_STATE_STOPPED)
     {
-        _state = DEVICE_CONTROLLER_STATE_STARTING;
-        _startCancelled = NO;
-        _initialSettingsReceived = NO;
-        _initialStatesReceived = NO;
-
-        /* Asynchronously start the base controller. */
-
-	dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-            [[NSNotificationCenter defaultCenter] postNotificationName:DeviceControllerWillStartNotification object:self];
-            BOOL failed = NO;
-            if ([self privateStart] == NO)
-            {
-                ARSAL_PRINT(ARSAL_PRINT_ERROR, TAG, "Failed to start the controller.");
-                failed = YES;
-            }
-            if (!failed && !_startCancelled)
-            {
-                /* Go to the STARTED state and notify. */
-                [_stateLock lock];
-                _state = DEVICE_CONTROLLER_STATE_STARTED;
-                [[NSNotificationCenter defaultCenter] postNotificationName:DeviceControllerDidStartNotification object:self];
-                [_stateLock unlock];
-            }
-            else
-            {
-                /* We failed to start. Go to the STOPPING state and stop in the background. */
-                [_stateLock lock];
-                _state = DEVICE_CONTROLLER_STATE_STOPPING;
-                if (failed) {
-                    [[NSNotificationCenter defaultCenter] postNotificationName:DeviceControllerDidFailNotification object:self];
-                } // No else: Do not send failure notification for a cancelled start.
-                [_stateLock unlock];
-                [self privateStop];
-                
-                /* Go to the STOPPED state and notify. */
-                [_stateLock lock];
-                _state = DEVICE_CONTROLLER_STATE_STOPPED;
-                [[NSNotificationCenter defaultCenter] postNotificationName:DeviceControllerDidStopNotification object:self];
-                [_stateLock unlock];
-            }
-	  });
+      _state = DEVICE_CONTROLLER_STATE_STARTING;
+      _startCancelled = NO;
+      _initialSettingsReceived = NO;
+      _initialStatesReceived = NO;
+      
+      
+      [[NSNotificationCenter defaultCenter] postNotificationName:DeviceControllerWillStartNotification object:self];
+      BOOL failed = NO;
+      if ([self privateStart] == NO)
+	{
+	  ARSAL_PRINT(ARSAL_PRINT_ERROR, TAG, "Failed to start the controller.");
+	  failed = YES;
+	}
+      if (!failed && !_startCancelled)
+	{
+	  [_stateLock lock];
+	  _state = DEVICE_CONTROLLER_STATE_STARTED;
+	  [[NSNotificationCenter defaultCenter] postNotificationName:DeviceControllerDidStartNotification object:self];
+	  [_stateLock unlock];
+	}
+      else
+	{
+	  [_stateLock lock];
+	  _state = DEVICE_CONTROLLER_STATE_STOPPING;
+	  if (failed) {
+	    [[NSNotificationCenter defaultCenter] postNotificationName:DeviceControllerDidFailNotification object:self];
+	  } // No else: Do not send failure notification for a cancelled start.
+	  [_stateLock unlock];
+	  [self privateStop];
+          
+	  [_stateLock lock];
+	  _state = DEVICE_CONTROLLER_STATE_STOPPED;
+	  [[NSNotificationCenter defaultCenter] postNotificationName:DeviceControllerDidStopNotification object:self];
+	  [_stateLock unlock];
+	}
     }
     [_stateLock unlock];
 }
@@ -231,29 +225,28 @@ typedef struct
     
     if (isRunning)
     {
-        switch(currentState)
-        {
-            case DEVICE_CONTROLLER_STATE_STARTED:
-                // Make a copy of the drone state.
-                [_droneStateLock lock];
-                localState = _droneState;
-                [_droneStateLock unlock];
-                /*NSLog(@"====> %d, %d, %d, %d, %d, %f", (uint8_t)(localState.pilotingData.active ? 1 : 0),
-                 (int8_t)(localState.pilotingData.roll * 100.f),
-                 (int8_t)(localState.pilotingData.pitch * 100.f),
-                 (int8_t)(localState.pilotingData.yaw * 100.f),
-                 (int8_t)(localState.pilotingData.gaz * 100.f),
-                 localState.pilotingData.heading);*/
-                [self MiniDroneDeviceController_SendPilotingPCMD:[MiniDroneARNetworkConfig c2dNackId] withSendPolicy:ARNETWORK_SEND_POLICY_DROP withCompletionBlock:nil withFlag:(uint8_t)(localState.pilotingData.active ? 1 : 0) withRoll:(int8_t)(localState.pilotingData.roll * 100.f) withPitch:(int8_t)(localState.pilotingData.pitch * 100.f) withYaw:(int8_t)(localState.pilotingData.yaw * 100.f) withGaz:(int8_t)(localState.pilotingData.gaz * 100.f) withPsi:localState.pilotingData.heading];
-                break;
+      switch(currentState) {
+        case DEVICE_CONTROLLER_STATE_STARTED:
+	  // Make a copy of the drone state.
+	  [_droneStateLock lock];
+	  localState = _droneState;
+	  [_droneStateLock unlock];
+	  NSLog(@"====> %d, %d, %d, %d, %d, %f", (uint8_t)(localState.pilotingData.active ? 1 : 0),
+		(int8_t)(localState.pilotingData.roll * 100.f),
+		(int8_t)(localState.pilotingData.pitch * 100.f),
+		(int8_t)(localState.pilotingData.yaw * 100.f),
+		(int8_t)(localState.pilotingData.gaz * 100.f),
+		localState.pilotingData.heading);
+	  [self MiniDroneDeviceController_SendPilotingPCMD:[MiniDroneARNetworkConfig c2dNackId] withSendPolicy:ARNETWORK_SEND_POLICY_DROP withCompletionBlock:nil withFlag:(uint8_t)(localState.pilotingData.active ? 1 : 0) withRoll:(int8_t)(localState.pilotingData.roll * 100.f) withPitch:(int8_t)(localState.pilotingData.pitch * 100.f) withYaw:(int8_t)(localState.pilotingData.yaw * 100.f) withGaz:(int8_t)(localState.pilotingData.gaz * 100.f) withPsi:localState.pilotingData.heading];
+	  break;
                 
-            case DEVICE_CONTROLLER_STATE_STOPPING:
-            case DEVICE_CONTROLLER_STATE_STARTING:
-            case DEVICE_CONTROLLER_STATE_STOPPED:
-            default:
-                // DO NOT SEND DATA
-                break;
-        }
+        case DEVICE_CONTROLLER_STATE_STOPPING:
+        case DEVICE_CONTROLLER_STATE_STARTING:
+        case DEVICE_CONTROLLER_STATE_STOPPED:
+        default:
+	  //DO NOT SEND DATA
+	  break;
+      }
     }
 }
 
@@ -477,16 +470,12 @@ typedef struct
             ARSAL_PRINT(ARSAL_PRINT_ERROR, TAG, "Failed to start the base controller.");
         }
     }
-    
     if (!failed && !_startCancelled)
     {
-        // Register ARCommands callbacks.
-      //[self registerMiniDroneARCommandsCallbacks];
-#ifdef ARCOMMANDS_HAS_DEBUG_COMMANDS
-      //[self registerMiniDroneDebugARCommandsCallbacks];
-#endif
+      // Register ARCommands callbacks.
+      [self registerMiniDroneARCommandsCallbacks];
     }
-    
+
     if (!failed && !_startCancelled && !self.fastReconnection)
     {
         NSDate *currentDate = [NSDate date];
@@ -503,56 +492,14 @@ typedef struct
         [self DeviceController_SendCommonCurrentTime:[MiniDroneARNetworkConfig c2dAckId] withSendPolicy:ARNETWORK_SEND_POLICY_RETRY withCompletionBlock:nil withTime:(char *)[[dateFormatter stringFromDate:currentDate] cStringUsingEncoding:NSUTF8StringEncoding]];
     }
 
-    if (!failed && !_startCancelled && !self.fastReconnection)
-    {
-        // Attempt to get initial settings
-        [[NSNotificationCenter defaultCenter] postNotificationName:DeviceControllerNotificationAllSettingsDidStart object:self userInfo:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(stateAllSettingsChanged:) name:DeviceControllerSettingsStateAllSettingsChangedNotification object:nil];
-        [self DeviceController_SendSettingsAllSettings:[MiniDroneARNetworkConfig c2dAckId] withSendPolicy:ARNETWORK_SEND_POLICY_RETRY withCompletionBlock:nil];
-        [_initialSettingsReceivedCondition lock];
-        [_initialSettingsReceivedCondition wait];
-        if (!_initialSettingsReceived)
-        {
-            ARSAL_PRINT(ARSAL_PRINT_ERROR, TAG, "Initial settings retrieval timed out.");
-            failed = YES;
-        }
-        [_initialSettingsReceivedCondition unlock];
-    }
-    
-    if (!failed && !_startCancelled)
-    {
-        // Attempt to get initial states
-        [[NSNotificationCenter defaultCenter] postNotificationName:DeviceControllerNotificationAllStatesDidStart object:self userInfo:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(stateAllStatesChanged:) name:DeviceControllerCommonStateAllStatesChangedNotification object:nil];
-        [self DeviceController_SendCommonAllStates:[MiniDroneARNetworkConfig c2dAckId] withSendPolicy:ARNETWORK_SEND_POLICY_RETRY withCompletionBlock:nil];
-        [_initialStatesReceivedCondition lock];
-        [_initialStatesReceivedCondition wait];
-        if (!_initialStatesReceived)
-        {
-            ARSAL_PRINT(ARSAL_PRINT_ERROR, TAG, "Initial states retrieval timed out.");
-            failed = YES;
-        }
-        [_initialStatesReceivedCondition unlock];
-    }
-
-    if (!failed && !_startCancelled)
-    {
-        [self registerCurrentProduct];
-        //_photoRecordController = [[MiniDronePhotoRecordController alloc] init];
-        //_photoRecordController.deviceController = self;
-    }
-
     return (failed == NO);
 }
 
 - (void)privateStop
 {
   //_photoRecordController = nil;
-  //[self unregisterMiniDroneARCommandsCallbacks];
-#ifdef ARCOMMANDS_HAS_DEBUG_COMMANDS
-  //[self unregisterMiniDroneDebugARCommandsCallbacks];
-#endif
-    [self stopBaseController];
+  [self unregisterMiniDroneARCommandsCallbacks];
+  [self stopBaseController];
 }
 
 - (void)stateAllSettingsChanged:(NSNotification *)notification
