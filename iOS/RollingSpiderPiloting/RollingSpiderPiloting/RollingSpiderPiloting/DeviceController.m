@@ -435,7 +435,7 @@ static const size_t NUM_OF_COMMANDS_BUFFER_IDS = sizeof(COMMAND_BUFFER_IDS) / si
     eARCOMMANDS_GENERATOR_ERROR cmdError;
     eARNETWORK_ERROR netError = ARNETWORK_ERROR;
     
-    // Send Posture command
+    // Send Takeoff command
     cmdError = ARCOMMANDS_Generator_GenerateMiniDronePilotingTakeOff(cmdBuffer, sizeof(cmdBuffer), &cmdSize);
     if (cmdError == ARCOMMANDS_GENERATOR_OK)
     {
@@ -459,7 +459,7 @@ static const size_t NUM_OF_COMMANDS_BUFFER_IDS = sizeof(COMMAND_BUFFER_IDS) / si
     eARCOMMANDS_GENERATOR_ERROR cmdError;
     eARNETWORK_ERROR netError = ARNETWORK_ERROR;
     
-    // Send Posture command
+    // Send Landing command
     cmdError = ARCOMMANDS_Generator_GenerateMiniDronePilotingLanding(cmdBuffer, sizeof(cmdBuffer), &cmdSize);
     if (cmdError == ARCOMMANDS_GENERATOR_OK)
     {
@@ -483,7 +483,7 @@ static const size_t NUM_OF_COMMANDS_BUFFER_IDS = sizeof(COMMAND_BUFFER_IDS) / si
     eARCOMMANDS_GENERATOR_ERROR cmdError;
     eARNETWORK_ERROR netError = ARNETWORK_ERROR;
     
-    // Send Posture command
+    // Send Emergency command
     cmdError = ARCOMMANDS_Generator_GenerateMiniDronePilotingEmergency(cmdBuffer, sizeof(cmdBuffer), &cmdSize);
     if (cmdError == ARCOMMANDS_GENERATOR_OK)
     {
@@ -499,6 +499,63 @@ static const size_t NUM_OF_COMMANDS_BUFFER_IDS = sizeof(COMMAND_BUFFER_IDS) / si
     return sentStatus;
 }
 
+- (BOOL) sendDate:(NSDate *)currentDate
+{
+    BOOL sentStatus = YES;
+    u_int8_t cmdBuffer[128];
+    int32_t cmdSize = 0;
+    eARCOMMANDS_GENERATOR_ERROR cmdError;
+    eARNETWORK_ERROR netError = ARNETWORK_ERROR;
+    
+    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+    [dateFormatter setTimeZone:[NSTimeZone systemTimeZone]];
+    [dateFormatter setLocale:[NSLocale systemLocale]];
+    [dateFormatter setDateFormat:@"yyyy-MM-dd"];
+    
+    // Send date command
+    cmdError = ARCOMMANDS_Generator_GenerateCommonCommonCurrentDate(cmdBuffer, sizeof(cmdBuffer), &cmdSize, (char *)[[dateFormatter stringFromDate:currentDate] cStringUsingEncoding:NSUTF8StringEncoding]);
+    if (cmdError == ARCOMMANDS_GENERATOR_OK)
+    {
+        // The commands sent by event should be sent to an buffer acknowledged  ; here RS_NET_C2D_ACK
+        netError = ARNETWORK_Manager_SendData(_netManager, RS_NET_C2D_ACK, cmdBuffer, cmdSize, NULL, &(arnetworkCmdCallback), 1);
+    }
+    
+    if ((cmdError != ARCOMMANDS_GENERATOR_OK) || (netError != ARNETWORK_OK))
+    {
+        sentStatus = NO;
+    }
+    
+    return sentStatus;
+}
+
+- (BOOL) sendTime:(NSDate *)currentDate
+{
+    BOOL sentStatus = YES;
+    u_int8_t cmdBuffer[128];
+    int32_t cmdSize = 0;
+    eARCOMMANDS_GENERATOR_ERROR cmdError;
+    eARNETWORK_ERROR netError = ARNETWORK_ERROR;
+    
+    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+    [dateFormatter setTimeZone:[NSTimeZone systemTimeZone]];
+    [dateFormatter setLocale:[NSLocale systemLocale]];
+    [dateFormatter setDateFormat:@"'T'HHmmssZZZ"];
+    
+    // Send time command
+    cmdError = ARCOMMANDS_Generator_GenerateCommonCommonCurrentTime(cmdBuffer, sizeof(cmdBuffer), &cmdSize, (char *)[[dateFormatter stringFromDate:currentDate] cStringUsingEncoding:NSUTF8StringEncoding]);
+    if (cmdError == ARCOMMANDS_GENERATOR_OK)
+    {
+        // The commands sent by event should be sent to an buffer acknowledged  ; here RS_NET_C2D_ACK
+        netError = ARNETWORK_Manager_SendData(_netManager, RS_NET_C2D_ACK, cmdBuffer, cmdSize, NULL, &(arnetworkCmdCallback), 1);
+    }
+    
+    if ((cmdError != ARCOMMANDS_GENERATOR_OK) || (netError != ARNETWORK_OK))
+    {
+        sentStatus = NO;
+    }
+    
+    return sentStatus;
+}
 
 -(void) registerARCommandsCallbacks
 {

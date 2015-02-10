@@ -83,6 +83,8 @@ typedef struct
 - (BOOL) sendEmergency;
 - (BOOL) sendTakeoff;
 - (BOOL) sendLanding;
+- (BOOL) sendDate:(NSDate *)currentDate;
+- (BOOL) sendTime:(NSDate *)currentDate;
 
 - (void) setRoll:(int8_t)roll;
 - (void) setPitch:(int8_t)pitch;

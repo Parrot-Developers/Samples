@@ -85,6 +85,13 @@
                 [self.navigationController popViewControllerAnimated:YES];
             });
         }
+        else
+        {
+            //only with RollingSpider in version 1.97 : date and time must be sent to permit a reconnection
+            NSDate *currentDate = [NSDate date];
+            [_deviceController sendDate:currentDate];
+            [_deviceController sendTime:currentDate];
+        }
     });
 }
 

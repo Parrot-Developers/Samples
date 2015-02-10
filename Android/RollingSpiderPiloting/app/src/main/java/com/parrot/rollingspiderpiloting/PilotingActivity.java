@@ -361,8 +361,6 @@ public class PilotingActivity extends Activity implements DeviceControllerListen
     {
         super.onStart();
 
-        Log.wtf(TAG, "onStart ...");
-
         if (deviceController != null)
         {
             AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(PilotingActivity.this);
@@ -449,8 +447,6 @@ public class PilotingActivity extends Activity implements DeviceControllerListen
     @Override
     protected void onStop()
     {
-        Log.wtf(TAG, "onStop ...");
-
         stopDeviceController();
 
         super.onStop();
