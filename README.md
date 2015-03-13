@@ -23,6 +23,9 @@ This example enables you to **connect** to a Bebop drone and **receive the h264 
 #### [RollingSpiderPiloting](https://github.com/ARDroneSDK3/Samples/tree/master/iOS/RollingSpiderPiloting)
 This example enables you to **discover** and **connect** to a RollingSpider and **send and receive commands** to pilot it and get its battery level.
 
+#### [BebopDronePiloting](https://github.com/ARDroneSDK3/Samples/tree/master/iOS/BebopDronePiloting)
+This example enables you to **discover** and **connect** to a Bebop drone, **send and receive commands** to pilot it and get its battery level and other states.
+
 ### Android
 #### [RollingSpiderPiloting](https://github.com/ARDroneSDK3/Samples/tree/master/Android/RollingSpiderPiloting)
 This example enables you to **discover** and **connect** to a RollingSpider and **send and receive commands** to pilot it and get its battery level.
