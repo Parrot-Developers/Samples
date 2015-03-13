@@ -1,0 +1,344 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		1D151CB71A7640AE00B00257 /* libARCommands.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D151CB21A7640AE00B00257 /* libARCommands.framework */; };
+		1D151CB91A7640AE00B00257 /* libARNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D151CB41A7640AE00B00257 /* libARNetwork.framework */; };
+		1D151CBA1A7640AE00B00257 /* libARNetworkAL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D151CB51A7640AE00B00257 /* libARNetworkAL.framework */; };
+		1D151CBB1A7640AE00B00257 /* libARSAL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D151CB61A7640AE00B00257 /* libARSAL.framework */; };
+		1D151CBD1A7643B600B00257 /* libARDiscovery.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D151CBC1A7643B600B00257 /* libARDiscovery.framework */; };
+		F80F5EBF1AB2F8670002B2C6 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = F80F5EB21AB2F8670002B2C6 /* AppDelegate.m */; };
+		F80F5EC01AB2F8670002B2C6 /* DeviceController.m in Sources */ = {isa = PBXBuildFile; fileRef = F80F5EB51AB2F8670002B2C6 /* DeviceController.m */; };
+		F80F5EC11AB2F8670002B2C6 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F80F5EB61AB2F8670002B2C6 /* Images.xcassets */; };
+		F80F5EC21AB2F8670002B2C6 /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = F80F5EB71AB2F8670002B2C6 /* Info.plist */; };
+		F80F5EC31AB2F8670002B2C6 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = F80F5EB81AB2F8670002B2C6 /* LaunchScreen.xib */; };
+		F80F5EC41AB2F8670002B2C6 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = F80F5EB91AB2F8670002B2C6 /* main.m */; };
+		F80F5EC51AB2F8670002B2C6 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F80F5EBA1AB2F8670002B2C6 /* Main.storyboard */; };
+		F80F5EC61AB2F8670002B2C6 /* PilotingViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F80F5EBC1AB2F8670002B2C6 /* PilotingViewController.m */; };
+		F80F5EC71AB2F8670002B2C6 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F80F5EBE1AB2F8670002B2C6 /* ViewController.m */; };
+		F8D543521A8BBBC700786F2A /* libARUtils.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F8D543511A8BBBC700786F2A /* libARUtils.framework */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		1D151CB21A7640AE00B00257 /* libARCommands.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = libARCommands.framework; path = ../../../../ARSDKBuildUtils/Targets/iOS/Install/Frameworks/libARCommands.framework; sourceTree = "<group>"; };
+		1D151CB41A7640AE00B00257 /* libARNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = libARNetwork.framework; path = ../../../../ARSDKBuildUtils/Targets/iOS/Install/Frameworks/libARNetwork.framework; sourceTree = "<group>"; };
+		1D151CB51A7640AE00B00257 /* libARNetworkAL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = libARNetworkAL.framework; path = ../../../../ARSDKBuildUtils/Targets/iOS/Install/Frameworks/libARNetworkAL.framework; sourceTree = "<group>"; };
+		1D151CB61A7640AE00B00257 /* libARSAL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = libARSAL.framework; path = ../../../../ARSDKBuildUtils/Targets/iOS/Install/Frameworks/libARSAL.framework; sourceTree = "<group>"; };
+		1D151CBC1A7643B600B00257 /* libARDiscovery.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = libARDiscovery.framework; path = ../../../../ARSDKBuildUtils/Targets/iOS/Install/Frameworks/libARDiscovery.framework; sourceTree = "<group>"; };
+		1D9DF2351A6D580F000941ED /* BebopDronePiloting.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BebopDronePiloting.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		F80F5EB11AB2F8670002B2C6 /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppDelegate.h; path = BebopDronePiloting/AppDelegate.h; sourceTree = SOURCE_ROOT; };
+		F80F5EB21AB2F8670002B2C6 /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AppDelegate.m; path = BebopDronePiloting/AppDelegate.m; sourceTree = SOURCE_ROOT; };
+		F80F5EB41AB2F8670002B2C6 /* DeviceController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DeviceController.h; path = BebopDronePiloting/DeviceController.h; sourceTree = SOURCE_ROOT; };
+		F80F5EB51AB2F8670002B2C6 /* DeviceController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = DeviceController.m; path = BebopDronePiloting/DeviceController.m; sourceTree = SOURCE_ROOT; };
+		F80F5EB61AB2F8670002B2C6 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = BebopDronePiloting/Images.xcassets; sourceTree = SOURCE_ROOT; };
+		F80F5EB71AB2F8670002B2C6 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = BebopDronePiloting/Info.plist; sourceTree = SOURCE_ROOT; };
+		F80F5EB81AB2F8670002B2C6 /* LaunchScreen.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = LaunchScreen.xib; path = BebopDronePiloting/LaunchScreen.xib; sourceTree = SOURCE_ROOT; };
+		F80F5EB91AB2F8670002B2C6 /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = BebopDronePiloting/main.m; sourceTree = SOURCE_ROOT; };
+		F80F5EBA1AB2F8670002B2C6 /* Main.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = Main.storyboard; path = BebopDronePiloting/Main.storyboard; sourceTree = SOURCE_ROOT; };
+		F80F5EBB1AB2F8670002B2C6 /* PilotingViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PilotingViewController.h; path = BebopDronePiloting/PilotingViewController.h; sourceTree = SOURCE_ROOT; };
+		F80F5EBC1AB2F8670002B2C6 /* PilotingViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = PilotingViewController.m; path = BebopDronePiloting/PilotingViewController.m; sourceTree = SOURCE_ROOT; };
+		F80F5EBD1AB2F8670002B2C6 /* ViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ViewController.h; path = BebopDronePiloting/ViewController.h; sourceTree = SOURCE_ROOT; };
+		F80F5EBE1AB2F8670002B2C6 /* ViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ViewController.m; path = BebopDronePiloting/ViewController.m; sourceTree = SOURCE_ROOT; };
+		F8D543511A8BBBC700786F2A /* libARUtils.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = libARUtils.framework; path = ../../../../ARSDKBuildUtils/Targets/iOS/Install/Frameworks/libARUtils.framework; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		1D9DF2321A6D580F000941ED /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1D151CBB1A7640AE00B00257 /* libARSAL.framework in Frameworks */,
+				1D151CBA1A7640AE00B00257 /* libARNetworkAL.framework in Frameworks */,
+				1D151CB71A7640AE00B00257 /* libARCommands.framework in Frameworks */,
+				1D151CB91A7640AE00B00257 /* libARNetwork.framework in Frameworks */,
+				1D151CBD1A7643B600B00257 /* libARDiscovery.framework in Frameworks */,
+				F8D543521A8BBBC700786F2A /* libARUtils.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		1D9DF22C1A6D580F000941ED = {
+			isa = PBXGroup;
+			children = (
+				F8C6053D1A9F06AC000D2804 /* BebopDronePiloting */,
+				1D9DF26B1A6D62CB000941ED /* Frameworks */,
+				1D9DF2361A6D580F000941ED /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		1D9DF2361A6D580F000941ED /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				1D9DF2351A6D580F000941ED /* BebopDronePiloting.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		1D9DF26B1A6D62CB000941ED /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				F8D543511A8BBBC700786F2A /* libARUtils.framework */,
+				1D151CBC1A7643B600B00257 /* libARDiscovery.framework */,
+				1D151CB21A7640AE00B00257 /* libARCommands.framework */,
+				1D151CB41A7640AE00B00257 /* libARNetwork.framework */,
+				1D151CB51A7640AE00B00257 /* libARNetworkAL.framework */,
+				1D151CB61A7640AE00B00257 /* libARSAL.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		F80F5EB31AB2F8670002B2C6 /* Base.lproj */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Base.lproj;
+			path = BebopDronePiloting/Base.lproj;
+			sourceTree = SOURCE_ROOT;
+		};
+		F8C6053D1A9F06AC000D2804 /* BebopDronePiloting */ = {
+			isa = PBXGroup;
+			children = (
+				F80F5EB11AB2F8670002B2C6 /* AppDelegate.h */,
+				F80F5EB21AB2F8670002B2C6 /* AppDelegate.m */,
+				F80F5EB31AB2F8670002B2C6 /* Base.lproj */,
+				F80F5EB41AB2F8670002B2C6 /* DeviceController.h */,
+				F80F5EB51AB2F8670002B2C6 /* DeviceController.m */,
+				F80F5EB61AB2F8670002B2C6 /* Images.xcassets */,
+				F80F5EB71AB2F8670002B2C6 /* Info.plist */,
+				F80F5EB81AB2F8670002B2C6 /* LaunchScreen.xib */,
+				F80F5EB91AB2F8670002B2C6 /* main.m */,
+				F80F5EBA1AB2F8670002B2C6 /* Main.storyboard */,
+				F80F5EBB1AB2F8670002B2C6 /* PilotingViewController.h */,
+				F80F5EBC1AB2F8670002B2C6 /* PilotingViewController.m */,
+				F80F5EBD1AB2F8670002B2C6 /* ViewController.h */,
+				F80F5EBE1AB2F8670002B2C6 /* ViewController.m */,
+			);
+			name = BebopDronePiloting;
+			path = BebopSample;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		1D9DF2341A6D580F000941ED /* BebopDronePiloting */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 1D9DF2581A6D5810000941ED /* Build configuration list for PBXNativeTarget "BebopDronePiloting" */;
+			buildPhases = (
+				1D9DF2311A6D580F000941ED /* Sources */,
+				1D9DF2321A6D580F000941ED /* Frameworks */,
+				1D9DF2331A6D580F000941ED /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = BebopDronePiloting;
+			productName = RollingSpiderPiloting;
+			productReference = 1D9DF2351A6D580F000941ED /* BebopDronePiloting.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		1D9DF22D1A6D580F000941ED /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0620;
+				ORGANIZATIONNAME = Parrot;
+				TargetAttributes = {
+					1D9DF2341A6D580F000941ED = {
+						CreatedOnToolsVersion = 6.1.1;
+					};
+				};
+			};
+			buildConfigurationList = 1D9DF2301A6D580F000941ED /* Build configuration list for PBXProject "BebopDronePiloting" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 1D9DF22C1A6D580F000941ED;
+			productRefGroup = 1D9DF2361A6D580F000941ED /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				1D9DF2341A6D580F000941ED /* BebopDronePiloting */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		1D9DF2331A6D580F000941ED /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F80F5EC21AB2F8670002B2C6 /* Info.plist in Resources */,
+				F80F5EC31AB2F8670002B2C6 /* LaunchScreen.xib in Resources */,
+				F80F5EC11AB2F8670002B2C6 /* Images.xcassets in Resources */,
+				F80F5EC51AB2F8670002B2C6 /* Main.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		1D9DF2311A6D580F000941ED /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F80F5EC61AB2F8670002B2C6 /* PilotingViewController.m in Sources */,
+				F80F5EBF1AB2F8670002B2C6 /* AppDelegate.m in Sources */,
+				F80F5EC41AB2F8670002B2C6 /* main.m in Sources */,
+				F80F5EC01AB2F8670002B2C6 /* DeviceController.m in Sources */,
+				F80F5EC71AB2F8670002B2C6 /* ViewController.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		1D9DF2561A6D5810000941ED /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.1;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		1D9DF2571A6D5810000941ED /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = YES;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.1;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		1D9DF2591A6D5810000941ED /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(SRCROOT)/../../../../ARSDKBuildUtils/Targets/iOS/Install/Frameworks",
+					/Users/d.bertrand/Documents/SDK/ARSDKBuildUtils/Targets/iOS/Install/Frameworks,
+				);
+				INFOPLIST_FILE = "$(SRCROOT)/BebopDronePiloting/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				ONLY_ACTIVE_ARCH = NO;
+				PRODUCT_NAME = BebopDronePiloting;
+				VALID_ARCHS = "armv7 armv7s";
+			};
+			name = Debug;
+		};
+		1D9DF25A1A6D5810000941ED /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(SRCROOT)/../../../../ARSDKBuildUtils/Targets/iOS/Install/Frameworks",
+					/Users/d.bertrand/Documents/SDK/ARSDKBuildUtils/Targets/iOS/Install/Frameworks,
+				);
+				INFOPLIST_FILE = "$(SRCROOT)/BebopDronePiloting/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_NAME = BebopDronePiloting;
+				VALID_ARCHS = "armv7 armv7s";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		1D9DF2301A6D580F000941ED /* Build configuration list for PBXProject "BebopDronePiloting" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1D9DF2561A6D5810000941ED /* Debug */,
+				1D9DF2571A6D5810000941ED /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		1D9DF2581A6D5810000941ED /* Build configuration list for PBXNativeTarget "BebopDronePiloting" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1D9DF2591A6D5810000941ED /* Debug */,
+				1D9DF25A1A6D5810000941ED /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 1D9DF22D1A6D580F000941ED /* Project object */;
+}

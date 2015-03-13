@@ -1,0 +1,8 @@
+==================
+Purpose of BebopDronePiloting
+==================
+
+This sample shows how to send and receive commands to communicate with a Parrot Bebop drone on an iOS device.
+This example enables you to **discover** and **connect** to a Bebop drone and **send and receive commands** to pilot it and get its battery level.
+
+These sample sources are a Xcode project building for iOS devices.
