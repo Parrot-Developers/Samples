@@ -30,6 +30,9 @@ This example enables you to **discover** and **connect** to a Bebop drone, **sen
 #### [RollingSpiderPiloting](https://github.com/ARDroneSDK3/Samples/tree/master/Android/RollingSpiderPiloting)
 This example enables you to **discover** and **connect** to a RollingSpider and **send and receive commands** to pilot it and get its battery level.
 
+#### [BebopDronePiloting](https://github.com/ARDroneSDK3/Samples/tree/master/Android/BebopDronePiloting)
+This example enables you to **discover** and **connect** to a Bebop drone, **send and receive commands** to pilot it and get its battery level and other states.
+
 Non runnable samples extracted from FreeFlight3
 -------------------
 

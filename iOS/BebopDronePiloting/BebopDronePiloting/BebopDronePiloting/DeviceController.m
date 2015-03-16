@@ -54,7 +54,7 @@ static const int BD_NET_D2C_EVENTS = 126;
 
 static const int D2C_PORT = 43210;  // fixed by the app, but should be sent to drone in json
 
-static const int PCMD_LOOP_IN_MS = 25000; // piloting command sending interval
+static const int PCMD_LOOP_IN_MS = 25; // piloting command sending interval
 
 static ARNETWORK_IOBufferParam_t C2D_PARAMS[] = {
     {
@@ -586,7 +586,7 @@ void *looperRun (void* data)
         {
             [deviceController sendPCMD];
             
-            usleep(PCMD_LOOP_IN_MS);
+            usleep(PCMD_LOOP_IN_MS * 1000);
         }
     }
     
