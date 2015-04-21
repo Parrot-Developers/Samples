@@ -336,6 +336,10 @@ void* Decode_RunDataThread(void *customData)
                     avFrame->format = AV_PIX_FMT_YUV420P;
 
                     avpicture_fill((AVPicture*)avFrame, NULL, PIX_FMT_YUV420P, decodedFrame->width, decodedFrame->height);
+                    avFrame->linesize[0] = decodedFrame->componentArray[0].lineSize;
+                    avFrame->linesize[1] = decodedFrame->componentArray[1].lineSize;
+                    avFrame->linesize[2] = decodedFrame->componentArray[2].lineSize;
+                    
                     avFrame->data[0] = decodedFrame->componentArray[0].data;
                     avFrame->data[1] = decodedFrame->componentArray[1].data;
                     avFrame->data[2] = decodedFrame->componentArray[2].data;
