@@ -311,7 +311,8 @@ void* Decode_RunDataThread(void *customData)
                 
                 uint8_t *decodedOut = malloc(pic_size);
                 
-                uint8_t *src_data[4];
+                // in case your install of FFMpeg supports av_image_copy_to_buffer, you can replace the AVFrame creation and initialisation by this block
+                /*uint8_t *src_data[4];
                 src_data[0] = decodedFrame->componentArray[0].data;
                 src_data[1] = decodedFrame->componentArray[1].data;
                 src_data[2] = decodedFrame->componentArray[2].data;
@@ -325,8 +326,23 @@ void* Decode_RunDataThread(void *customData)
                 
                 av_image_copy_to_buffer(decodedOut, pic_size,
                                         (const uint8_t *const *)src_data, src_linesize,
-                                        PIX_FMT_YUV420P, decodedFrame->width, decodedFrame->height, 1);
+                                        PIX_FMT_YUV420P, decodedFrame->width, decodedFrame->height, 1);*/
                 
+                AVFrame *avFrame = avcodec_alloc_frame();
+                if (avFrame != NULL)
+                {
+                    avFrame->width = decodedFrame->width;
+                    avFrame->height = decodedFrame->height;
+                    avFrame->format = AV_PIX_FMT_YUV420P;
+
+                    avpicture_fill((AVPicture*)avFrame, NULL, PIX_FMT_YUV420P, decodedFrame->width, decodedFrame->height);
+                    avFrame->data[0] = decodedFrame->componentArray[0].data;
+                    avFrame->data[1] = decodedFrame->componentArray[1].data;
+                    avFrame->data[2] = decodedFrame->componentArray[2].data;
+
+                    avpicture_layout((AVPicture*)avFrame, PIX_FMT_YUV420P, decodedFrame->width, decodedFrame->height, decodedOut, pic_size);
+                    avcodec_free_frame(&avFrame);
+                }
                 
                 if (decodedOut != NULL)
                 {
