@@ -219,7 +219,7 @@ int main (int argc, char *argv[])
     // add the command received callback to be informed when a command has been received from the device
     if (!failed)
     {
-        error = ARCONTROLLER_Device_AddCommandRecievedCallback (deviceController, commandReceived, deviceController);
+        error = ARCONTROLLER_Device_AddCommandReceivedCallback (deviceController, commandReceived, deviceController);
         
         if (error != ARCONTROLLER_OK)
         {
