@@ -6,6 +6,9 @@ Runnable samples
 ---------------
 
 ### Unix
+#### [JSPilotingNewAPI](https://github.com/ARDroneSDK3/Samples/tree/master/Unix/JSPilotingNewAPI)
+This example enables you to **connect** to a JumpingSumo and **send and receive commands** to pilot it and get its battery level. It also **receives the video stream**. <br/>**It uses the new and simplified API (ARController)**
+
 #### [JumpingSumoChangePosture](https://github.com/ARDroneSDK3/Samples/tree/master/Unix/JumpingSumoChangePosture)
 This example enables you to **connect** to a JumpingSumo and **send a command** to change its posture.
 
@@ -23,6 +26,9 @@ This example enables you to **connect** to a Bebop drone and **receive the h264 
 This example enables you to **connect** to a Bebop, **send commands** to pilot it, **receive the h264 video stream**, **decode it**, and display this decoded stream.
 
 ### iOS
+#### [RSPilotingNewAPI](https://github.com/ARDroneSDK3/Samples/tree/master/iOS/RSPilotingNewAPI)
+This example enables you to **discover** and **connect** to a RollingSpider and **send and receive commands** to pilot it and get its battery level.<br/> **It uses the new and simplified API (ARController)**
+
 #### [RollingSpiderPiloting](https://github.com/ARDroneSDK3/Samples/tree/master/iOS/RollingSpiderPiloting)
 This example enables you to **discover** and **connect** to a RollingSpider and **send and receive commands** to pilot it and get its battery level.
 
