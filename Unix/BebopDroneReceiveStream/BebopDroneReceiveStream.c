@@ -271,7 +271,7 @@ int main (int argc, char *argv[])
 
     if (deviceManager != NULL)
     {
-        // initialize jsMnager
+        // initialize deviceManager
         deviceManager->alManager = NULL;
         deviceManager->netManager = NULL;
         deviceManager->streamReader = NULL;
@@ -644,7 +644,7 @@ uint8_t *frameCompleteCallback (eARSTREAM_READER_CAUSE cause, uint8_t *frame, ui
     switch(cause)
     {
         case ARSTREAM_READER_CAUSE_FRAME_COMPLETE:
-            /* Here, the mjpeg video frame is in the "frame" pointer, with size "frameSize" bytes
+            /* Here, the h264 video frame is in the "frame" pointer, with size "frameSize" bytes
              You can do what you want, but keep it as short as possible, as the video is blocked until you return from this callback.
              Typically, you will either copy the frame and return the same buffer to the library, or store the buffer
              in a fifo for pending operations, and provide a new one.
