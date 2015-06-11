@@ -36,6 +36,9 @@ This example enables you to **discover** and **connect** to a RollingSpider and 
 This example enables you to **discover** and **connect** to a Bebop drone, **send and receive commands** to pilot it and get its battery level and other states.
 
 ### Android
+#### [BebopDronePilotingNewAPI](https://github.com/ARDroneSDK3/Samples/tree/master/Android/BebopDronePilotingNewAPI)
+This example enables you to **discover** and **connect** to a Bebop drone, **send and receive commands** to pilot it and get its battery level and other states.<br/> **It uses the new and simplified API (ARController)**
+
 #### [RollingSpiderPiloting](https://github.com/ARDroneSDK3/Samples/tree/master/Android/RollingSpiderPiloting)
 This example enables you to **discover** and **connect** to a RollingSpider and **send and receive commands** to pilot it and get its battery level.
 

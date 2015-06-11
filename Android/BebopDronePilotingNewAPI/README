@@ -1,0 +1,10 @@
+==================
+Purpose of BebopDronePilotingNewAPI
+==================
+
+This sample shows how to send and receive commands to communicate with a Parrot Bebop drone on an Android device, **using the ARController API**.
+
+This example enables you to **discover** and **connect** to a Bebop and **send and receive commands** to pilot it and get its battery level.
+
+These sample sources are an Android gradle project building for Android devices.
+
