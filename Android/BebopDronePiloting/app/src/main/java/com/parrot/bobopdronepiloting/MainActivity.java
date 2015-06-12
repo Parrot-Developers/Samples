@@ -47,6 +47,11 @@ public class MainActivity extends ActionBarActivity implements ARDiscoveryServic
             System.loadLibrary("ardiscovery");
             System.loadLibrary("ardiscovery_android");
 
+            /*** video mods start ***/
+            System.loadLibrary("arstream");
+            System.loadLibrary("arstream_android");
+            /*** video mods end ***/
+
             ARSALPrint.enableDebugPrints();
 
         }
