@@ -3,6 +3,7 @@ package com.parrot.bobopdronepiloting;
 
 import android.os.SystemClock;
 import android.util.Log;
+import android.graphics.Bitmap;
 
 import com.parrot.arsdk.arcommands.ARCOMMANDS_ARDRONE3_PILOTINGSTATE_FLYINGSTATECHANGED_STATE_ENUM;
 import com.parrot.arsdk.arcommands.ARCOMMANDS_DECODER_ERROR_ENUM;
@@ -229,15 +230,10 @@ public class DeviceController implements ARCommandCommonCommonStateBatteryStateC
             failed = !getInitialStates();
         }
 
-        Log.e(TAG, "after getInitialStates()");
-
         if (!failed)
         {
             failed = !sendBeginStream();
         }
-
-        Log.e(TAG, "after sendBeginStream()");
-        Log.e(TAG, "videoThread status = " + videoThread.isRunning());
 
         return failed;
     }
@@ -1200,22 +1196,11 @@ public class DeviceController implements ARCommandCommonCommonStateBatteryStateC
         @Override
         public void onloop()
         {
-
-            /*
-            ARFrame frame = streamManager.getFrameWithTimeout(VIDEO_RECEIVE_TIMEOUT);
-
-            if (frame != null)
-            {
-                // if (videoStreamListener != null)
-                if (streamManager.listener != null)
-                {
-                    //Log.i(TAG, "onReceiveFrame videop");
-                    //videoStreamListener.onReceiveFrame (frame);
-
-                }
-                streamManager.freeFrame(frame);
+            Bitmap bitmap = streamManager.getFrameWithTimeout(VIDEO_RECEIVE_TIMEOUT);
+            //display frame
+            if (listener != null) {
+                listener.onUpdateStream(bitmap);
             }
-            */
         }
 
         @Override

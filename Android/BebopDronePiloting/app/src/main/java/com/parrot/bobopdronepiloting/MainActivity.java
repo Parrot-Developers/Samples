@@ -24,6 +24,15 @@ import com.parrot.arsdk.ardiscovery.receivers.ARDiscoveryServicesDevicesListUpda
 import com.parrot.arsdk.arsal.ARSALPrint;
 import com.parrot.bebopdronepiloting.R;
 
+import org.bytedeco.javacpp.Loader;
+import org.bytedeco.javacpp.opencv_core;
+
+import static org.bytedeco.javacpp.avcodec.*;
+import static org.bytedeco.javacpp.avdevice.*;
+import static org.bytedeco.javacpp.avformat.*;
+import static org.bytedeco.javacpp.avutil.*;
+import static org.bytedeco.javacpp.swscale.*;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -50,6 +59,22 @@ public class MainActivity extends ActionBarActivity implements ARDiscoveryServic
             /*** video mods start ***/
             System.loadLibrary("arstream");
             System.loadLibrary("arstream_android");
+            System.loadLibrary("avutil");
+            System.loadLibrary("arstream_android");
+
+            Loader.load(org.bytedeco.javacpp.avutil.class);
+            Loader.load(org.bytedeco.javacpp.swresample.class);
+            Loader.load(org.bytedeco.javacpp.avcodec.class);
+            Loader.load(org.bytedeco.javacpp.avformat.class);
+            Loader.load(org.bytedeco.javacpp.swscale.class);
+
+            // Register all formats and codec
+            avcodec_register_all();
+            av_register_all();
+            avformat_network_init();
+
+            Loader.load(org.bytedeco.javacpp.avdevice.class);
+            avdevice_register_all();
             /*** video mods end ***/
 
             ARSALPrint.enableDebugPrints();
@@ -105,7 +130,6 @@ public class MainActivity extends ActionBarActivity implements ARDiscoveryServic
 
                 Intent intent = new Intent(MainActivity.this, PilotingActivity.class);
                 intent.putExtra(PilotingActivity.EXTRA_DEVICE_SERVICE, service);
-
 
                 startActivity(intent);
             }
