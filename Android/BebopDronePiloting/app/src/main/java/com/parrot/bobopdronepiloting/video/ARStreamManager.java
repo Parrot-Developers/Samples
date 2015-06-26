@@ -35,6 +35,7 @@ public class ARStreamManager {
     public ARStreamReaderListener listener;
     public static BlockingQueue<ARFrame> frameQueue;
 
+    public static int success = 0;
 
     private static String TAG = "ARStreamManager";
 
@@ -50,7 +51,7 @@ public class ARStreamManager {
                             int videoMaxAckInterval)
     {
         frameQueue = new LinkedBlockingQueue<ARFrame>();
-        data = new ARNativeData(40000);
+        data = new ARNativeData(42000);
         listener = new ARStreamReaderCallBack(frameQueue);
         streamReader = new ARStreamReader(netManager, iobufferD2cArstreamData,
                 iobufferC2dArstreamAck, data, listener, videoFragmentSize, videoMaxAckInterval);
@@ -80,13 +81,9 @@ public class ARStreamManager {
         ARFrame freeFrame = frameQueue.poll();
 
         freeFrame.frame = freeFrame.decodeFromVideo();
-        String paddedFrameNo = String.format("%05d", freeFrame.frameNo);
 
         if (freeFrame.frame != null)
         {
-            Log.i(TAG, freeFrame.frameNo + ": success");
-            // Save to image file to see omg
-
             AndroidFrameConverter converterToBitmap = new AndroidFrameConverter();
             bitmap = converterToBitmap.convert(freeFrame.frame);
 
@@ -153,37 +150,36 @@ class ARStreamReaderCallBack implements ARStreamReaderListener
         //Log.i(TAG, "isFlushFrame: " + isFlushFrame);
         //Log.i(TAG, "nbSkippedFrames: " + nbSkippedFrames);
         //Log.i(TAG, "newBufferCapacity: " + newBufferCapacity);
-
+        //Log.i(TAG, "frames received: " + count);
         switch (cause)
         {
             case ARSTREAM_READER_CAUSE_FRAME_COMPLETE:
                 ARFrame freeFrame = new ARFrame(currentFrame.getByteData(), currentFrame.getDataSize(), isFlushFrame, count++);
+
                 /*** I-Frame ***/
                 if (isFlushFrame) {
                     frameQueue.clear();
-                    frameQueue.offer(freeFrame);
                 }
-                /*** P-Frame ***/
-                else {
-                    frameQueue.offer(freeFrame);
-                }
-                break;
+
+                frameQueue.offer(freeFrame);
+
+                return currentFrame;
 
             case ARSTREAM_READER_CAUSE_FRAME_TOO_SMALL:
                 /* This case should not happen, as we've allocated a frame pointer to the maximum possible size. */
-                break;
+                ARNativeData enlargedFrame = new ARNativeData(newBufferCapacity);
+                return enlargedFrame;
 
             case ARSTREAM_READER_CAUSE_COPY_COMPLETE:
                 /* Same as before ... but return value are ignored, so we just do nothing */
-                break;
+                return null;
 
             case ARSTREAM_READER_CAUSE_CANCEL:
                 /* Same as before ... but return value are ignored, so we just do nothing */
-                break;
+                return null;
 
             default:
-                break;
+                return null;
         }
-        return currentFrame;
     }
 }

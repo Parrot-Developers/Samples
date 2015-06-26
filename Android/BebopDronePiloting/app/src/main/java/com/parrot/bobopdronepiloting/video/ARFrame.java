@@ -111,20 +111,16 @@ public class ARFrame {
                 video_c.extradata_size(videoData.capacity());
                 //encoding: Set by user | decoding: Set by user
                 video_c.flags2(video_c.flags2() | avcodec.CODEC_FLAG2_CHUNKS);
+
                 //Initialize the AVCodecContext to use the given AVCodec.
-
                 avcodec.avcodec_open2(video_c, codec, (PointerPointer) null);
-
-                if ((video_c.time_base().num() > 1000) && (video_c.time_base().den() == 1)) {
-                    video_c.time_base().den(1000);
-                }
 
             } else {
                 return null;
             }
         }
 
-        // First P-frame have not been received, exit decoding
+        // First I-frame have not been received, exit decoding
         if (video_c == null) {
             return null;
         }
@@ -138,38 +134,23 @@ public class ARFrame {
             return null;
         }
 
-        BytePointer processPictureBuffer;
         int width = getImageWidth();
         int height = getImageHeight();
+        int fmt = getPixelFormat();
 
-        switch (getImageMode()) {
-            case COLOR:
-            case GRAY:
-                int fmt = getPixelFormat();
+        //old - Calculate the size in bytes that a picture of the given width and height would occupy if stored in the given picture format
+        //Determine required buffer size and allocate buffer
+        int size = avcodec.avpicture_get_size(fmt, width, height);
+        image_ptr = new BytePointer[] { new BytePointer(avutil.av_malloc(size)).capacity(size)};
+        image_buf = new Buffer[] { image_ptr[0].asBuffer() };
 
-                //old - Calculate the size in bytes that a picture of the given width and height would occupy if stored in the given picture format
-                //Determine required buffer size and allocate buffer
-                int size = avcodec.avpicture_get_size(fmt, width, height);
-                image_ptr = new BytePointer[] { new BytePointer(avutil.av_malloc(size)).capacity(size)};
-                image_buf = new Buffer[] { image_ptr[0].asBuffer() };
-
-                //old - Setup the picture fields based on the specified image parameters and the provided image data buffer.
-                //Assign appropriate parts of buffer to image planes in picture rgb
-                //Note that picture_rgb i an AVFrame, but AVFrame is a superset of AVPicture
-                avcodec.avpicture_fill(new AVPicture(picture_rgb), image_ptr[0], fmt, width, height);
-                picture_rgb.format(fmt);
-                picture_rgb.width(width);
-                picture_rgb.height(height);
-                break;
-
-            case RAW:
-                image_ptr = new BytePointer[] { null };
-                image_buf = new Buffer[] { null };
-                break;
-
-            default:
-                assert false;
-        }
+        //old - Setup the picture fields based on the specified image parameters and the provided image data buffer.
+        //Assign appropriate parts of buffer to image planes in picture rgb
+        //Note that picture_rgb is an AVFrame, but AVFrame is a superset of AVPicture
+        avcodec.avpicture_fill(new AVPicture(picture_rgb), image_ptr[0], fmt, width, height);
+        picture_rgb.format(fmt);
+        picture_rgb.width(width);
+        picture_rgb.height(height);
 
         receivedVideoPacket.data(videoData);
         receivedVideoPacket.size(videoData.capacity());
@@ -178,7 +159,6 @@ public class ARFrame {
         //Zero if no frame could be decompressed, otherwise, it is nonzero
         int[] isVideoDecoded = new int[1];
 
-        video_c.pix_fmt(avutil.AV_PIX_FMT_YUV420P);
         //Decode the video frame of size avpkt->size from avpkt->data into picture.
         //AVCodecContext avContext, AVFrame	picture, int[] got_picture_ptr, AVPacket avpkt
         decodedFrameLength = avcodec.avcodec_decode_video2(video_c,
@@ -194,43 +174,28 @@ public class ARFrame {
             frame.imageDepth = Frame.DEPTH_UBYTE;
             // AVFrame -> Frame
             // Convert the image
-            switch (getImageMode()) {
-                case COLOR:
-                case GRAY:
 
-                    // Deinterlace the picture
-                    if (DEINTERLACE) {
-                        AVPicture p = new AVPicture(picture);
-                        avcodec.avpicture_deinterlace(p, p, video_c.pix_fmt(), video_c.width(), video_c.height());
-                    }
-
-                    // Convert the image into BGR or GRAY format that OpenCV uses
-                    img_convert_ctx = swscale.sws_getCachedContext(img_convert_ctx, video_c.width(), video_c.height(), video_c.pix_fmt(),
-                            frame.imageWidth, frame.imageHeight, getPixelFormat(), swscale.SWS_BILINEAR, null, null, (DoublePointer)null);
-                    if (img_convert_ctx == null) {
-                        return null;
-                    }
-
-                    //Convert the image from its native format to RGB or GRAY
-                    swscale.sws_scale(img_convert_ctx, new PointerPointer(picture), picture.linesize(), 0,
-                            video_c.height(), new PointerPointer(picture_rgb), picture_rgb.linesize());
-                    frame.imageStride = picture_rgb.linesize(0);
-                    frame.image = image_buf;
-                    break;
-
-                case RAW:
-                    frame.imageStride = picture.linesize(0);
-                    BytePointer ptr = picture.data(0);
-                    if (ptr != null && !ptr.equals(image_ptr[0])) {
-                        image_ptr[0] = ptr.capacity(frame.imageHeight * frame.imageStride);
-                        image_buf[0] = ptr.asBuffer();
-                    }
-                    frame.image = image_buf;
-                    break;
-
-                default:
-                    assert false;
+            // Deinterlace the picture
+            /*
+            if (DEINTERLACE) {
+                AVPicture p = new AVPicture(picture);
+                avcodec.avpicture_deinterlace(p, p, video_c.pix_fmt(), video_c.width(), video_c.height());
             }
+            */
+
+            // Convert the image into BGR or GRAY format that OpenCV uses
+            img_convert_ctx = swscale.sws_getCachedContext(img_convert_ctx, video_c.width(), video_c.height(), video_c.pix_fmt(),
+                    frame.imageWidth, frame.imageHeight, getPixelFormat(), swscale.SWS_BILINEAR, null, null, (DoublePointer)null);
+            if (img_convert_ctx == null) {
+                return null;
+            }
+
+            //Convert the image from its native format to RGB or GRAY
+            swscale.sws_scale(img_convert_ctx, new PointerPointer(picture), picture.linesize(), 0,
+                    video_c.height(), new PointerPointer(picture_rgb), picture_rgb.linesize());
+            frame.imageStride = picture_rgb.linesize(0);
+            frame.image = image_buf;
+
             frame.image[0].limit(frame.imageHeight * frame.imageStride);
             frame.imageChannels = frame.imageStride / frame.imageWidth;
         } else {
