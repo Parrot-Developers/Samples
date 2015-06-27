@@ -1,8 +1,9 @@
-package com.parrot.bobopdronepiloting;
+package com.parrot.bebopdronestreaming;
 
 
 import android.os.SystemClock;
 import android.util.Log;
+import android.graphics.Bitmap;
 
 import com.parrot.arsdk.arcommands.ARCOMMANDS_ARDRONE3_PILOTINGSTATE_FLYINGSTATECHANGED_STATE_ENUM;
 import com.parrot.arsdk.arcommands.ARCOMMANDS_DECODER_ERROR_ENUM;
@@ -27,6 +28,10 @@ import com.parrot.arsdk.arnetworkal.ARNETWORKAL_FRAME_TYPE_ENUM;
 import com.parrot.arsdk.arnetworkal.ARNetworkALManager;
 import com.parrot.arsdk.arsal.ARNativeData;
 import com.parrot.arsdk.arsal.ARSALPrint;
+/*** video mods start ***/
+import com.parrot.arsdk.arstream.ARStreamReader;
+import com.parrot.bebopdronestreaming.video.ARStreamManager;
+/*** video mods end ***/
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -40,6 +45,12 @@ import java.util.concurrent.Semaphore;
 
 public class DeviceController implements ARCommandCommonCommonStateBatteryStateChangedListener, ARCommandCommonSettingsStateAllSettingsChangedListener, ARCommandCommonCommonStateAllStatesChangedListener, ARCommandARDrone3PilotingStateFlyingStateChangedListener
 {
+    /*** video mods start ***/
+    private static final int DEFAULT_VIDEO_FRAGMENT_SIZE = 1000;
+    private static final int DEFAULT_VIDEO_FRAGMENT_MAXIMUM_NUMBER = 128;
+    private static final int VIDEO_RECEIVE_TIMEOUT= 500;
+    /*** video mods end ***/
+
     private static String TAG = "DeviceController";
 
     private static final int PCMD_LOOP_IN_MS = 25;
@@ -49,6 +60,24 @@ public class DeviceController implements ARCommandCommonCommonStateBatteryStateC
     private final static int iobufferC2dEmergency = 12;
     private final static int iobufferD2cNavdata = 127;
     private final static int iobufferD2cEvents = 126;
+    /*** video mods start ***/
+    // from BebopDroneReceiveStream
+    //private final static int iobufferC2dVideoAck = 13;
+    //private final static int iobufferD2cVideoData = 125;
+    //private final static int iobufferD2cVideoFragSize = 1000; //DEFAULT_VIDEO_FRAGMENT_SIZE
+    //private final static int iobufferD2cVideoMaxNumberOfFrag = 128; //DEFAULT_VIDEO_FRAGMENT_MAXIMUM_NUMBER
+    private final static boolean hasVideo = true;
+    //private final static int videoMaxAckInterval = ARStreamReader.DEFAULT_MAX_ACK_INTERVAL;
+
+    // from ARNetworkConfig
+    private int iobufferD2cArstreamData = 125;
+    private int iobufferC2dArstreamAck = 13;
+    private int videoFragmentSize = DEFAULT_VIDEO_FRAGMENT_SIZE;
+    private int videoFragmentMaximumNumber = DEFAULT_VIDEO_FRAGMENT_MAXIMUM_NUMBER;
+    //private int videoMaxAckInterval = ARStreamReader.DEFAULT_MAX_ACK_INTERVAL;
+    private int videoMaxAckInterval = 5;
+
+    /*** video mods end ***/
 
     protected static List<ARNetworkIOBufferParam> c2dParams = new ArrayList<ARNetworkIOBufferParam>();
     protected static List<ARNetworkIOBufferParam> d2cParams = new ArrayList<ARNetworkIOBufferParam>();
@@ -70,6 +99,9 @@ public class DeviceController implements ARCommandCommonCommonStateBatteryStateC
     private ARDiscoveryConnection discoveryData;
 
     private LooperThread looperThread;
+    /*** video mods start ***/
+    private VideoThread videoThread;
+    /*** video mods end ***/
 
     private DataPCMD dataPCMD;
     private ARDiscoveryDeviceService deviceService;
@@ -94,15 +126,15 @@ public class DeviceController implements ARCommandCommonCommonStateBatteryStateC
         c2dParams.add (new ARNetworkIOBufferParam (iobufferC2dAck,
                                                    ARNETWORKAL_FRAME_TYPE_ENUM.ARNETWORKAL_FRAME_TYPE_DATA_WITH_ACK,
                                                    20,
-                                                           500,
-                                                           3,
-                                                           20,
+                                                   500,
+                                                   3,
+                                                   20,
                                                    ARNetworkIOBufferParam.ARNETWORK_IOBUFFERPARAM_DATACOPYMAXSIZE_USE_MAX,
                                                    false));
         c2dParams.add (new ARNetworkIOBufferParam (iobufferC2dEmergency,
                                                    ARNETWORKAL_FRAME_TYPE_ENUM.ARNETWORKAL_FRAME_TYPE_DATA_WITH_ACK,
                                                    1,
-                                                           100,
+                                                   100,
                                                    ARNetworkIOBufferParam.ARNETWORK_IOBUFFERPARAM_INFINITE_NUMBER,
                                                    1,
                                                    ARNetworkIOBufferParam.ARNETWORK_IOBUFFERPARAM_DATACOPYMAXSIZE_USE_MAX,
@@ -120,9 +152,9 @@ public class DeviceController implements ARCommandCommonCommonStateBatteryStateC
         d2cParams.add (new ARNetworkIOBufferParam (iobufferD2cEvents,
                                                    ARNETWORKAL_FRAME_TYPE_ENUM.ARNETWORKAL_FRAME_TYPE_DATA_WITH_ACK,
                                                    20,
-                                                           500,
-                                                           3,
-                                                           20,
+                                                   500,
+                                                   3,
+                                                   20,
                                                    ARNetworkIOBufferParam.ARNETWORK_IOBUFFERPARAM_DATACOPYMAXSIZE_USE_MAX,
                                                    false));
 
@@ -159,9 +191,17 @@ public class DeviceController implements ARCommandCommonCommonStateBatteryStateC
             startReadThreads();
         }
 
+        /*** video mods start ***/
         if (!failed)
         {
-                /* start the looper thread */
+            /* start video thread */
+            startVideoThread();
+        }
+        /*** video mods end ***/
+
+        if (!failed)
+        {
+            /* start the looper thread */
             startLooperThread();
         }
 
@@ -189,6 +229,11 @@ public class DeviceController implements ARCommandCommonCommonStateBatteryStateC
             failed = !getInitialStates();
         }
 
+        if (!failed)
+        {
+            failed = !sendBeginStream();
+        }
+
         return failed;
     }
 
@@ -203,6 +248,9 @@ public class DeviceController implements ARCommandCommonCommonStateBatteryStateC
 
         /* cancel all reader threads and block until they are all stopped. */
         stopReaderThreads();
+
+        /* Stop the video streamer */
+        stopVideoThread();
 
         /* ARNetwork cleanup */
         stopNetwork();
@@ -227,6 +275,15 @@ public class DeviceController implements ARCommandCommonCommonStateBatteryStateC
             failed = true;
         }
 
+        /*** video mods start ***/
+        /* TODO : if ardiscoveryConnect ok */
+        //netConfig.addStreamReader(videoFragmentSize, videoFragmentMaximumNumber);
+        /* add the Stream parameters for the new connection */
+        c2dParams.add (ARStreamReader.newAckARNetworkIOBufferParam(iobufferC2dArstreamAck));
+        d2cParams.add (ARStreamReader.newDataARNetworkIOBufferParam (iobufferD2cArstreamData, videoFragmentSize, videoFragmentMaximumNumber));
+        /*** video mods end ***/
+
+        /* setup ARNetworkAL for wifi */
         netALError = alManager.initWifiNetwork(netDeviceService.getIp(), c2dPort, d2cPort, 3);
         //netALError = alManager.initWNetwork(context, bleDevice.getBluetoothDevice(), 1, bleNotificationIDs);
 
@@ -322,7 +379,7 @@ public class DeviceController implements ARCommandCommonCommonStateBatteryStateC
                     {
                         c2dPort = jsonObject.getInt(ARDiscoveryConnection.ARDISCOVERY_CONNECTION_JSON_C2DPORT_KEY);
                     }
-                    /*if (!jsonObject.isNull(ARDiscoveryConnection.ARDISCOVERY_CONNECTION_JSON_ARSTREAM_FRAGMENT_SIZE_KEY))
+                    if (!jsonObject.isNull(ARDiscoveryConnection.ARDISCOVERY_CONNECTION_JSON_ARSTREAM_FRAGMENT_SIZE_KEY))
                     {
                         videoFragmentSize = jsonObject.getInt(ARDiscoveryConnection.ARDISCOVERY_CONNECTION_JSON_ARSTREAM_FRAGMENT_SIZE_KEY);
                     }
@@ -334,10 +391,12 @@ public class DeviceController implements ARCommandCommonCommonStateBatteryStateC
                     {
                         videoMaxAckInterval = jsonObject.getInt(ARDiscoveryConnection.ARDISCOVERY_CONNECTION_JSON_ARSTREAM_MAX_ACK_INTERVAL_KEY);
                     }
+                    /*
                     if (!jsonObject.isNull(ARDiscoveryConnection.ARDISCOVERY_CONNECTION_JSON_SKYCONTROLLER_VERSION))
                     {
                         napSoftVersion = jsonObject.getString(ARDiscoveryConnection.ARDISCOVERY_CONNECTION_JSON_SKYCONTROLLER_VERSION);
-                    }*/
+                    }
+                    */
 
                 }
                 catch (JSONException e)
@@ -389,6 +448,24 @@ public class DeviceController implements ARCommandCommonCommonStateBatteryStateC
         }
     }
 
+    /*** video mods start ***/
+    private void startVideoThread()
+    {
+        /* Create a ARStreamReader and create the video thread if the target supports video streaming */
+        if (hasVideo)
+        {
+            /* Reset the video listener to prevent forwarding frames to it before we return from this method */
+            //videoStreamListener = null; //TODO:see
+
+            /* Create the video thread */
+            videoThread = new VideoThread();
+
+            /* Start the video thread */
+            videoThread.start();
+        }
+    }
+    /*** video mods end ***/
+
     private void startLooperThread()
     {
         /* Create the looper thread */
@@ -439,6 +516,26 @@ public class DeviceController implements ARCommandCommonCommonStateBatteryStateC
         }
     }
 
+    /*** video mods start ***/
+    private void stopVideoThread()
+    {
+        /* Stop the video streamer */
+        if (videoThread != null)
+        {
+            videoThread.stopThread();
+            try
+            {
+                videoThread.join();
+            }
+            catch (InterruptedException e)
+            {
+                e.printStackTrace();
+
+            }
+        }
+    }
+    /*** video mods end ***/
+
     private void stopNetwork()
     {
         if(netManager != null)
@@ -480,7 +577,29 @@ public class DeviceController implements ARCommandCommonCommonStateBatteryStateC
         }
     }
 
-
+    /*** video mods start ***/
+    /**
+     * Set the video listener object. One of its methods will be called for each
+     * received video frame.
+     * @param listener
+     */
+    /*
+    public void setVideoListener (DeviceControllerVideoStreamListener listener)
+    {
+        if (deviceControllerBridgeClass == null)
+        {
+            videoStreamListener = listener;
+        }
+        else
+        {
+            if (deviceControllerBridge != null)
+            {
+                deviceControllerBridge.setVideoListener(listener);
+            }
+        }
+    }
+    */
+    /*** video mods end ***/
 
     protected void registerARCommandsListener ()
     {
@@ -583,6 +702,38 @@ public class DeviceController implements ARCommandCommonCommonStateBatteryStateC
 
         return sentStatus;
     }
+
+    /*** video mods start ***/
+    private boolean sendBeginStream()
+    {
+        ARCOMMANDS_GENERATOR_ERROR_ENUM cmdError = ARCOMMANDS_GENERATOR_ERROR_ENUM.ARCOMMANDS_GENERATOR_OK;
+        boolean sentStatus = true;
+        ARCommand cmd = new ARCommand();
+
+        // Send Streaming begin command
+        byte _enable = 1;
+        cmdError = cmd.setARDrone3MediaStreamingVideoEnable(_enable);
+        if (cmdError == ARCOMMANDS_GENERATOR_ERROR_ENUM.ARCOMMANDS_GENERATOR_OK)
+        {
+            ARNETWORK_ERROR_ENUM netError = netManager.sendData (iobufferC2dAck, cmd, null, true);
+
+            if (netError != ARNETWORK_ERROR_ENUM.ARNETWORK_OK)
+            {
+                ARSALPrint.e(TAG, "netManager.sendData() failed. " + netError.toString());
+                sentStatus = false;
+            }
+
+            cmd.dispose();
+        }
+
+        if (sentStatus == false)
+        {
+            ARSALPrint.e(TAG, "Failed to send begin command.");
+        }
+
+        return sentStatus;
+    }
+    /*** video mods end ***/
 
     private boolean sendPCMD()
     {
@@ -1021,6 +1172,45 @@ public class DeviceController implements ARCommandCommonCommonStateBatteryStateC
             }
         }
     }
+
+    /*** video mods start ***/
+    private class VideoThread extends LooperThread
+    {
+        private ARStreamManager streamManager;
+
+        public VideoThread ()
+        {
+            streamManager = new ARStreamManager (netManager, iobufferD2cArstreamData,
+                    iobufferC2dArstreamAck, videoFragmentSize, videoMaxAckInterval);
+        }
+
+        @Override
+        public void onStart()
+        {
+            super.onStart();
+
+            streamManager.startStream();
+        }
+
+        @Override
+        public void onloop()
+        {
+            Bitmap bitmap = streamManager.getFrameWithTimeout(VIDEO_RECEIVE_TIMEOUT);
+            //display frame
+            if (listener != null) {
+                listener.onUpdateStream(bitmap);
+            }
+        }
+
+        @Override
+        public void onStop()
+        {
+            streamManager.stopStream();
+
+            super.onStop();
+        }
+    }
+    /*** video mods end ***/
 
     private class ConnectionThread extends Thread
     {

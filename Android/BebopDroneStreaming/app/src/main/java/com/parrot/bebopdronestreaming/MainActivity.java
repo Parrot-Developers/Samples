@@ -1,4 +1,4 @@
-package com.parrot.bobopdronepiloting;
+package com.parrot.bebopdronestreaming;
 
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
@@ -22,7 +22,12 @@ import com.parrot.arsdk.ardiscovery.ARDiscoveryService;
 import com.parrot.arsdk.ardiscovery.receivers.ARDiscoveryServicesDevicesListUpdatedReceiver;
 import com.parrot.arsdk.ardiscovery.receivers.ARDiscoveryServicesDevicesListUpdatedReceiverDelegate;
 import com.parrot.arsdk.arsal.ARSALPrint;
-import com.parrot.bebopdronepiloting.R;
+
+import org.bytedeco.javacpp.Loader;
+
+import static org.bytedeco.javacpp.avcodec.*;
+import static org.bytedeco.javacpp.avdevice.*;
+import static org.bytedeco.javacpp.avformat.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,6 +52,27 @@ public class MainActivity extends ActionBarActivity implements ARDiscoveryServic
             System.loadLibrary("ardiscovery");
             System.loadLibrary("ardiscovery_android");
 
+            /*** video mods start ***/
+            System.loadLibrary("arstream");
+            System.loadLibrary("arstream_android");
+            System.loadLibrary("avutil");
+            System.loadLibrary("arstream_android");
+
+            Loader.load(org.bytedeco.javacpp.avutil.class);
+            Loader.load(org.bytedeco.javacpp.swresample.class);
+            Loader.load(org.bytedeco.javacpp.avcodec.class);
+            Loader.load(org.bytedeco.javacpp.avformat.class);
+            Loader.load(org.bytedeco.javacpp.swscale.class);
+
+            // Register all formats and codec
+            avcodec_register_all();
+            av_register_all();
+            avformat_network_init();
+
+            Loader.load(org.bytedeco.javacpp.avdevice.class);
+            avdevice_register_all();
+            /*** video mods end ***/
+
             ARSALPrint.enableDebugPrints();
 
         }
@@ -64,7 +90,6 @@ public class MainActivity extends ActionBarActivity implements ARDiscoveryServic
     private boolean ardiscoveryServiceBound = false;
     private ServiceConnection ardiscoveryServiceConnection;
     public IBinder discoveryServiceBinder;
-
     private BroadcastReceiver ardiscoveryServicesDevicesListUpdatedReceiver;
 
     @Override
@@ -100,7 +125,6 @@ public class MainActivity extends ActionBarActivity implements ARDiscoveryServic
 
                 Intent intent = new Intent(MainActivity.this, PilotingActivity.class);
                 intent.putExtra(PilotingActivity.EXTRA_DEVICE_SERVICE, service);
-
 
                 startActivity(intent);
             }

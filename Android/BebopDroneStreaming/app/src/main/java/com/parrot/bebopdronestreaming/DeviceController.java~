@@ -49,6 +49,12 @@ public class DeviceController implements ARCommandCommonCommonStateBatteryStateC
     private final static int iobufferC2dEmergency = 12;
     private final static int iobufferD2cNavdata = 127;
     private final static int iobufferD2cEvents = 126;
+    /*** stream mods start ***/
+    private final static int iobufferC2dVideoAck = 13;
+    private final static int iobufferD2cVideoData = 125
+    private final static int iobufferD2cVideoFragSize = 1000;
+    private final static int iobufferD2cVideoMaxNumberOfFrag = 128;
+    /*** stream mods end ***/
 
     protected static List<ARNetworkIOBufferParam> c2dParams = new ArrayList<ARNetworkIOBufferParam>();
     protected static List<ARNetworkIOBufferParam> d2cParams = new ArrayList<ARNetworkIOBufferParam>();
@@ -94,15 +100,15 @@ public class DeviceController implements ARCommandCommonCommonStateBatteryStateC
         c2dParams.add (new ARNetworkIOBufferParam (iobufferC2dAck,
                                                    ARNETWORKAL_FRAME_TYPE_ENUM.ARNETWORKAL_FRAME_TYPE_DATA_WITH_ACK,
                                                    20,
-                                                           500,
-                                                           3,
-                                                           20,
+                                                   500,
+                                                   3,
+                                                   20,
                                                    ARNetworkIOBufferParam.ARNETWORK_IOBUFFERPARAM_DATACOPYMAXSIZE_USE_MAX,
                                                    false));
         c2dParams.add (new ARNetworkIOBufferParam (iobufferC2dEmergency,
                                                    ARNETWORKAL_FRAME_TYPE_ENUM.ARNETWORKAL_FRAME_TYPE_DATA_WITH_ACK,
                                                    1,
-                                                           100,
+                                                   100,
                                                    ARNetworkIOBufferParam.ARNETWORK_IOBUFFERPARAM_INFINITE_NUMBER,
                                                    1,
                                                    ARNetworkIOBufferParam.ARNETWORK_IOBUFFERPARAM_DATACOPYMAXSIZE_USE_MAX,
@@ -120,9 +126,9 @@ public class DeviceController implements ARCommandCommonCommonStateBatteryStateC
         d2cParams.add (new ARNetworkIOBufferParam (iobufferD2cEvents,
                                                    ARNETWORKAL_FRAME_TYPE_ENUM.ARNETWORKAL_FRAME_TYPE_DATA_WITH_ACK,
                                                    20,
-                                                           500,
-                                                           3,
-                                                           20,
+                                                   500,
+                                                   3,
+                                                   20,
                                                    ARNetworkIOBufferParam.ARNETWORK_IOBUFFERPARAM_DATACOPYMAXSIZE_USE_MAX,
                                                    false));
 

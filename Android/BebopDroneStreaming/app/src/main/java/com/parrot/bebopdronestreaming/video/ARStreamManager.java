@@ -1,14 +1,8 @@
-package com.parrot.bobopdronepiloting.video;
+package com.parrot.bebopdronestreaming.video;
 
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
-import java.util.Queue;
-import java.io.File;
 
-import android.os.Environment;
 import android.util.Log;
 import android.graphics.Bitmap;
 
@@ -17,10 +11,8 @@ import com.parrot.arsdk.arstream.ARSTREAM_READER_CAUSE_ENUM;
 import com.parrot.arsdk.arstream.ARStreamReader;
 import com.parrot.arsdk.arnetwork.ARNetworkManager;
 import com.parrot.arsdk.arstream.ARStreamReaderListener;
-import com.parrot.bobopdronepiloting.DeviceController;
 
 import org.bytedeco.javacv.AndroidFrameConverter;
-import org.bytedeco.javacv.Frame;
 
 
 /**

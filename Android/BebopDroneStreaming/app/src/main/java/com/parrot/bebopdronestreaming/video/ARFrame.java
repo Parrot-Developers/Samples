@@ -1,11 +1,6 @@
-package com.parrot.bobopdronepiloting.video;
-
-import android.util.Log;
+package com.parrot.bebopdronestreaming.video;
 
 import java.nio.Buffer;
-import java.util.Arrays;
-
-import com.parrot.arsdk.arsal.ARNativeData;
 
 import org.bytedeco.javacpp.DoublePointer;
 import org.bytedeco.javacpp.avcodec;

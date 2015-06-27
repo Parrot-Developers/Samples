@@ -1,4 +1,4 @@
-package com.parrot.bobopdronepiloting;
+package com.parrot.bebopdronestreaming;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -8,7 +8,8 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
-import com.parrot.bebopdronepiloting.R;
+import android.widget.ImageView;
+import android.graphics.Bitmap;
 
 import com.parrot.arsdk.arcommands.ARCOMMANDS_ARDRONE3_PILOTINGSTATE_FLYINGSTATECHANGED_STATE_ENUM;
 import com.parrot.arsdk.ardiscovery.ARDiscoveryDeviceService;
@@ -36,6 +37,8 @@ public class PilotingActivity extends Activity implements DeviceControllerListen
     private Button rollRightBt;
 
     private TextView batteryLabel;
+
+    private ImageView streamImageView;
 
     private AlertDialog alertDialog;
 
@@ -347,6 +350,8 @@ public class PilotingActivity extends Activity implements DeviceControllerListen
 
         batteryLabel = (TextView) findViewById(R.id.batteryLabel);
 
+        streamImageView = (ImageView) findViewById(R.id.streamImageView);
+
         Intent intent = getIntent();
         service = intent.getParcelableExtra(EXTRA_DEVICE_SERVICE);
 
@@ -408,26 +413,22 @@ public class PilotingActivity extends Activity implements DeviceControllerListen
             alertDialogBuilder.setTitle("Disconnecting ...");
 
             // show it
-            runOnUiThread(new Runnable()
-            {
+            runOnUiThread(new Runnable() {
                 @Override
-                public void run()
-                {
+                public void run() {
                     // create alert dialog
                     alertDialog = alertDialogBuilder.create();
                     alertDialog.show();
 
                     new Thread(new Runnable() {
                         @Override
-                        public void run()
-                        {
+                        public void run() {
                             deviceController.stop();
                             deviceController = null;
 
                             runOnUiThread(new Runnable() {
                                 @Override
-                                public void run()
-                                {
+                                public void run() {
                                     //alertDialog.hide();
                                     alertDialog.dismiss();
                                     finish();
@@ -472,8 +473,7 @@ public class PilotingActivity extends Activity implements DeviceControllerListen
     {
         runOnUiThread(new Runnable() {
             @Override
-            public void run()
-            {
+            public void run() {
                 batteryLabel.setText(String.format("%d%%", percent));
             }
         });
@@ -508,4 +508,17 @@ public class PilotingActivity extends Activity implements DeviceControllerListen
             }
         });
     }
+
+    @Override
+    public void onUpdateStream(final Bitmap bitmap)
+    {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                streamImageView.setImageBitmap(bitmap);
+            }
+        });
+
+    }
+
 }
