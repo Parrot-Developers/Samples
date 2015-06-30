@@ -4,7 +4,7 @@
     android:layout_width="fill_parent">
 
 
-    <com.parrot.bebopdronestreaming.video.StreamImageView
+    <com.parrot.bebopflyingbanana.video.StreamImageView
         android:id="@+id/streamImageView"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
