@@ -75,8 +75,8 @@
 #define BD_NET_DC_EVENT_ID 126
 #define BD_NET_DC_VIDEO_DATA_ID 125
 
-#define BD_NET_DC_VIDEO_FRAG_SIZE 1000
-#define BD_NET_DC_VIDEO_MAX_NUMBER_OF_FRAG 128
+#define BD_NET_DC_VIDEO_FRAG_SIZE 65000
+#define BD_NET_DC_VIDEO_MAX_NUMBER_OF_FRAG 4
 
 /*****************************************
  *
