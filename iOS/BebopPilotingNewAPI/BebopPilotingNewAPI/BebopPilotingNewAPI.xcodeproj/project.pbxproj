@@ -1,0 +1,360 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		F83CB5F91B14A1030072E8A9 /* libARCommands.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F8BD2F831B14722C0096573E /* libARCommands.framework */; };
+		F83CB5FA1B14A1030072E8A9 /* libARController.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F8BD2F761B1471820096573E /* libARController.framework */; };
+		F83CB5FB1B14A1030072E8A9 /* libARDiscovery.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F8BD2F781B1471930096573E /* libARDiscovery.framework */; };
+		F83CB5FC1B14A1230072E8A9 /* libARSAL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F8BD2F7D1B1472070096573E /* libARSAL.framework */; };
+		F83CB5FD1B14A1350072E8A9 /* libARStream.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F8BD2F7E1B1472070096573E /* libARStream.framework */; };
+		F83CB5FE1B14A1450072E8A9 /* json.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F8BD2F851B14725F0096573E /* json.framework */; };
+		F83CB5FF1B14A1570072E8A9 /* libARNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F8BD2F7B1B1472070096573E /* libARNetwork.framework */; };
+		F83CB6001B14A1570072E8A9 /* libARNetworkAL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F8BD2F7C1B1472070096573E /* libARNetworkAL.framework */; };
+		F86C1C4C1B5D18FE0085B48E /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = F86C1C4B1B5D18FE0085B48E /* AppDelegate.m */; };
+		F86C1C561B5D19100085B48E /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F86C1C4F1B5D19100085B48E /* Images.xcassets */; };
+		F86C1C571B5D19100085B48E /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = F86C1C501B5D19100085B48E /* Info.plist */; };
+		F86C1C581B5D19100085B48E /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = F86C1C511B5D19100085B48E /* main.m */; };
+		F86C1C591B5D19100085B48E /* PilotingViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F86C1C531B5D19100085B48E /* PilotingViewController.m */; };
+		F86C1C5A1B5D19100085B48E /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F86C1C551B5D19100085B48E /* ViewController.m */; };
+		F86C1C611B5D1A9C0085B48E /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = F86C1C601B5D1A9C0085B48E /* LaunchScreen.xib */; };
+		F86C1C641B5D1AC20085B48E /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F86C1C621B5D1AC20085B48E /* Main.storyboard */; };
+		F86C1C661B5D21840085B48E /* VideoToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F86C1C651B5D21840085B48E /* VideoToolbox.framework */; };
+		F86C1C681B5D218A0085B48E /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F86C1C671B5D218A0085B48E /* AVFoundation.framework */; };
+		F86C1C961B5D24960085B48E /* VideoView.m in Sources */ = {isa = PBXBuildFile; fileRef = F86C1C951B5D24960085B48E /* VideoView.m */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		F86C1C4A1B5D18FE0085B48E /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppDelegate.h; path = BebopPilotingNewAPI/AppDelegate.h; sourceTree = "<group>"; };
+		F86C1C4B1B5D18FE0085B48E /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AppDelegate.m; path = BebopPilotingNewAPI/AppDelegate.m; sourceTree = "<group>"; };
+		F86C1C4F1B5D19100085B48E /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = BebopPilotingNewAPI/Images.xcassets; sourceTree = "<group>"; };
+		F86C1C501B5D19100085B48E /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = BebopPilotingNewAPI/Info.plist; sourceTree = "<group>"; };
+		F86C1C511B5D19100085B48E /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = BebopPilotingNewAPI/main.m; sourceTree = "<group>"; };
+		F86C1C521B5D19100085B48E /* PilotingViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PilotingViewController.h; path = BebopPilotingNewAPI/PilotingViewController.h; sourceTree = "<group>"; };
+		F86C1C531B5D19100085B48E /* PilotingViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = PilotingViewController.m; path = BebopPilotingNewAPI/PilotingViewController.m; sourceTree = "<group>"; };
+		F86C1C541B5D19100085B48E /* ViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ViewController.h; path = BebopPilotingNewAPI/ViewController.h; sourceTree = "<group>"; };
+		F86C1C551B5D19100085B48E /* ViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ViewController.m; path = BebopPilotingNewAPI/ViewController.m; sourceTree = "<group>"; };
+		F86C1C601B5D1A9C0085B48E /* LaunchScreen.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = LaunchScreen.xib; path = BebopPilotingNewAPI/Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
+		F86C1C631B5D1AC20085B48E /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = BebopPilotingNewAPI/Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		F86C1C651B5D21840085B48E /* VideoToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = VideoToolbox.framework; path = System/Library/Frameworks/VideoToolbox.framework; sourceTree = SDKROOT; };
+		F86C1C671B5D218A0085B48E /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
+		F86C1C941B5D24960085B48E /* VideoView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = VideoView.h; path = BebopPilotingNewAPI/VideoView.h; sourceTree = "<group>"; };
+		F86C1C951B5D24960085B48E /* VideoView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = VideoView.m; path = BebopPilotingNewAPI/VideoView.m; sourceTree = "<group>"; };
+		F8BD2F491B1470660096573E /* BebopPilotingNewAPI.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BebopPilotingNewAPI.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		F8BD2F761B1471820096573E /* libARController.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = libARController.framework; path = ../../../../ARSDKBuildUtils/Targets/iOS/Install/Frameworks/libARController.framework; sourceTree = "<group>"; };
+		F8BD2F781B1471930096573E /* libARDiscovery.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = libARDiscovery.framework; path = ../../../../ARSDKBuildUtils/Targets/iOS/Install/Frameworks/libARDiscovery.framework; sourceTree = "<group>"; };
+		F8BD2F7B1B1472070096573E /* libARNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = libARNetwork.framework; path = ../../../../ARSDKBuildUtils/Targets/iOS/Install/Frameworks/libARNetwork.framework; sourceTree = "<group>"; };
+		F8BD2F7C1B1472070096573E /* libARNetworkAL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = libARNetworkAL.framework; path = ../../../../ARSDKBuildUtils/Targets/iOS/Install/Frameworks/libARNetworkAL.framework; sourceTree = "<group>"; };
+		F8BD2F7D1B1472070096573E /* libARSAL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = libARSAL.framework; path = ../../../../ARSDKBuildUtils/Targets/iOS/Install/Frameworks/libARSAL.framework; sourceTree = "<group>"; };
+		F8BD2F7E1B1472070096573E /* libARStream.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = libARStream.framework; path = ../../../../ARSDKBuildUtils/Targets/iOS/Install/Frameworks/libARStream.framework; sourceTree = "<group>"; };
+		F8BD2F831B14722C0096573E /* libARCommands.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = libARCommands.framework; path = ../../../../ARSDKBuildUtils/Targets/iOS/Install/Frameworks/libARCommands.framework; sourceTree = "<group>"; };
+		F8BD2F851B14725F0096573E /* json.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = json.framework; path = ../../../../ARSDKBuildUtils/Targets/iOS/Install/Frameworks/json.framework; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		F8BD2F461B1470660096573E /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F86C1C681B5D218A0085B48E /* AVFoundation.framework in Frameworks */,
+				F86C1C661B5D21840085B48E /* VideoToolbox.framework in Frameworks */,
+				F83CB5FF1B14A1570072E8A9 /* libARNetwork.framework in Frameworks */,
+				F83CB6001B14A1570072E8A9 /* libARNetworkAL.framework in Frameworks */,
+				F83CB5FE1B14A1450072E8A9 /* json.framework in Frameworks */,
+				F83CB5FD1B14A1350072E8A9 /* libARStream.framework in Frameworks */,
+				F83CB5FC1B14A1230072E8A9 /* libARSAL.framework in Frameworks */,
+				F83CB5F91B14A1030072E8A9 /* libARCommands.framework in Frameworks */,
+				F83CB5FA1B14A1030072E8A9 /* libARController.framework in Frameworks */,
+				F83CB5FB1B14A1030072E8A9 /* libARDiscovery.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		F86C1C491B5D18EE0085B48E /* BebopPilotingNewAPI */ = {
+			isa = PBXGroup;
+			children = (
+				F86C1C4A1B5D18FE0085B48E /* AppDelegate.h */,
+				F86C1C4B1B5D18FE0085B48E /* AppDelegate.m */,
+				F86C1C4F1B5D19100085B48E /* Images.xcassets */,
+				F86C1C501B5D19100085B48E /* Info.plist */,
+				F86C1C511B5D19100085B48E /* main.m */,
+				F86C1C521B5D19100085B48E /* PilotingViewController.h */,
+				F86C1C531B5D19100085B48E /* PilotingViewController.m */,
+				F86C1C541B5D19100085B48E /* ViewController.h */,
+				F86C1C551B5D19100085B48E /* ViewController.m */,
+				F86C1C621B5D1AC20085B48E /* Main.storyboard */,
+				F86C1C601B5D1A9C0085B48E /* LaunchScreen.xib */,
+				F86C1C941B5D24960085B48E /* VideoView.h */,
+				F86C1C951B5D24960085B48E /* VideoView.m */,
+			);
+			name = BebopPilotingNewAPI;
+			sourceTree = "<group>";
+		};
+		F8BD2F401B1470660096573E = {
+			isa = PBXGroup;
+			children = (
+				F86C1C491B5D18EE0085B48E /* BebopPilotingNewAPI */,
+				F8BD2F7A1B1471B70096573E /* Frameworks */,
+				F8BD2F4A1B1470660096573E /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		F8BD2F4A1B1470660096573E /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				F8BD2F491B1470660096573E /* BebopPilotingNewAPI.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		F8BD2F7A1B1471B70096573E /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				F86C1C671B5D218A0085B48E /* AVFoundation.framework */,
+				F86C1C651B5D21840085B48E /* VideoToolbox.framework */,
+				F8BD2F851B14725F0096573E /* json.framework */,
+				F8BD2F831B14722C0096573E /* libARCommands.framework */,
+				F8BD2F7B1B1472070096573E /* libARNetwork.framework */,
+				F8BD2F7C1B1472070096573E /* libARNetworkAL.framework */,
+				F8BD2F7D1B1472070096573E /* libARSAL.framework */,
+				F8BD2F7E1B1472070096573E /* libARStream.framework */,
+				F8BD2F781B1471930096573E /* libARDiscovery.framework */,
+				F8BD2F761B1471820096573E /* libARController.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		F8BD2F481B1470660096573E /* BebopPilotingNewAPI */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = F8BD2F6C1B1470660096573E /* Build configuration list for PBXNativeTarget "BebopPilotingNewAPI" */;
+			buildPhases = (
+				F8BD2F451B1470660096573E /* Sources */,
+				F8BD2F461B1470660096573E /* Frameworks */,
+				F8BD2F471B1470660096573E /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = BebopPilotingNewAPI;
+			productName = RSPilotingNewAPI;
+			productReference = F8BD2F491B1470660096573E /* BebopPilotingNewAPI.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		F8BD2F411B1470660096573E /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0630;
+				ORGANIZATIONNAME = Parrot;
+				TargetAttributes = {
+					F8BD2F481B1470660096573E = {
+						CreatedOnToolsVersion = 6.3.1;
+					};
+				};
+			};
+			buildConfigurationList = F8BD2F441B1470660096573E /* Build configuration list for PBXProject "BebopPilotingNewAPI" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = F8BD2F401B1470660096573E;
+			productRefGroup = F8BD2F4A1B1470660096573E /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				F8BD2F481B1470660096573E /* BebopPilotingNewAPI */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		F8BD2F471B1470660096573E /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F86C1C571B5D19100085B48E /* Info.plist in Resources */,
+				F86C1C561B5D19100085B48E /* Images.xcassets in Resources */,
+				F86C1C611B5D1A9C0085B48E /* LaunchScreen.xib in Resources */,
+				F86C1C641B5D1AC20085B48E /* Main.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		F8BD2F451B1470660096573E /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F86C1C591B5D19100085B48E /* PilotingViewController.m in Sources */,
+				F86C1C961B5D24960085B48E /* VideoView.m in Sources */,
+				F86C1C581B5D19100085B48E /* main.m in Sources */,
+				F86C1C5A1B5D19100085B48E /* ViewController.m in Sources */,
+				F86C1C4C1B5D18FE0085B48E /* AppDelegate.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXVariantGroup section */
+		F86C1C621B5D1AC20085B48E /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				F86C1C631B5D1AC20085B48E /* Base */,
+			);
+			name = Main.storyboard;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		F8BD2F6A1B1470660096573E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		F8BD2F6B1B1470660096573E /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		F8BD2F6D1B1470660096573E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(SRCROOT)/../../../../ARSDKBuildUtils/Targets/iOS/Install/Frameworks",
+				);
+				INFOPLIST_FILE = BebopPilotingNewAPI/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		F8BD2F6E1B1470660096573E /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(SRCROOT)/../../../../ARSDKBuildUtils/Targets/iOS/Install/Frameworks",
+				);
+				INFOPLIST_FILE = BebopPilotingNewAPI/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		F8BD2F441B1470660096573E /* Build configuration list for PBXProject "BebopPilotingNewAPI" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F8BD2F6A1B1470660096573E /* Debug */,
+				F8BD2F6B1B1470660096573E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		F8BD2F6C1B1470660096573E /* Build configuration list for PBXNativeTarget "BebopPilotingNewAPI" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F8BD2F6D1B1470660096573E /* Debug */,
+				F8BD2F6E1B1470660096573E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = F8BD2F411B1470660096573E /* Project object */;
+}

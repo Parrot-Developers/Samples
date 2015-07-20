@@ -29,6 +29,9 @@ This example enables you to **connect** to a Bebop, **send commands** to pilot i
 #### [RSPilotingNewAPI](https://github.com/ARDroneSDK3/Samples/tree/master/iOS/RSPilotingNewAPI)
 This example enables you to **discover** and **connect** to a RollingSpider and **send and receive commands** to pilot it and get its battery level.<br/> **It uses the new and simplified API (ARController)**
 
+#### [BebopPilotingNewAPI](https://github.com/ARDroneSDK3/Samples/tree/master/iOS/BebopPilotingNewAPI)
+This example enables you to **discover** and **connect** to a Bebop drone and **send and receive commands** to pilot it, get its battery level and display video stream.<br/> **It uses the new and simplified API (ARController)**
+
 #### [RollingSpiderPiloting](https://github.com/ARDroneSDK3/Samples/tree/master/iOS/RollingSpiderPiloting)
 This example enables you to **discover** and **connect** to a RollingSpider and **send and receive commands** to pilot it and get its battery level.
 
