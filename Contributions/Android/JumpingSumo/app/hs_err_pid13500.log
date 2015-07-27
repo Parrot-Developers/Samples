@@ -1,0 +1,126 @@
+#
+# There is insufficient memory for the Java Runtime Environment to continue.
+# Native memory allocation (malloc) failed to allocate 82837504 bytes for committing reserved memory.
+# Possible reasons:
+#   The system is out of physical RAM or swap space
+#   In 32 bit mode, the process size limit was hit
+# Possible solutions:
+#   Reduce memory load on the system
+#   Increase physical memory or swap space
+#   Check if swap backing store is full
+#   Use 64 bit Java on a 64 bit OS
+#   Decrease Java heap size (-Xmx/-Xms)
+#   Decrease number of Java threads
+#   Decrease Java thread stack sizes (-Xss)
+#   Set larger code cache with -XX:ReservedCodeCacheSize=
+# This output file may be truncated or incomplete.
+#
+#  Out of Memory Error (os_linux.cpp:2809), pid=13500, tid=139704827029248
+#
+# JRE version: OpenJDK Runtime Environment (7.0_79-b14) (build 1.7.0_79-b14)
+# Java VM: OpenJDK 64-Bit Server VM (24.79-b02 mixed mode linux-amd64 compressed oops)
+# Derivative: IcedTea 2.5.5
+# Distribution: Ubuntu 14.04 LTS, package 7u79-2.5.5-0ubuntu0.14.04.2
+# Failed to write core dump. Core dumps have been disabled. To enable core dumping, try "ulimit -c unlimited" before starting Java again
+#
+
+---------------  T H R E A D  ---------------
+
+Current thread (0x00007f0fa4076800):  VMThread [stack: 0x00007f0f9086a000,0x00007f0f9096b000] [id=13511]
+
+Stack: [0x00007f0f9086a000,0x00007f0f9096b000],  sp=0x00007f0f90969490,  free space=1021k
+Native frames: (J=compiled Java code, j=interpreted, Vv=VM code, C=native code)
+V  [libjvm.so+0x94aec5]  VMError::report_and_die()+0x175
+V  [libjvm.so+0x48b9c4]  report_vm_out_of_memory(char const*, int, unsigned long, char const*)+0x74
+V  [libjvm.so+0x7c806b]  os::pd_commit_memory(char*, unsigned long, unsigned long, bool)+0xeb
+V  [libjvm.so+0x7c2b0f]  os::commit_memory(char*, unsigned long, unsigned long, bool)+0x1f
+V  [libjvm.so+0x83500b]  PSVirtualSpace::expand_by(unsigned long)+0x5b
+V  [libjvm.so+0x835e60]  PSYoungGen::resize_generation(unsigned long, unsigned long)+0xb0
+V  [libjvm.so+0x83654b]  PSYoungGen::resize(unsigned long, unsigned long)+0x1b
+V  [libjvm.so+0x832830]  PSScavenge::invoke_no_policy()+0xde0
+V  [libjvm.so+0x833008]  PSScavenge::invoke()+0x38
+V  [libjvm.so+0x7e96f3]  ParallelScavengeHeap::failed_mem_allocate(unsigned long)+0x63
+V  [libjvm.so+0x94c8c4]  VM_ParallelGCFailedAllocation::doit()+0x84
+V  [libjvm.so+0x950dc7]  VM_Operation::evaluate()+0x47
+V  [libjvm.so+0x94f738]  VMThread::evaluate_operation(VM_Operation*)+0x318
+V  [libjvm.so+0x94fb99]  VMThread::loop()+0x219
+V  [libjvm.so+0x94ffe2]  VMThread::run()+0x72
+V  [libjvm.so+0x7c4f32]  java_start(Thread*)+0xf2
+
+VM_Operation (0x00007f0fab075310): ParallelGCFailedAllocation, mode: safepoint, requested by thread 0x00007f0fa400b000
+
+
+---------------  P R O C E S S  ---------------
+
+Java Threads: ( => current thread )
+  0x00007f0fa40b0000 JavaThread "Service Thread" daemon [_thread_blocked, id=13517, stack(0x00007f0f90264000,0x00007f0f90365000)]
+  0x00007f0fa40ae000 JavaThread "C2 CompilerThread1" daemon [_thread_in_native, id=13516, stack(0x00007f0f90365000,0x00007f0f90466000)]
+  0x00007f0fa40ab000 JavaThread "C2 CompilerThread0" daemon [_thread_blocked, id=13515, stack(0x00007f0f90466000,0x00007f0f90567000)]
+  0x00007f0fa40a9000 JavaThread "Signal Dispatcher" daemon [_thread_blocked, id=13514, stack(0x00007f0f90567000,0x00007f0f90668000)]
+  0x00007f0fa407d000 JavaThread "Finalizer" daemon [_thread_blocked, id=13513, stack(0x00007f0f90668000,0x00007f0f90769000)]
+  0x00007f0fa407b000 JavaThread "Reference Handler" daemon [_thread_blocked, id=13512, stack(0x00007f0f90769000,0x00007f0f9086a000)]
+  0x00007f0fa400b000 JavaThread "main" [_thread_blocked, id=13506, stack(0x00007f0faaf76000,0x00007f0fab077000)]
+
+Other Threads:
+=>0x00007f0fa4076800 VMThread [stack: 0x00007f0f9086a000,0x00007f0f9096b000] [id=13511]
+  0x00007f0fa40bb000 WatcherThread [stack: 0x00007f0f90163000,0x00007f0f90264000] [id=13518]
+
+VM state:at safepoint (normal execution)
+
+VM Mutex/Monitor currently owned by a thread:  ([mutex/lock_event])
+[0x00007f0fa40077f0] Threads_lock - owner thread: 0x00007f0fa4076800
+[0x00007f0fa4007cf0] Heap_lock - owner thread: 0x00007f0fa400b000
+
+Heap
+ PSYoungGen      total 66048K, used 2554K [0x00000000eaa80000, 0x00000000eed80000, 0x0000000100000000)
+  eden space 63488K, 0% used [0x00000000eaa80000,0x00000000eaa80000,0x00000000ee880000)
+  from space 2560K, 99% used [0x00000000ee880000,0x00000000eeafe880,0x00000000eeb00000)
+  to   space 2560K, 0% used [0x00000000eeb00000,0x00000000eeb00000,0x00000000eed80000)
+ ParOldGen       total 41472K, used 23034K [0x00000000c0000000, 0x00000000c2880000, 0x00000000eaa80000)
+  object space 41472K, 55% used [0x00000000c0000000,0x00000000c167eac8,0x00000000c2880000)
+ PSPermGen       total 21504K, used 7071K [0x00000000b5a00000, 0x00000000b6f00000, 0x00000000c0000000)
+  object space 21504K, 32% used [0x00000000b5a00000,0x00000000b60e7c70,0x00000000b6f00000)
+
+Card table byte_map: [0x00007f0fa078b000,0x00007f0fa09df000] byte_map_base: 0x00007f0fa01de000
+
+Polling page: 0x00007f0fab0a5000
+
+Code Cache  [0x00007f0fa09df000, 0x00007f0fa0c4f000, 0x00007f0fa39df000)
+ total_blobs=681 nmethods=432 adapters=202 free_code_cache=47961Kb largest_free_block=49065280
+
+Compilation events (10 events):
+Event: 21,389 Thread 0x00007f0fa40ae000 nmethod 431 0x00007f0fa0afe610 code [0x00007f0fa0afe740, 0x00007f0fa0afe798]
+Event: 21,440 Thread 0x00007f0fa40ab000 nmethod 420 0x00007f0fa0afbc90 code [0x00007f0fa0afbe00, 0x00007f0fa0afc178]
+Event: 21,909 Thread 0x00007f0fa40ae000  433             com.android.dx.merge.SortableType::getTypeIndex (8 bytes)
+Event: 21,909 Thread 0x00007f0fa40ab000  434             com.android.dx.merge.SortableType$1::compare (13 bytes)
+Event: 24,094 Thread 0x00007f0fa40ab000 nmethod 434 0x00007f0fa0afc550 code [0x00007f0fa0afc6a0, 0x00007f0fa0afc7b8]
+Event: 24,393 Thread 0x00007f0fa40ae000 nmethod 433 0x00007f0fa0afe3d0 code [0x00007f0fa0afe500, 0x00007f0fa0afe578]
+Event: 24,403 Thread 0x00007f0fa40ab000  435             com.android.dx.merge.SortableType$1::compare (50 bytes)
+Event: 24,403 Thread 0x00007f0fa40ae000  436             com.android.dx.io.instructions.InstructionCodec$18::decode (51 bytes)
+Event: 93,106 Thread 0x00007f0fa40ab000 nmethod 435 0x00007f0fa0afe110 code [0x00007f0fa0afe260, 0x00007f0fa0afe318]
+Event: 96,776 Thread 0x00007f0fa40ab000  437             com.android.dx.io.instructions.InstructionCodec$18::encode (29 bytes)
+
+GC Heap History (9 events):
+Event: 1,217 GC heap before
+{Heap before GC invocations=1 (full 0):
+ PSYoungGen      total 18432K, used 15872K [0x00000000eaa80000, 0x00000000ebf00000, 0x0000000100000000)
+  eden space 15872K, 100% used [0x00000000eaa80000,0x00000000eba00000,0x00000000eba00000)
+  from space 2560K, 0% used [0x00000000ebc80000,0x00000000ebc80000,0x00000000ebf00000)
+  to   space 2560K, 0% used [0x00000000eba00000,0x00000000eba00000,0x00000000ebc80000)
+ ParOldGen       total 41472K, used 0K [0x00000000c0000000, 0x00000000c2880000, 0x00000000eaa80000)
+  object space 41472K, 0% used [0x00000000c0000000,0x00000000c0000000,0x00000000c2880000)
+ PSPermGen       total 21504K, used 5150K [0x00000000b5a00000, 0x00000000b6f00000, 0x00000000c0000000)
+  object space 21504K, 23% used [0x00000000b5a00000,0x00000000b5f07828,0x00000000b6f00000)
+Event: 1,255 GC heap after
+Heap after GC invocations=1 (full 0):
+ PSYoungGen      total 18432K, used 2555K [0x00000000eaa80000, 0x00000000ece80000, 0x0000000100000000)
+  eden space 15872K, 0% used [0x00000000eaa80000,0x00000000eaa80000,0x00000000eba00000)
+  from space 2560K, 99% used [0x00000000eba00000,0x00000000ebc7ec48,0x00000000ebc80000)
+  to   space 2560K, 0% used [0x00000000ecc00000,0x00000000ecc00000,0x00000000ece80000)
+ ParOldGen       total 41472K, used 1329K [0x00000000c0000000, 0x00000000c2880000, 0x00000000eaa80000)
+  object space 41472K, 3% used [0x00000000c0000000,0x00000000c014c748,0x00000000c2880000)
+ PSPermGen       total 21504K, used 5150K [0x00000000b5a00000, 0x00000000b6f00000, 0x00000000c0000000)
+  object space 21504K, 23% used [0x00000000b5a00000,0x00000000b5f07828,0x00000000b6f00000)
+}
+Event: 4,491 GC heap before
+{Heap before GC invocations=2 

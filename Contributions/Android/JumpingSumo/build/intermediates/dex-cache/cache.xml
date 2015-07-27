@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<items version="2" >
+
+    <item
+        jar="/home/nguyenquockhai/workspace/android/JumpingSumo/app/libs/libARSAL.jar"
+        jumboMode="false"
+        revision="21.1.1"
+        sha1="aad36ca3f945a4c31d70aba75d63665ff9f896b6">
+        <dex dex="/home/nguyenquockhai/workspace/android/JumpingSumo/app/build/intermediates/pre-dexed/release/libARSAL-973a3572ace2711c34732ad7d49859bf9496755c.jar" />
+    </item>
+    <item
+        jar="/home/nguyenquockhai/workspace/android/JumpingSumo/app/build/intermediates/exploded-aar/com.android.support/support-v4/21.0.3/jars/libs/internal_impl-21.0.3.jar"
+        jumboMode="false"
+        revision="21.1.1"
+        sha1="01ec05bfbafcc07646ba813000bf2ef11742dd03">
+        <dex dex="/home/nguyenquockhai/workspace/android/JumpingSumo/app/build/intermediates/pre-dexed/release/internal_impl-21.0.3-ed1dbddcaadbbf3075fd8255998ae45381ff984f.jar" />
+    </item>
+    <item
+        jar="/home/nguyenquockhai/workspace/android/JumpingSumo/app/libs/jmdns.jar"
+        jumboMode="false"
+        revision="21.1.1"
+        sha1="d914a5266e692bd454a23b400281371f6747261e">
+        <dex dex="/home/nguyenquockhai/workspace/android/JumpingSumo/app/build/intermediates/pre-dexed/release/jmdns-8073b59e525fc6cb54cc78217fbbcf59c241c755.jar" />
+    </item>
+    <item
+        jar="/home/nguyenquockhai/workspace/android/JumpingSumo/app/libs/libARNetwork.jar"
+        jumboMode="false"
+        revision="21.1.1"
+        sha1="0cfa55c5ed77bec09a50bc9d828c2392b24d41b4">
+        <dex dex="/home/nguyenquockhai/workspace/android/JumpingSumo/app/build/intermediates/pre-dexed/release/libARNetwork-3afe91963808606a785e00dcd15aefbd11cf729a.jar" />
+    </item>
+    <item
+        jar="/home/nguyenquockhai/workspace/android/JumpingSumo/app/libs/libARNetworkAL.jar"
+        jumboMode="false"
+        revision="21.1.1"
+        sha1="3dbbeb087402d9a9221985795701649959472629">
+        <dex dex="/home/nguyenquockhai/workspace/android/JumpingSumo/app/build/intermediates/pre-dexed/release/libARNetworkAL-897dc7d7590452cb6e45e770d2ddcb8ff08622a3.jar" />
+    </item>
+    <item
+        jar="/home/nguyenquockhai/workspace/android/JumpingSumo/app/libs/libARController.jar"
+        jumboMode="false"
+        revision="21.1.1"
+        sha1="84e0c2add7744408262a9b365e336288f32e3a36">
+        <dex dex="/home/nguyenquockhai/workspace/android/JumpingSumo/app/build/intermediates/pre-dexed/release/libARController-9437fb1279335074c0c5037e19e5735ce146ae7a.jar" />
+    </item>
+    <item
+        jar="/home/nguyenquockhai/workspace/android/JumpingSumo/app/libs/libARStream.jar"
+        jumboMode="false"
+        revision="21.1.1"
+        sha1="0d5f95d954d5dd4041673027c4508669ab505dc9">
+        <dex dex="/home/nguyenquockhai/workspace/android/JumpingSumo/app/build/intermediates/pre-dexed/release/libARStream-726691c998613d2b5c99e74fc927defe3fd55b74.jar" />
+    </item>
+    <item
+        jar="/home/nguyenquockhai/workspace/android/JumpingSumo/app/build/intermediates/exploded-aar/com.android.support/appcompat-v7/21.0.3/jars/classes.jar"
+        jumboMode="false"
+        revision="21.1.1"
+        sha1="81d42bf983a8741f4888a6e333e454e4a5e0eeb7">
+        <dex dex="/home/nguyenquockhai/workspace/android/JumpingSumo/app/build/intermediates/pre-dexed/release/classes-18b7579685bdf856b9cec3adfa45604c819ea3ef.jar" />
+    </item>
+    <item
+        jar="/home/nguyenquockhai/workspace/android/JumpingSumo/app/libs/libjson.jar"
+        jumboMode="false"
+        revision="21.1.1"
+        sha1="31875ee6ebf28fb547cea413c9b8e88c10f67ca0">
+        <dex dex="/home/nguyenquockhai/workspace/android/JumpingSumo/app/build/intermediates/pre-dexed/release/libjson-14f8b542a5601ff534b077a88573daa5047609cf.jar" />
+    </item>
+    <item
+        jar="/home/nguyenquockhai/android-sdk/extras/android/m2repository/com/android/support/support-annotations/21.0.3/support-annotations-21.0.3.jar"
+        jumboMode="false"
+        revision="21.1.1"
+        sha1="4b74cefe1f0c1b819e7260c8627a14674e37fd35">
+        <dex dex="/home/nguyenquockhai/workspace/android/JumpingSumo/app/build/intermediates/pre-dexed/release/support-annotations-21.0.3-6beb32aa00a4eb4e750f744599d6a7c7581607f4.jar" />
+    </item>
+    <item
+        jar="/home/nguyenquockhai/workspace/android/JumpingSumo/app/build/intermediates/exploded-aar/com.android.support/support-v4/21.0.3/jars/classes.jar"
+        jumboMode="false"
+        revision="21.1.1"
+        sha1="2c91c949a45a21cdecf26e03951e46c7beec9ad8">
+        <dex dex="/home/nguyenquockhai/workspace/android/JumpingSumo/app/build/intermediates/pre-dexed/release/classes-fbd183c1787d3b30b0fa47cdf5f5534eedec29f0.jar" />
+    </item>
+    <item
+        jar="/home/nguyenquockhai/workspace/android/JumpingSumo/app/libs/libARCommands.jar"
+        jumboMode="false"
+        revision="21.1.1"
+        sha1="b3a3c2b1519402e6bbf1ecaf5d770ee319342fcb">
+        <dex dex="/home/nguyenquockhai/workspace/android/JumpingSumo/app/build/intermediates/pre-dexed/release/libARCommands-63e4d6270f3d292a07d569c002bb5ecf201485b8.jar" />
+    </item>
+    <item
+        jar="/home/nguyenquockhai/workspace/android/JumpingSumo/app/libs/libARDiscovery.jar"
+        jumboMode="false"
+        revision="21.1.1"
+        sha1="ef7f0dc42207ddd6e09ca1d1f309619c3fe2bad1">
+        <dex dex="/home/nguyenquockhai/workspace/android/JumpingSumo/app/build/intermediates/pre-dexed/release/libARDiscovery-a2df0b69db14c41321f9ba328348aba6835f29c3.jar" />
+    </item>
+
+</items>

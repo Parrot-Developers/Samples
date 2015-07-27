@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="libARSAL">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/app/libs/libARSAL.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
