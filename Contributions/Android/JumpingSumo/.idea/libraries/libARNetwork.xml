@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="libARNetwork">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/app/libs/libARNetwork.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
