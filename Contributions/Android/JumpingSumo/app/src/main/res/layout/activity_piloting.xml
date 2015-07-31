@@ -1,0 +1,105 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent" android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:paddingBottom="@dimen/activity_vertical_margin" tools:context=".PilotingActivity"
+    android:id="@+id/piloting_view">
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="fitXY"
+        android:id="@+id/imageView" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="Battery: "
+        android:id="@+id/textView"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:textColor="#ff0000" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="XXX%"
+        android:id="@+id/batteryLabel"
+        android:layout_alignParentTop="true"
+        android:layout_toRightOf="@+id/textView"
+        android:layout_toEndOf="@+id/textView"
+        android:textColor="#ff0000" />
+
+    <Button
+        android:layout_width="75dp"
+        android:layout_height="wrap_content"
+        android:text="right"
+        android:id="@+id/turnRightBt"
+        android:layout_centerVertical="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="false"/>
+
+    <Button
+        android:layout_width="75dp"
+        android:layout_height="wrap_content"
+        android:text="left"
+        android:id="@+id/turnLeftBt"
+        android:layout_toLeftOf="@+id/textTurn"
+        android:layout_alignBaseline="@+id/turnRightBt"/>
+
+
+    <TextView
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="Turn"
+        android:id="@+id/textTurn"
+        android:width="50dp"
+        android:textAlignment="center"
+        android:gravity="center_horizontal"
+        android:layout_centerVertical="true"
+        android:layout_toLeftOf="@+id/turnRightBt"
+        android:layout_alignBaseline="@id/turnRightBt"/>
+
+
+    <Button
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:text="back"
+        android:id="@+id/backBt"
+        android:layout_centerVertical="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentBottom="true"
+        android:width="100dp"/>
+
+    <Button
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:text="forward"
+        android:id="@+id/forwardBt"
+        android:layout_above="@+id/backBt"
+        android:layout_alignParentLeft="true"
+        android:width="100dp"/>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Jum-Hight"
+        android:id="@+id/jumHightBt"
+        android:layout_toRightOf="@+id/forwardBt"
+        android:layout_alignBaseline="@id/forwardBt" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Jum-Long"
+        android:id="@+id/jumLongBt"
+        android:layout_toRightOf="@+id/backBt"
+        android:layout_alignBaseline="@id/backBt" />
+
+</RelativeLayout>

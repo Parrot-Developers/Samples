@@ -1,0 +1,12 @@
+==================
+Purpose of JumpingSumo
+==================
+
+This sample shows how to send and receive commands to communicate with a Jumping Sumo mini drone on an Android device, **using the ARController API**.
+
+This example enables you to **discover** and **connect** to a JS and **send and receive commands** to pilot it and get its battery level.
+
+In addition, this example show you how to display Jpeg frames on Android by simple methode. For more performan, you should use other methode such as SurfaceView that is suggested by Google for interaction.
+
+These sample sources are an Android gradle project building for Android devices.
+
