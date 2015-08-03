@@ -9,3 +9,7 @@ Author : Sean Weaver <weaversa@gmail.com>
 OSX/RollingSpiderOK
 ----------------------
 Author : Sean Weaver <weaversa@gmail.com>
+
+Android/JumpingSumo
+----------------------
+Author : nguyenquockhai <nqkhai1706@gmail.com>
