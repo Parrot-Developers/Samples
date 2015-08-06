@@ -22,6 +22,7 @@ import com.parrot.arsdk.ardiscovery.ARDiscoveryService;
 import com.parrot.arsdk.ardiscovery.receivers.ARDiscoveryServicesDevicesListUpdatedReceiver;
 import com.parrot.arsdk.ardiscovery.receivers.ARDiscoveryServicesDevicesListUpdatedReceiverDelegate;
 import com.parrot.arsdk.arsal.ARSALPrint;
+import com.parrot.arsdk.arsal.ARSAL_PRINT_LEVEL_ENUM;
 import com.parrot.bebopdronepiloting.R;
 
 import java.util.ArrayList;
@@ -47,7 +48,7 @@ public class MainActivity extends ActionBarActivity implements ARDiscoveryServic
             System.loadLibrary("ardiscovery");
             System.loadLibrary("ardiscovery_android");
 
-            ARSALPrint.enableDebugPrints();
+            ARSALPrint.setMinimumLogLevel(ARSAL_PRINT_LEVEL_ENUM.ARSAL_PRINT_INFO);
 
         }
         catch (Exception e)

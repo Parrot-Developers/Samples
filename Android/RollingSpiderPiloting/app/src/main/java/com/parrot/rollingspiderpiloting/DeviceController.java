@@ -356,7 +356,7 @@ public class DeviceController implements ARCommandCommonCommonStateBatteryStateC
         boolean sentStatus = true;
         ARCommand cmd = new ARCommand();
 
-        cmdError = cmd.setMiniDronePilotingPCMD (dataPCMD.flag, dataPCMD.roll, dataPCMD.pitch, dataPCMD.yaw, dataPCMD.gaz, dataPCMD.psi);
+        cmdError = cmd.setMiniDronePilotingPCMD (dataPCMD.flag, dataPCMD.roll, dataPCMD.pitch, dataPCMD.yaw, dataPCMD.gaz, dataPCMD.timestamp);
         if (cmdError == ARCOMMANDS_GENERATOR_ERROR_ENUM.ARCOMMANDS_GENERATOR_OK)
         {
             /* Send data with ARNetwork */
@@ -619,7 +619,7 @@ public class DeviceController implements ARCommandCommonCommonStateBatteryStateC
         public byte pitch;
         public byte yaw;
         public byte gaz;
-        public float psi;
+        public int timestamp;
 
         public DataPCMD ()
         {
@@ -628,7 +628,7 @@ public class DeviceController implements ARCommandCommonCommonStateBatteryStateC
             pitch = 0;
             yaw = 0;
             gaz = 0;
-            psi = 0.0f;
+            timestamp = 0;
         }
     }
 
