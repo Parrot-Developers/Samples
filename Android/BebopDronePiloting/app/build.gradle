@@ -1,12 +1,12 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 21
-    buildToolsVersion "21.1.1"
+    compileSdkVersion rootProject.ext.compileSdkVersion
+    buildToolsVersion rootProject.ext.buildToolsVersion
     defaultConfig {
         applicationId 'com.parrot.bebopsample'
-        minSdkVersion 15
-        targetSdkVersion 21
+        minSdkVersion rootProject.ext.minSdkVersion
+        targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
         versionName "1.0"
     }
@@ -18,9 +18,18 @@ android {
     }
     productFlavors {
     }
+    sourceSets {
+        main {
+            jniLibs.srcDirs = ['libs']
+        }
+    }
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile 'com.android.support:appcompat-v7:21.0.3'
+    compile rootProject.ext.androidSupportAppcompatVersion
+    compile project(':libARCommands')
+    compile project(':libARDiscovery')
+    compile project(':libARNetwork')
+    compile project(':libARNetworkAL')
+    compile project(':libARSAL')
 }
