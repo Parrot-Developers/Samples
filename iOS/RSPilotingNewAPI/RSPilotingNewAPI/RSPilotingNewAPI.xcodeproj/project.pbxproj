@@ -7,14 +7,14 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		F83CB5F91B14A1030072E8A9 /* libARCommands.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F8BD2F831B14722C0096573E /* libARCommands.framework */; };
-		F83CB5FA1B14A1030072E8A9 /* libARController.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F8BD2F761B1471820096573E /* libARController.framework */; };
-		F83CB5FB1B14A1030072E8A9 /* libARDiscovery.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F8BD2F781B1471930096573E /* libARDiscovery.framework */; };
-		F83CB5FC1B14A1230072E8A9 /* libARSAL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F8BD2F7D1B1472070096573E /* libARSAL.framework */; };
-		F83CB5FD1B14A1350072E8A9 /* libARStream.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F8BD2F7E1B1472070096573E /* libARStream.framework */; };
-		F83CB5FE1B14A1450072E8A9 /* json.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F8BD2F851B14725F0096573E /* json.framework */; };
-		F83CB5FF1B14A1570072E8A9 /* libARNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F8BD2F7B1B1472070096573E /* libARNetwork.framework */; };
-		F83CB6001B14A1570072E8A9 /* libARNetworkAL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F8BD2F7C1B1472070096573E /* libARNetworkAL.framework */; };
+		84CB94B61BB19F26003DF310 /* libarcommands.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 84CB94AE1BB19F26003DF310 /* libarcommands.a */; };
+		84CB94B71BB19F26003DF310 /* libarcontroller.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 84CB94AF1BB19F26003DF310 /* libarcontroller.a */; };
+		84CB94B81BB19F26003DF310 /* libardiscovery.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 84CB94B01BB19F26003DF310 /* libardiscovery.a */; };
+		84CB94B91BB19F26003DF310 /* libarnetwork.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 84CB94B11BB19F26003DF310 /* libarnetwork.a */; };
+		84CB94BA1BB19F26003DF310 /* libarnetworkal.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 84CB94B21BB19F26003DF310 /* libarnetworkal.a */; };
+		84CB94BB1BB19F26003DF310 /* libarsal.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 84CB94B31BB19F26003DF310 /* libarsal.a */; };
+		84CB94BC1BB19F26003DF310 /* libarstream.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 84CB94B41BB19F26003DF310 /* libarstream.a */; };
+		84CB94BD1BB19F26003DF310 /* libjson.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 84CB94B51BB19F26003DF310 /* libjson.a */; };
 		F8BD2F4F1B1470660096573E /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = F8BD2F4E1B1470660096573E /* main.m */; };
 		F8BD2F521B1470660096573E /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = F8BD2F511B1470660096573E /* AppDelegate.m */; };
 		F8BD2F551B1470660096573E /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F8BD2F541B1470660096573E /* ViewController.m */; };
@@ -25,6 +25,14 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		84CB94AE1BB19F26003DF310 /* libarcommands.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libarcommands.a; path = "../../../../../out/iOS-arm/staging/usr/lib/libarcommands.a"; sourceTree = "<group>"; };
+		84CB94AF1BB19F26003DF310 /* libarcontroller.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libarcontroller.a; path = "../../../../../out/iOS-arm/staging/usr/lib/libarcontroller.a"; sourceTree = "<group>"; };
+		84CB94B01BB19F26003DF310 /* libardiscovery.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libardiscovery.a; path = "../../../../../out/iOS-arm/staging/usr/lib/libardiscovery.a"; sourceTree = "<group>"; };
+		84CB94B11BB19F26003DF310 /* libarnetwork.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libarnetwork.a; path = "../../../../../out/iOS-arm/staging/usr/lib/libarnetwork.a"; sourceTree = "<group>"; };
+		84CB94B21BB19F26003DF310 /* libarnetworkal.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libarnetworkal.a; path = "../../../../../out/iOS-arm/staging/usr/lib/libarnetworkal.a"; sourceTree = "<group>"; };
+		84CB94B31BB19F26003DF310 /* libarsal.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libarsal.a; path = "../../../../../out/iOS-arm/staging/usr/lib/libarsal.a"; sourceTree = "<group>"; };
+		84CB94B41BB19F26003DF310 /* libarstream.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libarstream.a; path = "../../../../../out/iOS-arm/staging/usr/lib/libarstream.a"; sourceTree = "<group>"; };
+		84CB94B51BB19F26003DF310 /* libjson.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libjson.a; path = "../../../../../out/iOS-arm/staging/usr/lib/libjson.a"; sourceTree = "<group>"; };
 		F8BD2F491B1470660096573E /* RSPilotingNewAPI.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RSPilotingNewAPI.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F8BD2F4D1B1470660096573E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		F8BD2F4E1B1470660096573E /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
@@ -37,14 +45,6 @@
 		F8BD2F5C1B1470660096573E /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
 		F8BD2F721B1471160096573E /* PilotingViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PilotingViewController.h; sourceTree = "<group>"; };
 		F8BD2F731B1471160096573E /* PilotingViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PilotingViewController.m; sourceTree = "<group>"; };
-		F8BD2F761B1471820096573E /* libARController.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = libARController.framework; path = ../../../../ARSDKBuildUtils/Targets/iOS/Install/Frameworks/libARController.framework; sourceTree = "<group>"; };
-		F8BD2F781B1471930096573E /* libARDiscovery.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = libARDiscovery.framework; path = ../../../../ARSDKBuildUtils/Targets/iOS/Install/Frameworks/libARDiscovery.framework; sourceTree = "<group>"; };
-		F8BD2F7B1B1472070096573E /* libARNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = libARNetwork.framework; path = ../../../../ARSDKBuildUtils/Targets/iOS/Install/Frameworks/libARNetwork.framework; sourceTree = "<group>"; };
-		F8BD2F7C1B1472070096573E /* libARNetworkAL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = libARNetworkAL.framework; path = ../../../../ARSDKBuildUtils/Targets/iOS/Install/Frameworks/libARNetworkAL.framework; sourceTree = "<group>"; };
-		F8BD2F7D1B1472070096573E /* libARSAL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = libARSAL.framework; path = ../../../../ARSDKBuildUtils/Targets/iOS/Install/Frameworks/libARSAL.framework; sourceTree = "<group>"; };
-		F8BD2F7E1B1472070096573E /* libARStream.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = libARStream.framework; path = ../../../../ARSDKBuildUtils/Targets/iOS/Install/Frameworks/libARStream.framework; sourceTree = "<group>"; };
-		F8BD2F831B14722C0096573E /* libARCommands.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = libARCommands.framework; path = ../../../../ARSDKBuildUtils/Targets/iOS/Install/Frameworks/libARCommands.framework; sourceTree = "<group>"; };
-		F8BD2F851B14725F0096573E /* json.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = json.framework; path = ../../../../ARSDKBuildUtils/Targets/iOS/Install/Frameworks/json.framework; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -52,14 +52,14 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F83CB5FF1B14A1570072E8A9 /* libARNetwork.framework in Frameworks */,
-				F83CB6001B14A1570072E8A9 /* libARNetworkAL.framework in Frameworks */,
-				F83CB5FE1B14A1450072E8A9 /* json.framework in Frameworks */,
-				F83CB5FD1B14A1350072E8A9 /* libARStream.framework in Frameworks */,
-				F83CB5FC1B14A1230072E8A9 /* libARSAL.framework in Frameworks */,
-				F83CB5F91B14A1030072E8A9 /* libARCommands.framework in Frameworks */,
-				F83CB5FA1B14A1030072E8A9 /* libARController.framework in Frameworks */,
-				F83CB5FB1B14A1030072E8A9 /* libARDiscovery.framework in Frameworks */,
+				84CB94B61BB19F26003DF310 /* libarcommands.a in Frameworks */,
+				84CB94B71BB19F26003DF310 /* libarcontroller.a in Frameworks */,
+				84CB94B81BB19F26003DF310 /* libardiscovery.a in Frameworks */,
+				84CB94B91BB19F26003DF310 /* libarnetwork.a in Frameworks */,
+				84CB94BA1BB19F26003DF310 /* libarnetworkal.a in Frameworks */,
+				84CB94BB1BB19F26003DF310 /* libarsal.a in Frameworks */,
+				84CB94BC1BB19F26003DF310 /* libarstream.a in Frameworks */,
+				84CB94BD1BB19F26003DF310 /* libjson.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -112,14 +112,14 @@
 		F8BD2F7A1B1471B70096573E /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				F8BD2F851B14725F0096573E /* json.framework */,
-				F8BD2F831B14722C0096573E /* libARCommands.framework */,
-				F8BD2F7B1B1472070096573E /* libARNetwork.framework */,
-				F8BD2F7C1B1472070096573E /* libARNetworkAL.framework */,
-				F8BD2F7D1B1472070096573E /* libARSAL.framework */,
-				F8BD2F7E1B1472070096573E /* libARStream.framework */,
-				F8BD2F781B1471930096573E /* libARDiscovery.framework */,
-				F8BD2F761B1471820096573E /* libARController.framework */,
+				84CB94AE1BB19F26003DF310 /* libarcommands.a */,
+				84CB94AF1BB19F26003DF310 /* libarcontroller.a */,
+				84CB94B01BB19F26003DF310 /* libardiscovery.a */,
+				84CB94B11BB19F26003DF310 /* libarnetwork.a */,
+				84CB94B21BB19F26003DF310 /* libarnetworkal.a */,
+				84CB94B31BB19F26003DF310 /* libarsal.a */,
+				84CB94B41BB19F26003DF310 /* libarstream.a */,
+				84CB94B51BB19F26003DF310 /* libjson.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -310,12 +310,19 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ENABLE_BITCODE = NO;
-				FRAMEWORK_SEARCH_PATHS = (
+				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
+				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(SRCROOT)/../../../../ARSDKBuildUtils/Targets/iOS/Install/Frameworks",
+					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+					"$(SRCROOT)/../../../../../out/iOS-arm/staging/usr/include",
 				);
 				INFOPLIST_FILE = RSPilotingNewAPI/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(SRCROOT)/../../../../../out/iOS-arm/staging/usr/lib",
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
@@ -325,12 +332,19 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ENABLE_BITCODE = NO;
-				FRAMEWORK_SEARCH_PATHS = (
+				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
+				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(SRCROOT)/../../../../ARSDKBuildUtils/Targets/iOS/Install/Frameworks",
+					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+					"$(SRCROOT)/../../../../../out/iOS-arm/staging/usr/include",
 				);
 				INFOPLIST_FILE = RSPilotingNewAPI/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(SRCROOT)/../../../../../out/iOS-arm/staging/usr/lib",
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;
