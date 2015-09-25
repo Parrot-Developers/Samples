@@ -7,14 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		847CBB981BB195D80083E8F8 /* libarcommands.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 847CBB901BB195D80083E8F8 /* libarcommands.a */; };
-		847CBB991BB195D80083E8F8 /* libarcontroller.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 847CBB911BB195D80083E8F8 /* libarcontroller.a */; };
-		847CBB9A1BB195D80083E8F8 /* libardiscovery.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 847CBB921BB195D80083E8F8 /* libardiscovery.a */; };
-		847CBB9B1BB195D80083E8F8 /* libarnetwork.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 847CBB931BB195D80083E8F8 /* libarnetwork.a */; };
-		847CBB9C1BB195D80083E8F8 /* libarnetworkal.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 847CBB941BB195D80083E8F8 /* libarnetworkal.a */; };
-		847CBB9D1BB195D80083E8F8 /* libarsal.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 847CBB951BB195D80083E8F8 /* libarsal.a */; };
-		847CBB9E1BB195D80083E8F8 /* libarstream.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 847CBB961BB195D80083E8F8 /* libarstream.a */; };
-		847CBB9F1BB195D80083E8F8 /* libjson.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 847CBB971BB195D80083E8F8 /* libjson.a */; };
 		F86C1C4C1B5D18FE0085B48E /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = F86C1C4B1B5D18FE0085B48E /* AppDelegate.m */; };
 		F86C1C561B5D19100085B48E /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F86C1C4F1B5D19100085B48E /* Images.xcassets */; };
 		F86C1C571B5D19100085B48E /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = F86C1C501B5D19100085B48E /* Info.plist */; };
@@ -29,14 +21,6 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		847CBB901BB195D80083E8F8 /* libarcommands.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libarcommands.a; path = "../../../../../out/iOS-arm/staging/usr/lib/libarcommands.a"; sourceTree = "<group>"; };
-		847CBB911BB195D80083E8F8 /* libarcontroller.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libarcontroller.a; path = "../../../../../out/iOS-arm/staging/usr/lib/libarcontroller.a"; sourceTree = "<group>"; };
-		847CBB921BB195D80083E8F8 /* libardiscovery.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libardiscovery.a; path = "../../../../../out/iOS-arm/staging/usr/lib/libardiscovery.a"; sourceTree = "<group>"; };
-		847CBB931BB195D80083E8F8 /* libarnetwork.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libarnetwork.a; path = "../../../../../out/iOS-arm/staging/usr/lib/libarnetwork.a"; sourceTree = "<group>"; };
-		847CBB941BB195D80083E8F8 /* libarnetworkal.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libarnetworkal.a; path = "../../../../../out/iOS-arm/staging/usr/lib/libarnetworkal.a"; sourceTree = "<group>"; };
-		847CBB951BB195D80083E8F8 /* libarsal.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libarsal.a; path = "../../../../../out/iOS-arm/staging/usr/lib/libarsal.a"; sourceTree = "<group>"; };
-		847CBB961BB195D80083E8F8 /* libarstream.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libarstream.a; path = "../../../../../out/iOS-arm/staging/usr/lib/libarstream.a"; sourceTree = "<group>"; };
-		847CBB971BB195D80083E8F8 /* libjson.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libjson.a; path = "../../../../../out/iOS-arm/staging/usr/lib/libjson.a"; sourceTree = "<group>"; };
 		F86C1C4A1B5D18FE0085B48E /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppDelegate.h; path = BebopPilotingNewAPI/AppDelegate.h; sourceTree = "<group>"; };
 		F86C1C4B1B5D18FE0085B48E /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AppDelegate.m; path = BebopPilotingNewAPI/AppDelegate.m; sourceTree = "<group>"; };
 		F86C1C4F1B5D19100085B48E /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = BebopPilotingNewAPI/Images.xcassets; sourceTree = "<group>"; };
@@ -60,14 +44,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				847CBB981BB195D80083E8F8 /* libarcommands.a in Frameworks */,
-				847CBB991BB195D80083E8F8 /* libarcontroller.a in Frameworks */,
-				847CBB9A1BB195D80083E8F8 /* libardiscovery.a in Frameworks */,
-				847CBB9B1BB195D80083E8F8 /* libarnetwork.a in Frameworks */,
-				847CBB9C1BB195D80083E8F8 /* libarnetworkal.a in Frameworks */,
-				847CBB9D1BB195D80083E8F8 /* libarsal.a in Frameworks */,
-				847CBB9E1BB195D80083E8F8 /* libarstream.a in Frameworks */,
-				847CBB9F1BB195D80083E8F8 /* libjson.a in Frameworks */,
 				F86C1C681B5D218A0085B48E /* AVFoundation.framework in Frameworks */,
 				F86C1C661B5D21840085B48E /* VideoToolbox.framework in Frameworks */,
 			);
@@ -116,14 +92,6 @@
 		F8BD2F7A1B1471B70096573E /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				847CBB901BB195D80083E8F8 /* libarcommands.a */,
-				847CBB911BB195D80083E8F8 /* libarcontroller.a */,
-				847CBB921BB195D80083E8F8 /* libardiscovery.a */,
-				847CBB931BB195D80083E8F8 /* libarnetwork.a */,
-				847CBB941BB195D80083E8F8 /* libarnetworkal.a */,
-				847CBB951BB195D80083E8F8 /* libarsal.a */,
-				847CBB961BB195D80083E8F8 /* libarstream.a */,
-				847CBB971BB195D80083E8F8 /* libjson.a */,
 				F86C1C671B5D218A0085B48E /* AVFoundation.framework */,
 				F86C1C651B5D21840085B48E /* VideoToolbox.framework */,
 			);
@@ -311,16 +279,37 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
-				HEADER_SEARCH_PATHS = (
+				HEADER_SEARCH_PATHS = "";
+				"HEADER_SEARCH_PATHS[sdk=iphoneos*]" = (
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
-					"$(SRCROOT)/../../../../../out/iOS-arm/staging/usr/include",
+					"$(SRCROOT)/../../../../../out/iOS-iphoneos/staging/usr/include",
+				);
+				"HEADER_SEARCH_PATHS[sdk=iphonesimulator*]" = (
+					"$(inherited)",
+					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+					"$(SRCROOT)/../../../../../out/iOS-iphonesimulator/staging/usr/include",
 				);
 				INFOPLIST_FILE = BebopPilotingNewAPI/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				LIBRARY_SEARCH_PATHS = (
+				LIBRARY_SEARCH_PATHS = "";
+				"LIBRARY_SEARCH_PATHS[sdk=iphoneos*]" = (
 					"$(inherited)",
-					"$(SRCROOT)/../../../../../out/iOS-arm/staging/usr/lib",
+					"$(SRCROOT)/../../../../../out/iOS-iphoneos/staging/usr/lib",
+				);
+				"LIBRARY_SEARCH_PATHS[sdk=iphonesimulator*]" = (
+					"$(inherited)",
+					"$(SRCROOT)/../../../../../out/iOS-iphonesimulator/staging/usr/lib",
+				);
+				OTHER_LDFLAGS = (
+					"-larcommands",
+					"-larcontroller",
+					"-lardiscovery",
+					"-larnetwork",
+					"-larnetworkal",
+					"-larsal",
+					"-larstream",
+					"-ljson",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -332,16 +321,37 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
-				HEADER_SEARCH_PATHS = (
+				HEADER_SEARCH_PATHS = "";
+				"HEADER_SEARCH_PATHS[sdk=iphoneos*]" = (
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
-					"$(SRCROOT)/../../../../../out/iOS-arm/staging/usr/include",
+					"$(SRCROOT)/../../../../../out/iOS-iphoneos/staging/usr/include",
+				);
+				"HEADER_SEARCH_PATHS[sdk=iphonesimulator*]" = (
+					"$(inherited)",
+					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+					"$(SRCROOT)/../../../../../out/iOS-iphonesimulator/staging/usr/include",
 				);
 				INFOPLIST_FILE = BebopPilotingNewAPI/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				LIBRARY_SEARCH_PATHS = (
+				LIBRARY_SEARCH_PATHS = "";
+				"LIBRARY_SEARCH_PATHS[sdk=iphoneos*]" = (
 					"$(inherited)",
-					"$(SRCROOT)/../../../../../out/iOS-arm/staging/usr/lib",
+					"$(SRCROOT)/../../../../../out/iOS-iphoneos/staging/usr/lib",
+				);
+				"LIBRARY_SEARCH_PATHS[sdk=iphonesimulator*]" = (
+					"$(inherited)",
+					"$(SRCROOT)/../../../../../out/iOS-iphonesimulator/staging/usr/lib",
+				);
+				OTHER_LDFLAGS = (
+					"-larcommands",
+					"-larcontroller",
+					"-lardiscovery",
+					"-larnetwork",
+					"-larnetworkal",
+					"-larsal",
+					"-larstream",
+					"-ljson",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};

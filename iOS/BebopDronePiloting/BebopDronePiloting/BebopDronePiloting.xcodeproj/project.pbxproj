@@ -7,11 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		846758F01BB191F300B043C9 /* libarcommands.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 846758EB1BB191F300B043C9 /* libarcommands.a */; };
-		846758F11BB191F300B043C9 /* libardiscovery.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 846758EC1BB191F300B043C9 /* libardiscovery.a */; };
-		846758F21BB191F300B043C9 /* libarnetwork.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 846758ED1BB191F300B043C9 /* libarnetwork.a */; };
-		846758F31BB191F300B043C9 /* libarnetworkal.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 846758EE1BB191F300B043C9 /* libarnetworkal.a */; };
-		846758F41BB191F300B043C9 /* libarsal.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 846758EF1BB191F300B043C9 /* libarsal.a */; };
 		F80F5EBF1AB2F8670002B2C6 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = F80F5EB21AB2F8670002B2C6 /* AppDelegate.m */; };
 		F80F5EC01AB2F8670002B2C6 /* DeviceController.m in Sources */ = {isa = PBXBuildFile; fileRef = F80F5EB51AB2F8670002B2C6 /* DeviceController.m */; };
 		F80F5EC11AB2F8670002B2C6 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F80F5EB61AB2F8670002B2C6 /* Images.xcassets */; };
@@ -25,11 +20,6 @@
 
 /* Begin PBXFileReference section */
 		1D9DF2351A6D580F000941ED /* BebopDronePiloting.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BebopDronePiloting.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		846758EB1BB191F300B043C9 /* libarcommands.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libarcommands.a; path = "../../../../../out/iOS-arm/staging/usr/lib/libarcommands.a"; sourceTree = "<group>"; };
-		846758EC1BB191F300B043C9 /* libardiscovery.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libardiscovery.a; path = "../../../../../out/iOS-arm/staging/usr/lib/libardiscovery.a"; sourceTree = "<group>"; };
-		846758ED1BB191F300B043C9 /* libarnetwork.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libarnetwork.a; path = "../../../../../out/iOS-arm/staging/usr/lib/libarnetwork.a"; sourceTree = "<group>"; };
-		846758EE1BB191F300B043C9 /* libarnetworkal.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libarnetworkal.a; path = "../../../../../out/iOS-arm/staging/usr/lib/libarnetworkal.a"; sourceTree = "<group>"; };
-		846758EF1BB191F300B043C9 /* libarsal.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libarsal.a; path = "../../../../../out/iOS-arm/staging/usr/lib/libarsal.a"; sourceTree = "<group>"; };
 		F80F5EB11AB2F8670002B2C6 /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppDelegate.h; path = BebopDronePiloting/AppDelegate.h; sourceTree = SOURCE_ROOT; };
 		F80F5EB21AB2F8670002B2C6 /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AppDelegate.m; path = BebopDronePiloting/AppDelegate.m; sourceTree = SOURCE_ROOT; };
 		F80F5EB41AB2F8670002B2C6 /* DeviceController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DeviceController.h; path = BebopDronePiloting/DeviceController.h; sourceTree = SOURCE_ROOT; };
@@ -50,11 +40,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				846758F01BB191F300B043C9 /* libarcommands.a in Frameworks */,
-				846758F11BB191F300B043C9 /* libardiscovery.a in Frameworks */,
-				846758F21BB191F300B043C9 /* libarnetwork.a in Frameworks */,
-				846758F31BB191F300B043C9 /* libarnetworkal.a in Frameworks */,
-				846758F41BB191F300B043C9 /* libarsal.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -81,11 +66,6 @@
 		1D9DF26B1A6D62CB000941ED /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				846758EB1BB191F300B043C9 /* libarcommands.a */,
-				846758EC1BB191F300B043C9 /* libardiscovery.a */,
-				846758ED1BB191F300B043C9 /* libarnetwork.a */,
-				846758EE1BB191F300B043C9 /* libarnetworkal.a */,
-				846758EF1BB191F300B043C9 /* libarsal.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -286,20 +266,38 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
-				HEADER_SEARCH_PATHS = (
+				HEADER_SEARCH_PATHS = "";
+				"HEADER_SEARCH_PATHS[sdk=iphoneos*]" = (
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
-					"$(SRCROOT)/../../../../../out/iOS-arm/staging/usr/include",
+					"$(SRCROOT)/../../../../../out/iOS-iphoneos/staging/usr/include",
+				);
+				"HEADER_SEARCH_PATHS[sdk=iphonesimulator*]" = (
+					"$(inherited)",
+					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+					"$(SRCROOT)/../../../../../out/iOS-iphonesimulator/staging/usr/include",
 				);
 				INFOPLIST_FILE = "$(SRCROOT)/BebopDronePiloting/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				LIBRARY_SEARCH_PATHS = (
+				LIBRARY_SEARCH_PATHS = "";
+				"LIBRARY_SEARCH_PATHS[sdk=iphoneos*]" = (
 					"$(inherited)",
-					"$(SRCROOT)/../../../../../out/iOS-arm/staging/usr/lib",
+					"$(SRCROOT)/../../../../../out/iOS-iphoneos/staging/usr/lib",
 				);
-				ONLY_ACTIVE_ARCH = NO;
+				"LIBRARY_SEARCH_PATHS[sdk=iphonesimulator*]" = (
+					"$(inherited)",
+					"$(SRCROOT)/../../../../../out/iOS-iphonesimulator/staging/usr/lib",
+				);
+				ONLY_ACTIVE_ARCH = YES;
+				OTHER_LDFLAGS = (
+					"-larcommands",
+					"-lardiscovery",
+					"-larnetwork",
+					"-larnetworkal",
+					"-larsal",
+				);
 				PRODUCT_NAME = BebopDronePiloting;
-				VALID_ARCHS = "armv7 armv7s";
+				VALID_ARCHS = "$(ARCHS_STANDARD)";
 			};
 			name = Debug;
 		};
@@ -309,19 +307,37 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
-				HEADER_SEARCH_PATHS = (
+				HEADER_SEARCH_PATHS = "";
+				"HEADER_SEARCH_PATHS[sdk=iphoneos*]" = (
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
-					"$(SRCROOT)/../../../../../out/iOS-arm/staging/usr/include",
+					"$(SRCROOT)/../../../../../out/iOS-iphoneos/staging/usr/include",
+				);
+				"HEADER_SEARCH_PATHS[sdk=iphonesimulator*]" = (
+					"$(inherited)",
+					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+					"$(SRCROOT)/../../../../../out/iOS-iphonesimulator/staging/usr/include",
 				);
 				INFOPLIST_FILE = "$(SRCROOT)/BebopDronePiloting/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				LIBRARY_SEARCH_PATHS = (
+				LIBRARY_SEARCH_PATHS = "";
+				"LIBRARY_SEARCH_PATHS[sdk=iphoneos*]" = (
 					"$(inherited)",
-					"$(SRCROOT)/../../../../../out/iOS-arm/staging/usr/lib",
+					"$(SRCROOT)/../../../../../out/iOS-iphoneos/staging/usr/lib",
+				);
+				"LIBRARY_SEARCH_PATHS[sdk=iphonesimulator*]" = (
+					"$(inherited)",
+					"$(SRCROOT)/../../../../../out/iOS-iphonesimulator/staging/usr/lib",
+				);
+				OTHER_LDFLAGS = (
+					"-larcommands",
+					"-lardiscovery",
+					"-larnetwork",
+					"-larnetworkal",
+					"-larsal",
 				);
 				PRODUCT_NAME = BebopDronePiloting;
-				VALID_ARCHS = "armv7 armv7s";
+				VALID_ARCHS = "$(ARCHS_STANDARD)";
 			};
 			name = Release;
 		};
