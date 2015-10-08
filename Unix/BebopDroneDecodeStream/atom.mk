@@ -13,7 +13,12 @@ LOCAL_LIBRARIES := ARSDKBuildUtils libARSAL libARCommands libARNetwork libARNetw
 LOCAL_SRC_FILES := \
 	$(call all-c-files-under,.)
 
-LOCAL_LDLIBS := -lncurses -lavcodec -lavformat -lswscale -lavutil
+ifeq ("$(TARGET_OS)","darwin")
+  LOCAL_C_INCLUDES := -I/usr/local/include
+  LOCAL_LDLIBS := -L/usr/local/lib
+endif
+
+LOCAL_LDLIBS += -lncurses -lavcodec -lavformat -lswscale -lavutil
 
 include $(BUILD_EXECUTABLE)
 

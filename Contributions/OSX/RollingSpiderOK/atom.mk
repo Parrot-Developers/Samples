@@ -1,5 +1,7 @@
 ifeq ("$(TARGET_PRODUCT)","Unix")
 
+ifeq ("$(TARGET_OS)","darwin")
+
 LOCAL_PATH := $(call my-dir)
 
 include $(CLEAR_VARS)
@@ -16,5 +18,7 @@ LOCAL_LDLIBS := -framework Foundation -framework CoreBluetooth -framework CoreGr
 LOCAL_CFLAGS := -fobjc-arc
 
 include $(BUILD_EXECUTABLE)
+
+endif
 
 endif
