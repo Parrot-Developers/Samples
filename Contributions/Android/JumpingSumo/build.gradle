@@ -17,3 +17,23 @@ allprojects {
         jcenter()
     }
 }
+
+ext {
+    compileSdkVersion = 21
+    buildToolsVersion = "21.1.1"
+    androidSupportV4Version = 'com.android.support:support-v4:22.0.+'
+    jmdnsVersion = 'javax.jmdns:jmdns:3.4.1'
+    sanselanVersion = 'org.apache.sanselan:sanselan:0.97-incubator'
+    androidSupportAppcompatVersion = 'com.android.support:appcompat-v7:21.0.3'
+    minSdkVersion = 16
+    targetSdkVersion = 21
+}
+
+// rootProject.buildDir is specific to this gradle build.
+if (project.hasProperty("customBuildDir"))
+    buildDir = new File(customBuildDir)
+
+subprojects {
+    // Change buildDir first so that all plugins pick up the new value.
+    project.buildDir = project.file("$project.parent.buildDir/$project.name")
+}
