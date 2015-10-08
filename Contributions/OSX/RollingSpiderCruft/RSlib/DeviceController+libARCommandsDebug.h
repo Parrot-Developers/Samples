@@ -40,8 +40,8 @@
 #import <Foundation/Foundation.h>
 #import <libARCommands/ARCommands.h>
 #ifdef ARCOMMANDS_HAS_DEBUG_COMMANDS
-#import <ARUtils/DeviceController.h>
-#import <ARUtils/ARNetworkConfig.h>
+#import "DeviceController.h"
+#import "ARNetworkConfig.h"
 
 /*
  * Send a packet from drone
