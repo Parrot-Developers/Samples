@@ -9,11 +9,10 @@ LOCAL_MODULE := JumpingSumoPilotingNewAPI
 LOCAL_DESCRIPTION := Jumping Sumo Piloting
 
 LOCAL_LIBRARIES := ARSDKBuildUtils libARSAL libARController libARDiscovery
+LOCAL_LIBRARIES += ncurses
 
 LOCAL_SRC_FILES := \
 	$(call all-c-files-under,.)
-
-LOCAL_LDLIBS := -lncurses
 
 include $(BUILD_EXECUTABLE)
 
