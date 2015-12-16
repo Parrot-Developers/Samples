@@ -565,6 +565,12 @@ public class PilotingActivity extends Activity implements ARDeviceControllerList
     }
 
     @Override
+    public void onExtensionStateChanged(ARDeviceController deviceController, ARCONTROLLER_DEVICE_STATE_ENUM newState, ARDISCOVERY_PRODUCT_ENUM product, String name, ARCONTROLLER_ERROR_ENUM error)
+    {
+        // Nothing to do here since we don't want to connect to the Bebop through a SkyController
+    }
+
+    @Override
     public void onCommandReceived(ARDeviceController deviceController, ARCONTROLLER_DICTIONARY_KEY_ENUM commandKey, ARControllerDictionary elementDictionary)
     {
         if (elementDictionary != null)
