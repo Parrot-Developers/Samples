@@ -17,7 +17,9 @@ import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.parrot.arsdk.arcontroller.ARCONTROLLER_STREAM_CODEC_TYPE_ENUM;
 import com.parrot.arsdk.arcontroller.ARControllerArgumentDictionary;
+import com.parrot.arsdk.arcontroller.ARControllerCodec;
 import com.parrot.arsdk.arcontroller.ARControllerDictionary;
 import com.parrot.arsdk.arcontroller.ARCONTROLLER_DEVICE_STATE_ENUM;
 import com.parrot.arsdk.arcontroller.ARCONTROLLER_DICTIONARY_KEY_ENUM;
@@ -26,11 +28,14 @@ import com.parrot.arsdk.arcontroller.ARControllerException;
 import com.parrot.arsdk.arcontroller.ARDeviceController;
 import com.parrot.arsdk.arcontroller.ARDeviceControllerListener;
 import com.parrot.arsdk.arcontroller.ARDeviceControllerStreamListener;
+import com.parrot.arsdk.arcontroller.ARFeatureCommon;
 import com.parrot.arsdk.arcontroller.ARFrame;
 import com.parrot.arsdk.ardiscovery.ARDISCOVERY_PRODUCT_ENUM;
 import com.parrot.arsdk.ardiscovery.ARDiscoveryDevice;
 import com.parrot.arsdk.ardiscovery.ARDiscoveryDeviceNetService;
 import com.parrot.arsdk.ardiscovery.ARDiscoveryException;
+import com.parrot.arsdk.ardiscovery.ARDiscoveryService;
+import com.parrot.arsdk.arsal.ARNativeData;
 import com.parrot.bebopdronepiloting.R;
 
 import com.parrot.arsdk.ardiscovery.ARDiscoveryDeviceService;
@@ -78,8 +83,8 @@ public class PilotingActivity extends Activity implements ARDeviceControllerList
     private MediaCodec mediaCodec;
     private Lock readyLock;
     private boolean isCodecConfigured = false;
-    private ByteBuffer csdBuffer;
-    private boolean waitForIFrame = true;
+    private ByteBuffer spsBuffer;
+    private ByteBuffer ppsBuffer;
     private ByteBuffer [] buffers;
 
     @Override
@@ -98,10 +103,10 @@ public class PilotingActivity extends Activity implements ARDeviceControllerList
         try
         {
             device = new ARDiscoveryDevice();
-
             ARDiscoveryDeviceNetService netDeviceService = (ARDiscoveryDeviceNetService) service.getDevice();
+            ARDISCOVERY_PRODUCT_ENUM product = ARDiscoveryService.getProductFromProductID(service.getProductID());
 
-            device.initWifi(ARDISCOVERY_PRODUCT_ENUM.ARDISCOVERY_PRODUCT_ARDRONE, netDeviceService.getName(), netDeviceService.getIp(), netDeviceService.getPort());
+            device.initWifi(product, netDeviceService.getName(), netDeviceService.getIp(), netDeviceService.getPort());
         }
         catch (ARDiscoveryException e)
         {
@@ -143,10 +148,8 @@ public class PilotingActivity extends Activity implements ARDeviceControllerList
 
         takeoffBt = (Button) findViewById(R.id.takeoffBt);
         takeoffBt.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v)
-            {
-                if ((deviceController != null) && (deviceController.getFeatureARDrone3() != null))
-                {
+            public void onClick(View v) {
+                if ((deviceController != null) && (deviceController.getFeatureARDrone3() != null)) {
                     //send takeOff
                     ARCONTROLLER_ERROR_ENUM error = deviceController.getFeatureARDrone3().sendPilotingTakeOff();
                 }
@@ -154,10 +157,8 @@ public class PilotingActivity extends Activity implements ARDeviceControllerList
         });
         landingBt = (Button) findViewById(R.id.landingBt);
         landingBt.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v)
-            {
-                if ((deviceController != null) && (deviceController.getFeatureARDrone3() != null))
-                {
+            public void onClick(View v) {
+                if ((deviceController != null) && (deviceController.getFeatureARDrone3() != null)) {
                     //send landing
                     ARCONTROLLER_ERROR_ENUM error = deviceController.getFeatureARDrone3().sendPilotingLanding();
                 }
@@ -183,7 +184,7 @@ public class PilotingActivity extends Activity implements ARDeviceControllerList
                         v.setPressed(false);
                         if (deviceController != null)
                         {
-                            deviceController.getFeatureARDrone3().setPilotingPCMDGaz((byte)0);
+                            deviceController.getFeatureARDrone3().setPilotingPCMDGaz((byte) 0);
 
                         }
                         break;
@@ -208,7 +209,7 @@ public class PilotingActivity extends Activity implements ARDeviceControllerList
                         v.setPressed(true);
                         if (deviceController != null)
                         {
-                            deviceController.getFeatureARDrone3().setPilotingPCMDGaz((byte)-50);
+                            deviceController.getFeatureARDrone3().setPilotingPCMDGaz((byte) -50);
 
                         }
                         break;
@@ -217,7 +218,7 @@ public class PilotingActivity extends Activity implements ARDeviceControllerList
                         v.setPressed(false);
                         if (deviceController != null)
                         {
-                            deviceController.getFeatureARDrone3().setPilotingPCMDGaz((byte)0);
+                            deviceController.getFeatureARDrone3().setPilotingPCMDGaz((byte) 0);
                         }
                         break;
 
@@ -240,7 +241,7 @@ public class PilotingActivity extends Activity implements ARDeviceControllerList
                         v.setPressed(true);
                         if (deviceController != null)
                         {
-                            deviceController.getFeatureARDrone3().setPilotingPCMDYaw((byte)-50);
+                            deviceController.getFeatureARDrone3().setPilotingPCMDYaw((byte) -50);
 
                         }
                         break;
@@ -340,7 +341,7 @@ public class PilotingActivity extends Activity implements ARDeviceControllerList
                         v.setPressed(true);
                         if (deviceController != null)
                         {
-                            deviceController.getFeatureARDrone3().setPilotingPCMDPitch((byte)-50);
+                            deviceController.getFeatureARDrone3().setPilotingPCMDPitch((byte) -50);
                             deviceController.getFeatureARDrone3().setPilotingPCMDFlag((byte)1);
                         }
                         break;
@@ -349,7 +350,7 @@ public class PilotingActivity extends Activity implements ARDeviceControllerList
                         v.setPressed(false);
                         if (deviceController != null)
                         {
-                            deviceController.getFeatureARDrone3().setPilotingPCMDPitch((byte)0);
+                            deviceController.getFeatureARDrone3().setPilotingPCMDPitch((byte) 0);
                             deviceController.getFeatureARDrone3().setPilotingPCMDFlag((byte)0);
                         }
                         break;
@@ -470,19 +471,16 @@ public class PilotingActivity extends Activity implements ARDeviceControllerList
             alertDialogBuilder.setTitle("Disconnecting ...");
 
             // show it
-            runOnUiThread(new Runnable()
-            {
+            runOnUiThread(new Runnable() {
                 @Override
-                public void run()
-                {
+                public void run() {
                     // create alert dialog
                     alertDialog = alertDialogBuilder.create();
                     alertDialog.show();
 
                     ARCONTROLLER_ERROR_ENUM error = deviceController.stop();
 
-                    if (error != ARCONTROLLER_ERROR_ENUM.ARCONTROLLER_OK)
-                    {
+                    if (error != ARCONTROLLER_ERROR_ENUM.ARCONTROLLER_OK) {
                         finish();
                     }
                 }
@@ -513,8 +511,7 @@ public class PilotingActivity extends Activity implements ARDeviceControllerList
     {
         runOnUiThread(new Runnable() {
             @Override
-            public void run()
-            {
+            public void run() {
                 batteryLabel.setText(String.format("%d%%", percent));
             }
         });
@@ -524,7 +521,7 @@ public class PilotingActivity extends Activity implements ARDeviceControllerList
     @Override
     public void onStateChanged (ARDeviceController deviceController, ARCONTROLLER_DEVICE_STATE_ENUM newState, ARCONTROLLER_ERROR_ENUM error)
     {
-        Log.i(TAG, "onStateChanged ... newState:" + newState+" error: "+ error );
+        Log.i(TAG, "onStateChanged ... newState:" + newState + " error: " + error);
 
         switch (newState)
         {
@@ -581,7 +578,8 @@ public class PilotingActivity extends Activity implements ARDeviceControllerList
 
                 if (args != null)
                 {
-                    Integer batValue = (Integer) args.get("arcontroller_dictionary_key_common_commonstate_batterystatechanged_percent");
+
+                    Integer batValue = (Integer) args.get(ARFeatureCommon.ARCONTROLLER_DICTIONARY_KEY_COMMON_COMMONSTATE_BATTERYSTATECHANGED_PERCENT);
 
                     onUpdateBattery(batValue);
                 }
@@ -594,24 +592,42 @@ public class PilotingActivity extends Activity implements ARDeviceControllerList
     }
 
     @Override
-    public void onFrameReceived(ARDeviceController deviceController, ARFrame frame)
+    public ARCONTROLLER_ERROR_ENUM configureDecoder(ARDeviceController deviceController, ARControllerCodec codec)
     {
         readyLock.lock();
 
         if ((mediaCodec != null))
         {
-            if (!isCodecConfigured && frame.isIFrame())
+            if (!isCodecConfigured)
             {
-                csdBuffer = getCSD(frame);
-                if (csdBuffer != null)
+                if (codec.getType() == ARCONTROLLER_STREAM_CODEC_TYPE_ENUM.ARCONTROLLER_STREAM_CODEC_TYPE_H264)
                 {
-                    configureMediaCodec();
+                    ARControllerCodec.H264 codecH264 = codec.getAsH264();
+
+                    spsBuffer = ByteBuffer.wrap(codecH264.getSps().getByteData());
+                    ppsBuffer = ByteBuffer.wrap(codecH264.getPps().getByteData());
+
+                    if (spsBuffer != null) {
+                        configureMediaCodec();
+                    }
                 }
             }
-            if (isCodecConfigured && (!waitForIFrame || frame.isIFrame()))
-            {
-                waitForIFrame = false;
+        }
 
+        readyLock.unlock();
+
+        return ARCONTROLLER_ERROR_ENUM.ARCONTROLLER_OK;
+    }
+
+    @Override
+    public ARCONTROLLER_ERROR_ENUM onFrameReceived(ARDeviceController deviceController, ARFrame frame)
+    {
+        readyLock.lock();
+
+        if ((mediaCodec != null))
+        {
+            if (isCodecConfigured)
+            {
                 // Here we have either a good PFrame, or an IFrame
                 int index = -1;
 
@@ -628,26 +644,15 @@ public class PilotingActivity extends Activity implements ARDeviceControllerList
                     ByteBuffer b = buffers[index];
                     b.clear();
                     b.put(frame.getByteData(), 0, frame.getDataSize());
-                    //ByteBufferDumper.dumpBufferStartEnd("PFRAME", b, 10, 4);
-                    int flag = 0;
-                    if (frame.isIFrame())
-                    {
-                        //flag = MediaCodec.BUFFER_FLAG_SYNC_FRAME | MediaCodec.BUFFER_FLAG_CODEC_CONFIG;
-                    }
 
                     try
                     {
-                        mediaCodec.queueInputBuffer(index, 0, frame.getDataSize(), 0, flag);
+                        mediaCodec.queueInputBuffer(index, 0, frame.getDataSize(), 0, 0);
                     }
                     catch (IllegalStateException e)
                     {
                         Log.e(TAG, "Error while queue input buffer");
                     }
-
-                }
-                else
-                {
-                    waitForIFrame = true;
                 }
             }
 
@@ -672,6 +677,8 @@ public class PilotingActivity extends Activity implements ARDeviceControllerList
 
 
         readyLock.unlock();
+
+        return ARCONTROLLER_ERROR_ENUM.ARCONTROLLER_OK;
     }
 
     @Override
@@ -729,7 +736,7 @@ public class PilotingActivity extends Activity implements ARDeviceControllerList
             e.printStackTrace();
         }
 
-        if (csdBuffer != null)
+        if (spsBuffer != null)
         {
             configureMediaCodec();
         }
@@ -739,7 +746,8 @@ public class PilotingActivity extends Activity implements ARDeviceControllerList
     private void configureMediaCodec()
     {
         MediaFormat format = MediaFormat.createVideoFormat("video/avc", VIDEO_WIDTH, VIDEO_HEIGHT);
-        format.setByteBuffer("csd-0", csdBuffer);
+        format.setByteBuffer("csd-0", spsBuffer);
+        format.setByteBuffer("csd-1", ppsBuffer);
 
         mediaCodec.configure(format, sfView.getHolder().getSurface(), null, 0);
         mediaCodec.start();
@@ -762,47 +770,6 @@ public class PilotingActivity extends Activity implements ARDeviceControllerList
             isCodecConfigured = false;
             mediaCodec = null;
         }
-    }
-
-    public ByteBuffer getCSD(ARFrame frame)
-    {
-        int spsSize = -1;
-        if (frame.isIFrame())
-        {
-            byte[] data = frame.getByteData();
-            int searchIndex = 0;
-            // we'll need to search the "00 00 00 01" pattern to find each header size
-            // Search start at index 4 to avoid finding the SPS "00 00 00 01" tag
-            for (searchIndex = 4; searchIndex <= frame.getDataSize() - 4; searchIndex ++)
-            {
-                if (0 == data[searchIndex  ] &&
-                        0 == data[searchIndex+1] &&
-                        0 == data[searchIndex+2] &&
-                        1 == data[searchIndex+3])
-                {
-                    break;  // PPS header found
-                }
-            }
-            spsSize = searchIndex;
-
-            // Search start at index 4 to avoid finding the PSS "00 00 00 01" tag
-            for (searchIndex = spsSize+4; searchIndex <= frame.getDataSize() - 4; searchIndex ++)
-            {
-                if (0 == data[searchIndex  ] &&
-                        0 == data[searchIndex+1] &&
-                        0 == data[searchIndex+2] &&
-                        1 == data[searchIndex+3])
-                {
-                    break;  // frame header found
-                }
-            }
-            int csdSize = searchIndex;
-
-            byte[] csdInfo = new byte[csdSize];
-            System.arraycopy(data, 0, csdInfo, 0, csdSize);
-            return ByteBuffer.wrap(csdInfo);
-        }
-        return null;
     }
 
     @Override

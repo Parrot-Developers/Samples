@@ -13,4 +13,7 @@ project(':libARSAL').projectDir = new File('../../../libARSAL')
 include 'libARStream'
 project(':libARStream').projectDir = new File('../../../libARStream')
 
+include 'libARStream2'
+project(':libARStream2').projectDir = new File('../../../libARStream2')
+
 include ':app'

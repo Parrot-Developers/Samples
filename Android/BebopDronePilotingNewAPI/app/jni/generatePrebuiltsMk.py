@@ -6,6 +6,7 @@ libs = [
 'libARNetworkAL',
 'libARSAL',
 'libARStream',
+'libARStream2',
 'json',
 ]
 
