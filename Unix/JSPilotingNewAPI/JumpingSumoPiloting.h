@@ -34,6 +34,8 @@
 
 #include <ihm.h>
 
+#include <libARController/ARController.h>
+
 // called when the state of the device controller has changed
 void stateChanged (eARCONTROLLER_DEVICE_STATE newState, eARCONTROLLER_ERROR error, void *customData);
 
@@ -43,8 +45,11 @@ void commandReceived (eARCONTROLLER_DICTIONARY_KEY commandKey, ARCONTROLLER_DICT
 // IHM updates from commands
 void batteryStateChanged (uint8_t percent);
 
+// called to configure the video stream decoder
+eARCONTROLLER_ERROR decoderConfigCallback (ARCONTROLLER_Stream_Codec_t codec, void *customData);
+
 // called when a streaming frame has been received
-void didReceiveFrameCallback (ARCONTROLLER_Frame_t *frame, void *customData);
+eARCONTROLLER_ERROR didReceiveFrameCallback (ARCONTROLLER_Frame_t *frame, void *customData);
 
 /* IHM callbacks: */
 void onInputEvent (eIHM_INPUT_EVENT event, void *customData);

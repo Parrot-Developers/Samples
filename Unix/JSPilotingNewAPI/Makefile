@@ -1,17 +1,16 @@
 EXEC_NAME=JumpingSumoPiloting #output filename
 
-SDK_DIR=../../../ARSDKBuildUtils
+SDK_DIR=../../../../out/Unix-base/
 IDIR=./
-CC=gcc
-CFLAGS=-I$(IDIR) -I $(SDK_DIR)/Targets/Unix/Install/include
+CFLAGS=-I$(IDIR) -I$(SDK_DIR)/staging/usr/include
 
 OBJDIR=obj
-LDIR = $(SDK_DIR)/Targets/Unix/Install/lib
+LDIR = $(SDK_DIR)/final/usr/lib
 
 EXTERNAL_LIB=-lncurses
 
-LIBS=-L$(SDK_DIR)/Targets/Unix/Install/lib -larsal -larcontroller -lardiscovery $(EXTERNAL_LIB)
-LIBS_DBG=-L$(SDK_DIR)/Targets/Unix/Install/lib -larsal_dbg -larcontroller_dbg -lardiscovery_dbg $(EXTERNAL_LIB)
+LIBS=-L$(LDIR) -larsal -larcontroller -lardiscovery $(EXTERNAL_LIB) -Wl,-rpath=$(LDIR)
+LIBS_DBG=-L$(LDIR) -larsal_dbg -larcontroller_dbg -lardiscovery_dbg $(EXTERNAL_LIB) -Wl,-rpath=$(LDIR)
 
 _DEPS = JumpingSumoPiloting.h ihm.h
 DEPS = $(patsubst %,$(IDIR)/%,$(_DEPS))
@@ -29,7 +28,7 @@ $(OBJDIR)/%.o: %.c $(DEPS)
 	@ $(CC) -c -o $@ $< $(CFLAGS)
 
 $(EXEC_NAME): $(OBJ)
-	gcc -o $@ $^ $(CFLAGS) $(LIBS)
+	$(CC) -o $@ $^ $(CFLAGS) $(LIBS)
 
 .PHONY: clean
 

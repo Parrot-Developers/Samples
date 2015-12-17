@@ -103,21 +103,7 @@ int main (int argc, char *argv[])
     
     ARSAL_PRINT(ARSAL_PRINT_INFO, TAG, "-- Jumping Sumo Piloting --");
     
-#ifdef IHM
-    ihm = IHM_New (&onInputEvent);
-    if (ihm != NULL)
-    {
-        gErrorStr[0] = '\0';
-        ARSAL_Print_SetCallback (customPrintCallback); //use a custom callback to print, for not disturb ncurses IHM
-        
-        IHM_PrintHeader (ihm, "-- Jumping Sumo Piloting --");
-    }
-    else
-    {
-        ARSAL_PRINT (ARSAL_PRINT_ERROR, TAG, "Creation of IHM failed.");
-        failed = 1;
-    }
-#endif
+
 
     if (!failed)
     {
@@ -126,8 +112,8 @@ int main (int argc, char *argv[])
             // fork the process to launch ffplay
             if ((child = fork()) == 0)
             {
-                execlp("mplayer", "mplayer", "-demuxer",  "lavf", "video_fifo.mjpg", "-benchmark", "-really-quiet", NULL);
-                ARSAL_PRINT(ARSAL_PRINT_ERROR, TAG, "Missing mplayer, you will not see the video. Please install avplay.");
+                execlp("xterm", "xterm", "-e", "mplayer", "-demuxer",  "lavf", "video_fifo.mjpg", "-benchmark", "-really-quiet", NULL);
+                ARSAL_PRINT(ARSAL_PRINT_ERROR, TAG, "Missing mplayer, you will not see the video. Please install mplayer and xterm.");
                 return -1;
             }
         }
@@ -154,6 +140,22 @@ int main (int argc, char *argv[])
             videoOut = fopen("./video_fifo.mjpg", "w");
         }
     }
+    
+#ifdef IHM
+    ihm = IHM_New (&onInputEvent);
+    if (ihm != NULL)
+    {
+        gErrorStr[0] = '\0';
+        ARSAL_Print_SetCallback (customPrintCallback); //use a custom callback to print, for not disturb ncurses IHM
+        
+        IHM_PrintHeader (ihm, "-- Jumping Sumo Piloting --");
+    }
+    else
+    {
+        ARSAL_PRINT (ARSAL_PRINT_ERROR, TAG, "Creation of IHM failed.");
+        failed = 1;
+    }
+#endif
     
     // create a discovery device
     if (!failed)
@@ -232,7 +234,7 @@ int main (int argc, char *argv[])
     if (!failed)
     {
         ARSAL_PRINT(ARSAL_PRINT_INFO, TAG, "- set Video callback ... ");
-        error = ARCONTROLLER_Device_SetVideoReceiveCallback (deviceController, didReceiveFrameCallback, NULL , NULL);
+        error = ARCONTROLLER_Device_SetVideoStreamCallbacks (deviceController, decoderConfigCallback, didReceiveFrameCallback, NULL , NULL);
     
         if (error != ARCONTROLLER_OK)
         {
@@ -244,6 +246,7 @@ int main (int argc, char *argv[])
     if (!failed)
     {
         IHM_PrintInfo(ihm, "Connecting ...");
+        ARSAL_PRINT(ARSAL_PRINT_INFO, TAG, "Connecting ...");
         error = ARCONTROLLER_Device_Start (deviceController);
         
         if (error != ARCONTROLLER_OK)
@@ -284,30 +287,32 @@ int main (int argc, char *argv[])
     {
         IHM_PrintInfo(ihm, "Running ... (Arrow keys to move ; Spacebar to jump ; 'q' to quit)");
         
+        #ifdef IHM
         while (gIHMRun)
         {
             usleep(50);
         }
+        #else
+        ARSAL_PRINT(ARSAL_PRINT_INFO, TAG, "- sleep 20 ... ");
+        sleep(20);
+        ARSAL_PRINT(ARSAL_PRINT_INFO, TAG, "- sleep end ... ");
+        #endif
     }
+    
+#ifdef IHM
+    IHM_Delete (&ihm);
+#endif
     
     // we are here because of a disconnection or user has quit IHM, so safely delete everything
     if (deviceController != NULL)
     {
-        if (DISPLAY_WITH_MPLAYER)
-        {
-            fflush (videoOut);
-            fclose (videoOut);
-            
-            if (child > 0)
-            {
-                kill(child, SIGKILL);
-            }
-        }
+
         
         deviceState = ARCONTROLLER_Device_GetState (deviceController, &error);
         if ((error == ARCONTROLLER_OK) && (deviceState != ARCONTROLLER_DEVICE_STATE_STOPPED))
         {
             IHM_PrintInfo(ihm, "Disconnecting ...");
+            ARSAL_PRINT(ARSAL_PRINT_INFO, TAG, "Disconnecting ...");
             
             error = ARCONTROLLER_Device_Stop (deviceController);
             
@@ -319,7 +324,19 @@ int main (int argc, char *argv[])
         }
         
         IHM_PrintInfo(ihm, "");
+        ARSAL_PRINT(ARSAL_PRINT_INFO, TAG, "ARCONTROLLER_Device_Delete ...");
         ARCONTROLLER_Device_Delete (&deviceController);
+        
+        if (DISPLAY_WITH_MPLAYER)
+        {
+            fflush (videoOut);
+            fclose (videoOut);
+            
+            if (child > 0)
+            {
+                kill(child, SIGKILL);
+            }
+        }
     }
     
     ARSAL_Sem_Destroy (&(stateSem));
@@ -416,7 +433,14 @@ void batteryStateChanged (uint8_t percent)
     
 }
 
-void didReceiveFrameCallback (ARCONTROLLER_Frame_t *frame, void *customData)
+eARCONTROLLER_ERROR decoderConfigCallback (ARCONTROLLER_Stream_Codec_t codec, void *customData)
+{
+    ARSAL_PRINT(ARSAL_PRINT_ERROR, TAG, "decoderConfigCallback codec.type :%d", codec.type);
+    
+    return ARCONTROLLER_OK;
+}
+
+eARCONTROLLER_ERROR didReceiveFrameCallback (ARCONTROLLER_Frame_t *frame, void *customData)
 {
     if (videoOut != NULL)
     {
@@ -438,7 +462,6 @@ void didReceiveFrameCallback (ARCONTROLLER_Frame_t *frame, void *customData)
                 fwrite(frame, frame->used, 1, img);
                 fclose(img);
             }
-            
         }
         else
         {
@@ -449,6 +472,8 @@ void didReceiveFrameCallback (ARCONTROLLER_Frame_t *frame, void *customData)
     {
         ARSAL_PRINT(ARSAL_PRINT_WARNING, TAG, "videoOut is NULL.");
     }
+    
+    return ARCONTROLLER_OK;
 }
 
 
