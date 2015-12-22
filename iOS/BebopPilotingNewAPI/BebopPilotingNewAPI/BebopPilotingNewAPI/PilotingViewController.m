@@ -123,8 +123,21 @@
         // add the received frame callback to be informed when a frame should be displayed
         if (error == ARCONTROLLER_OK)
         {
+            NSLog(@"- ARCONTROLLER_Device_SetVideoStreamMP4Compliant ... ");
+            error = ARCONTROLLER_Device_SetVideoStreamMP4Compliant(_deviceController, 1);
+            
+            
+            if (error != ARCONTROLLER_OK)
+            {
+                NSLog(@"- error :%s", ARCONTROLLER_Error_ToString(error));
+            }
+        }
+        
+        // add the received frame callback to be informed when a frame should be displayed
+        if (error == ARCONTROLLER_OK)
+        {
             NSLog(@"- ARCONTROLLER_Device_SetVideoReceiveCallback ... ");
-            error = ARCONTROLLER_Device_SetVideoReceiveCallback (_deviceController, didReceiveFrameCallback, NULL , (__bridge void *)(self));
+            error = ARCONTROLLER_Device_SetVideoStreamCallbacks(_deviceController, configDecoderCallback, didReceiveFrameCallback, NULL , (__bridge void *)(self));
             
             if (error != ARCONTROLLER_OK)
             {
@@ -178,7 +191,7 @@
     if (errorDiscovery == ARDISCOVERY_OK)
     {
         // init the discovery device
-        if (service.product == ARDISCOVERY_PRODUCT_ARDRONE)
+        if ((service.product == ARDISCOVERY_PRODUCT_ARDRONE) || ((service.product == ARDISCOVERY_PRODUCT_BEBOP_2)))
         {
             // need to resolve service to get the IP
             BOOL resolveSucceeded = [self resolveService:service];
@@ -341,11 +354,27 @@ void onCommandReceived (eARCONTROLLER_DICTIONARY_KEY commandKey, ARCONTROLLER_DI
     }
 }
 
-void didReceiveFrameCallback (ARCONTROLLER_Frame_t *frame, void *customData)
+eARCONTROLLER_ERROR configDecoderCallback (ARCONTROLLER_Stream_Codec_t codec, void *customData)
 {
     PilotingViewController *pilotingViewController = (__bridge PilotingViewController *)customData;
+    BOOL failed = NO;
     
-    [pilotingViewController.videoView displayFrame:frame];
+    if (codec.type == ARCONTROLLER_STREAM_CODEC_TYPE_H264)
+    {
+        failed =[pilotingViewController.videoView sps:codec.parameters.h264parameters.spsBuffer spsSize:codec.parameters.h264parameters.spsSize pps:codec.parameters.h264parameters.ppsBuffer ppsSize:codec.parameters.h264parameters.ppsSize];
+    }
+    
+    return (failed) ? ARCONTROLLER_ERROR : ARCONTROLLER_OK;
+}
+                                                          
+eARCONTROLLER_ERROR didReceiveFrameCallback (ARCONTROLLER_Frame_t *frame, void *customData)
+{
+    PilotingViewController *pilotingViewController = (__bridge PilotingViewController *)customData;
+    BOOL failed = NO;
+    
+    failed = [pilotingViewController.videoView displayFrame:frame];
+    
+    return (failed) ? ARCONTROLLER_ERROR : ARCONTROLLER_OK;
 }
 
 

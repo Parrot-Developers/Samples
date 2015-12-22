@@ -11,6 +11,7 @@
 
 @interface VideoView : UIView
 
-- (void)displayFrame:(ARCONTROLLER_Frame_t *)frame;
+- (BOOL)displayFrame:(ARCONTROLLER_Frame_t *)frame;
+- (BOOL)sps:(uint8_t *)spsBuffer spsSize:(int)spsSize pps:(uint8_t *)ppsBuffer ppsSize:(int) ppsSize;
 
 @end

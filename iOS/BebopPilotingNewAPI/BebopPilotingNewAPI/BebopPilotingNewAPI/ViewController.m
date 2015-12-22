@@ -109,7 +109,7 @@
     for (ARService *service in services)
     {
         // only display Bebops
-        if (service.product == ARDISCOVERY_PRODUCT_ARDRONE)
+        if ((service.product == ARDISCOVERY_PRODUCT_ARDRONE) || (service.product == ARDISCOVERY_PRODUCT_BEBOP_2))
         {
             CellData *cellData = [[CellData alloc]init];
             
