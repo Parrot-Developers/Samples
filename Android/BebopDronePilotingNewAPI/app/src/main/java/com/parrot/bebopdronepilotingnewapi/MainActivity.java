@@ -239,7 +239,7 @@ public class MainActivity extends ActionBarActivity implements ARDiscoveryServic
                     ARDISCOVERY_PRODUCT_ENUM product = ARDiscoveryService.getProductFromProductID(service.getProductID());
                     Log.e(TAG, "product :  "+ product);
                     // only display Bebop drones
-                    if (ARDISCOVERY_PRODUCT_ENUM.ARDISCOVERY_PRODUCT_ARDRONE.equals(product))
+                    if ((ARDISCOVERY_PRODUCT_ENUM.ARDISCOVERY_PRODUCT_ARDRONE.equals(product)) ||(ARDISCOVERY_PRODUCT_ENUM.ARDISCOVERY_PRODUCT_BEBOP_2.equals(product)))
                     {
                         deviceList.add(service);
                         deviceNames.add(service.getName());
