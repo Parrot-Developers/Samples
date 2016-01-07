@@ -300,6 +300,7 @@ void stateChanged (eARCONTROLLER_DEVICE_STATE newState, eARCONTROLLER_ERROR erro
                 dispatch_async(dispatch_get_main_queue(), ^{
                     [pilotingViewController.alertView dismissWithClickedButtonIndex:0 animated:TRUE];
                 });
+                pilotingViewController.deviceController->aRDrone3->sendMediaStreamingVideoEnable(pilotingViewController.deviceController->aRDrone3, 1);
                 break;
             }
             case ARCONTROLLER_DEVICE_STATE_STOPPED:

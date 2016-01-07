@@ -116,12 +116,12 @@
 #pragma mark - application notifications
 - (void)enteredBackground:(NSNotification*)notification
 {
-    NSLog(@"enteredBackground ... ");
+    [[ARDiscovery sharedInstance] stop];
 }
 
 - (void)enterForeground:(NSNotification*)notification
 {
-    NSLog(@"enterForeground ... ");
+    [[ARDiscovery sharedInstance] start];
 }
 
 #pragma mark ARDiscovery notification
