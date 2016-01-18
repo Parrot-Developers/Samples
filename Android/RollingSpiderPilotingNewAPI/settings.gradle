@@ -1,0 +1,12 @@
+include 'libARCommands'
+project(':libARCommands').projectDir = new File('../../../libARCommands')
+include 'libARController'
+project(':libARController').projectDir = new File('../../../libARController')
+include 'libARDiscovery'
+project(':libARDiscovery').projectDir = new File('../../../libARDiscovery')
+include 'libARNetworkAL'
+project(':libARNetworkAL').projectDir = new File('../../../libARNetworkAL')
+include 'libARSAL'
+project(':libARSAL').projectDir = new File('../../../libARSAL')
+
+include ':app'
