@@ -16,3 +16,4 @@ include $(ZPATH)/../../../../../../libARNetworkAL/Android.mk
 include $(ZPATH)/../../../../../../libARNetwork/Android.mk
 include $(ZPATH)/../../../../../../libARSAL/Android.mk
 include $(ZPATH)/../../../../../../libARStream/Android.mk
+include $(ZPATH)/../../../../../../libARStream2/Android.mk

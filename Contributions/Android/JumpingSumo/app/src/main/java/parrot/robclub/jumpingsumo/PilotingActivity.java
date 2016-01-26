@@ -1,7 +1,5 @@
 package parrot.robclub.jumpingsumo;
 
-import java.io.ByteArrayInputStream;
-
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Intent;
@@ -20,6 +18,7 @@ import com.parrot.arsdk.arcontroller.ARCONTROLLER_DEVICE_STATE_ENUM;
 import com.parrot.arsdk.arcontroller.ARCONTROLLER_DICTIONARY_KEY_ENUM;
 import com.parrot.arsdk.arcontroller.ARCONTROLLER_ERROR_ENUM;
 import com.parrot.arsdk.arcontroller.ARControllerArgumentDictionary;
+import com.parrot.arsdk.arcontroller.ARControllerCodec;
 import com.parrot.arsdk.arcontroller.ARControllerDictionary;
 import com.parrot.arsdk.arcontroller.ARControllerException;
 import com.parrot.arsdk.arcontroller.ARDeviceController;
@@ -31,6 +30,8 @@ import com.parrot.arsdk.ardiscovery.ARDiscoveryDevice;
 import com.parrot.arsdk.ardiscovery.ARDiscoveryDeviceNetService;
 import com.parrot.arsdk.ardiscovery.ARDiscoveryDeviceService;
 import com.parrot.arsdk.ardiscovery.ARDiscoveryException;
+
+import java.io.ByteArrayInputStream;
 
 /**
  * Author: nguyenquockhai (nqkhai1706@gmail.com) create on 16/07/2015 at Robotics Club.
@@ -449,10 +450,16 @@ public class PilotingActivity extends Activity implements ARDeviceControllerList
     }
 
     @Override
-    public void onFrameReceived(ARDeviceController deviceController, ARFrame frame)
+    public ARCONTROLLER_ERROR_ENUM configureDecoder(ARDeviceController deviceController, ARControllerCodec codec)
+    {
+        return ARCONTROLLER_ERROR_ENUM.ARCONTROLLER_OK;
+    }
+
+    @Override
+    public ARCONTROLLER_ERROR_ENUM onFrameReceived(ARDeviceController deviceController, ARFrame frame)
     {
         if (!frame.isIFrame())
-            return;
+            return ARCONTROLLER_ERROR_ENUM.ARCONTROLLER_ERROR_STREAM;
 
         byte[] data = frame.getByteData();
         ByteArrayInputStream ins = new ByteArrayInputStream(data);
@@ -460,6 +467,8 @@ public class PilotingActivity extends Activity implements ARDeviceControllerList
 
         FrameDisplay fDisplay = new FrameDisplay(imgView, bmp);
         fDisplay.execute();
+
+        return ARCONTROLLER_ERROR_ENUM.ARCONTROLLER_OK;
     }
 
 
