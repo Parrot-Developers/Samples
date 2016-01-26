@@ -6,11 +6,6 @@ include 'libARDiscovery'
 project(':libARDiscovery').projectDir = new File('../../../../libARDiscovery')
 include 'libARNetworkAL'
 project(':libARNetworkAL').projectDir = new File('../../../../libARNetworkAL')
-include 'libARNetwork'
-project(':libARNetwork').projectDir = new File('../../../../libARNetwork')
 include 'libARSAL'
 project(':libARSAL').projectDir = new File('../../../../libARSAL')
-include 'libARStream'
-project(':libARStream').projectDir = new File('../../../../libARStream')
-
 include ':app'
