@@ -1,7 +1,7 @@
 
 # Prebuilt modules used as dependencies for Unix build
 
-ifeq ("$(TARGET_PRODUCT)","Unix")
+ifeq ("$(TARGET_OS_FLAVOUR)","native")
 
 LOCAL_PATH := $(call my-dir)
 

@@ -1,4 +1,4 @@
-ifeq ("$(TARGET_PRODUCT)","Unix")
+ifeq ("$(TARGET_OS_FLAVOUR)","native")
 
 LOCAL_PATH := $(call my-dir)
 
@@ -8,8 +8,11 @@ LOCAL_CATEGORY_PATH := samples
 LOCAL_MODULE := JumpingSumoPilotingNewAPI
 LOCAL_DESCRIPTION := Jumping Sumo Piloting
 
-LOCAL_LIBRARIES := ARSDKBuildUtils libARSAL libARController libARDiscovery
-LOCAL_LIBRARIES += ncurses
+LOCAL_LIBRARIES := \
+	libARSAL \
+	libARController \
+	libARDiscovery \
+	ncurses
 
 LOCAL_SRC_FILES := \
 	$(call all-c-files-under,.)
