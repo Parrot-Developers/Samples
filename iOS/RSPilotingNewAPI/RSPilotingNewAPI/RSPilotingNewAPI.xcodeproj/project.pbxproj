@@ -310,6 +310,7 @@
 					"-larnetworkal",
 					"-larsal",
 					"-larstream",
+					"-larstream2",
 					"-ljson",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -353,6 +354,7 @@
 					"-larnetworkal",
 					"-larsal",
 					"-larstream",
+					"-larstream2",
 					"-ljson",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
