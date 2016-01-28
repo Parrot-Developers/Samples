@@ -311,6 +311,7 @@
 					"-larnetworkal",
 					"-larsal",
 					"-larstream",
+					"-larstream2",
 					"-ljson",
 					"-larstream2",
 				);
@@ -356,6 +357,7 @@
 					"-larnetworkal",
 					"-larsal",
 					"-larstream",
+					"-larstream2",
 					"-ljson",
 					"-larstream2",
 				);
