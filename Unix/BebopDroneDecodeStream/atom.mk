@@ -1,4 +1,4 @@
-ifeq ("$(TARGET_PRODUCT)","Unix")
+ifeq ("$(TARGET_OS_FLAVOUR)","native")
 
 LOCAL_PATH := $(call my-dir)
 
@@ -8,8 +8,15 @@ LOCAL_CATEGORY_PATH := samples
 LOCAL_MODULE := BebopDroneDecodeStream
 LOCAL_DESCRIPTION := Bebop Drone Decode Stream
 
-LOCAL_LIBRARIES := ARSDKBuildUtils libARSAL libARCommands libARNetwork libARNetworkAL libARDiscovery libARStream
-LOCAL_LIBRARIES += ncurses ffmpeg
+LOCAL_LIBRARIES := \
+	libARSAL \
+	libARCommands \
+	libARNetwork \
+	libARNetworkAL \
+	libARDiscovery \
+	libARStream \
+	ncurses \
+	ffmpeg
 
 LOCAL_SRC_FILES := \
 	$(call all-c-files-under,.)
