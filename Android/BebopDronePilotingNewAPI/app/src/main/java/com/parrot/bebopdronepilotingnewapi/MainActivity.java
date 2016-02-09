@@ -40,15 +40,8 @@ public class MainActivity extends ActionBarActivity implements ARDiscoveryServic
             System.loadLibrary("arsal_android");
             System.loadLibrary("arnetworkal");
             System.loadLibrary("arnetworkal_android");
-            System.loadLibrary("arnetwork");
-            System.loadLibrary("arnetwork_android");
-            System.loadLibrary("arcommands");
-            System.loadLibrary("arcommands_android");
-            System.loadLibrary("json");
             System.loadLibrary("ardiscovery");
             System.loadLibrary("ardiscovery_android");
-            System.loadLibrary("arstream");
-            System.loadLibrary("arstream_android");
             System.loadLibrary("arcontroller");
             System.loadLibrary("arcontroller_android");
 

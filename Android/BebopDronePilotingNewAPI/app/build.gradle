@@ -33,11 +33,8 @@ android {
 
 dependencies {
     compile rootProject.ext.androidSupportAppcompatVersion
-    compile project(':libARCommands')
     compile project(':libARController')
     compile project(':libARDiscovery')
-    compile project(':libARNetwork')
     compile project(':libARNetworkAL')
     compile project(':libARSAL')
-    compile project(':libARStream')
 }
