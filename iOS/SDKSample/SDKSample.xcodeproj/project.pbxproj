@@ -1,0 +1,564 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		F828FA6A1C8604150075E867 /* JSDrone.m in Sources */ = {isa = PBXBuildFile; fileRef = F828FA691C8604150075E867 /* JSDrone.m */; };
+		F828FA701C8608B90075E867 /* JSVC.m in Sources */ = {isa = PBXBuildFile; fileRef = F828FA6F1C8608B90075E867 /* JSVC.m */; };
+		F828FA731C860BEB0075E867 /* JSVideoView.m in Sources */ = {isa = PBXBuildFile; fileRef = F828FA721C860BEB0075E867 /* JSVideoView.m */; };
+		F828FA761C86EB630075E867 /* MiniDrone.m in Sources */ = {isa = PBXBuildFile; fileRef = F828FA751C86EB620075E867 /* MiniDrone.m */; };
+		F828FA791C86F14C0075E867 /* MiniDroneVC.m in Sources */ = {isa = PBXBuildFile; fileRef = F828FA781C86F14C0075E867 /* MiniDroneVC.m */; };
+		F828FA7D1C8729860075E867 /* SkyController.m in Sources */ = {isa = PBXBuildFile; fileRef = F828FA7C1C8729860075E867 /* SkyController.m */; };
+		F828FA801C8750070075E867 /* SkyControllerVC.m in Sources */ = {isa = PBXBuildFile; fileRef = F828FA7F1C8750070075E867 /* SkyControllerVC.m */; };
+		F8838E571C80874900B49443 /* BebopVideoView.m in Sources */ = {isa = PBXBuildFile; fileRef = F8838E561C80874900B49443 /* BebopVideoView.m */; };
+		F8838E691C80A51300B49443 /* SDCardModule.m in Sources */ = {isa = PBXBuildFile; fileRef = F8838E681C80A51200B49443 /* SDCardModule.m */; };
+		F8B03D881C7DA4E900149B4F /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = F8B03D871C7DA4E900149B4F /* main.m */; };
+		F8B03D8B1C7DA4E900149B4F /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = F8B03D8A1C7DA4E900149B4F /* AppDelegate.m */; };
+		F8B03D911C7DA4E900149B4F /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F8B03D8F1C7DA4E900149B4F /* Main.storyboard */; };
+		F8B03D931C7DA4E900149B4F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F8B03D921C7DA4E900149B4F /* Assets.xcassets */; };
+		F8B03D961C7DA4E900149B4F /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F8B03D941C7DA4E900149B4F /* LaunchScreen.storyboard */; };
+		F8B03DBF1C7DA82600149B4F /* DeviceListVC.m in Sources */ = {isa = PBXBuildFile; fileRef = F8B03DBE1C7DA82600149B4F /* DeviceListVC.m */; };
+		F8B03DC21C7DA90900149B4F /* BebopVC.m in Sources */ = {isa = PBXBuildFile; fileRef = F8B03DC11C7DA90900149B4F /* BebopVC.m */; };
+		F8F74D301C7DC7BE00DC5FA1 /* DroneDiscoverer.m in Sources */ = {isa = PBXBuildFile; fileRef = F8F74D2F1C7DC7BE00DC5FA1 /* DroneDiscoverer.m */; };
+		F8F74D441C7DEAB700DC5FA1 /* BebopDrone.m in Sources */ = {isa = PBXBuildFile; fileRef = F8F74D431C7DEAB700DC5FA1 /* BebopDrone.m */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		F828FA681C8604150075E867 /* JSDrone.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSDrone.h; path = Drones/JSDrone.h; sourceTree = "<group>"; };
+		F828FA691C8604150075E867 /* JSDrone.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSDrone.m; path = Drones/JSDrone.m; sourceTree = "<group>"; };
+		F828FA6E1C8608B90075E867 /* JSVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSVC.h; path = ViewControllers/JSVC.h; sourceTree = "<group>"; };
+		F828FA6F1C8608B90075E867 /* JSVC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSVC.m; path = ViewControllers/JSVC.m; sourceTree = "<group>"; };
+		F828FA711C860BEB0075E867 /* JSVideoView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSVideoView.h; path = Views/JSVideoView.h; sourceTree = "<group>"; };
+		F828FA721C860BEB0075E867 /* JSVideoView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSVideoView.m; path = Views/JSVideoView.m; sourceTree = "<group>"; };
+		F828FA741C86EB620075E867 /* MiniDrone.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MiniDrone.h; path = Drones/MiniDrone.h; sourceTree = "<group>"; };
+		F828FA751C86EB620075E867 /* MiniDrone.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MiniDrone.m; path = Drones/MiniDrone.m; sourceTree = "<group>"; };
+		F828FA771C86F14C0075E867 /* MiniDroneVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MiniDroneVC.h; path = ViewControllers/MiniDroneVC.h; sourceTree = "<group>"; };
+		F828FA781C86F14C0075E867 /* MiniDroneVC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MiniDroneVC.m; path = ViewControllers/MiniDroneVC.m; sourceTree = "<group>"; };
+		F828FA7B1C8729860075E867 /* SkyController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SkyController.h; path = Drones/SkyController.h; sourceTree = "<group>"; };
+		F828FA7C1C8729860075E867 /* SkyController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SkyController.m; path = Drones/SkyController.m; sourceTree = "<group>"; };
+		F828FA7E1C8750070075E867 /* SkyControllerVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SkyControllerVC.h; path = ViewControllers/SkyControllerVC.h; sourceTree = "<group>"; };
+		F828FA7F1C8750070075E867 /* SkyControllerVC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SkyControllerVC.m; path = ViewControllers/SkyControllerVC.m; sourceTree = "<group>"; };
+		F8838E551C80874900B49443 /* BebopVideoView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BebopVideoView.h; path = Views/BebopVideoView.h; sourceTree = "<group>"; };
+		F8838E561C80874900B49443 /* BebopVideoView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = BebopVideoView.m; path = Views/BebopVideoView.m; sourceTree = "<group>"; };
+		F8838E671C80A51200B49443 /* SDCardModule.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SDCardModule.h; path = Drones/SDCardModule.h; sourceTree = "<group>"; };
+		F8838E681C80A51200B49443 /* SDCardModule.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SDCardModule.m; path = Drones/SDCardModule.m; sourceTree = "<group>"; };
+		F8B03D831C7DA4E900149B4F /* SDKSample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SDKSample.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		F8B03D871C7DA4E900149B4F /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		F8B03D891C7DA4E900149B4F /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
+		F8B03D8A1C7DA4E900149B4F /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
+		F8B03D901C7DA4E900149B4F /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		F8B03D921C7DA4E900149B4F /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		F8B03D951C7DA4E900149B4F /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		F8B03D971C7DA4E900149B4F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		F8B03DBD1C7DA82600149B4F /* DeviceListVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DeviceListVC.h; path = ViewControllers/DeviceListVC.h; sourceTree = "<group>"; };
+		F8B03DBE1C7DA82600149B4F /* DeviceListVC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = DeviceListVC.m; path = ViewControllers/DeviceListVC.m; sourceTree = "<group>"; };
+		F8B03DC01C7DA90900149B4F /* BebopVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BebopVC.h; path = ViewControllers/BebopVC.h; sourceTree = "<group>"; };
+		F8B03DC11C7DA90900149B4F /* BebopVC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = BebopVC.m; path = ViewControllers/BebopVC.m; sourceTree = "<group>"; };
+		F8F74D2E1C7DC7BE00DC5FA1 /* DroneDiscoverer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DroneDiscoverer.h; path = Discovery/DroneDiscoverer.h; sourceTree = "<group>"; };
+		F8F74D2F1C7DC7BE00DC5FA1 /* DroneDiscoverer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = DroneDiscoverer.m; path = Discovery/DroneDiscoverer.m; sourceTree = "<group>"; };
+		F8F74D421C7DEAB700DC5FA1 /* BebopDrone.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BebopDrone.h; path = Drones/BebopDrone.h; sourceTree = "<group>"; };
+		F8F74D431C7DEAB700DC5FA1 /* BebopDrone.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = BebopDrone.m; path = Drones/BebopDrone.m; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		F8B03D801C7DA4E900149B4F /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		F8B03D7A1C7DA4E900149B4F = {
+			isa = PBXGroup;
+			children = (
+				F8B03D851C7DA4E900149B4F /* SDKSample */,
+				F8B03D841C7DA4E900149B4F /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		F8B03D841C7DA4E900149B4F /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				F8B03D831C7DA4E900149B4F /* SDKSample.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		F8B03D851C7DA4E900149B4F /* SDKSample */ = {
+			isa = PBXGroup;
+			children = (
+				F8B03DBC1C7DA7CE00149B4F /* Views */,
+				F8B03DBB1C7DA7C400149B4F /* Discovery */,
+				F8B03DBA1C7DA7BE00149B4F /* Drones */,
+				F8B03DB91C7DA7B500149B4F /* ViewControllers */,
+				F8B03D891C7DA4E900149B4F /* AppDelegate.h */,
+				F8B03D8A1C7DA4E900149B4F /* AppDelegate.m */,
+				F8B03D8F1C7DA4E900149B4F /* Main.storyboard */,
+				F8B03D921C7DA4E900149B4F /* Assets.xcassets */,
+				F8B03D941C7DA4E900149B4F /* LaunchScreen.storyboard */,
+				F8B03D971C7DA4E900149B4F /* Info.plist */,
+				F8B03D861C7DA4E900149B4F /* Supporting Files */,
+			);
+			path = SDKSample;
+			sourceTree = "<group>";
+		};
+		F8B03D861C7DA4E900149B4F /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				F8B03D871C7DA4E900149B4F /* main.m */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		F8B03DB91C7DA7B500149B4F /* ViewControllers */ = {
+			isa = PBXGroup;
+			children = (
+				F828FA7E1C8750070075E867 /* SkyControllerVC.h */,
+				F828FA7F1C8750070075E867 /* SkyControllerVC.m */,
+				F828FA771C86F14C0075E867 /* MiniDroneVC.h */,
+				F828FA781C86F14C0075E867 /* MiniDroneVC.m */,
+				F828FA6E1C8608B90075E867 /* JSVC.h */,
+				F828FA6F1C8608B90075E867 /* JSVC.m */,
+				F8B03DBD1C7DA82600149B4F /* DeviceListVC.h */,
+				F8B03DBE1C7DA82600149B4F /* DeviceListVC.m */,
+				F8B03DC01C7DA90900149B4F /* BebopVC.h */,
+				F8B03DC11C7DA90900149B4F /* BebopVC.m */,
+			);
+			name = ViewControllers;
+			sourceTree = "<group>";
+		};
+		F8B03DBA1C7DA7BE00149B4F /* Drones */ = {
+			isa = PBXGroup;
+			children = (
+				F828FA7B1C8729860075E867 /* SkyController.h */,
+				F828FA7C1C8729860075E867 /* SkyController.m */,
+				F828FA741C86EB620075E867 /* MiniDrone.h */,
+				F828FA751C86EB620075E867 /* MiniDrone.m */,
+				F828FA681C8604150075E867 /* JSDrone.h */,
+				F828FA691C8604150075E867 /* JSDrone.m */,
+				F8F74D421C7DEAB700DC5FA1 /* BebopDrone.h */,
+				F8F74D431C7DEAB700DC5FA1 /* BebopDrone.m */,
+				F8838E671C80A51200B49443 /* SDCardModule.h */,
+				F8838E681C80A51200B49443 /* SDCardModule.m */,
+			);
+			name = Drones;
+			sourceTree = "<group>";
+		};
+		F8B03DBB1C7DA7C400149B4F /* Discovery */ = {
+			isa = PBXGroup;
+			children = (
+				F8F74D2E1C7DC7BE00DC5FA1 /* DroneDiscoverer.h */,
+				F8F74D2F1C7DC7BE00DC5FA1 /* DroneDiscoverer.m */,
+			);
+			name = Discovery;
+			sourceTree = "<group>";
+		};
+		F8B03DBC1C7DA7CE00149B4F /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				F828FA711C860BEB0075E867 /* JSVideoView.h */,
+				F828FA721C860BEB0075E867 /* JSVideoView.m */,
+				F8838E551C80874900B49443 /* BebopVideoView.h */,
+				F8838E561C80874900B49443 /* BebopVideoView.m */,
+			);
+			name = Views;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		F8B03D821C7DA4E900149B4F /* SDKSample */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = F8B03DB01C7DA4E900149B4F /* Build configuration list for PBXNativeTarget "SDKSample" */;
+			buildPhases = (
+				F828FA811C8765710075E867 /* ShellScript */,
+				F8B03D7F1C7DA4E900149B4F /* Sources */,
+				F8B03D801C7DA4E900149B4F /* Frameworks */,
+				F8B03D811C7DA4E900149B4F /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = SDKSample;
+			productName = SDKSample;
+			productReference = F8B03D831C7DA4E900149B4F /* SDKSample.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		F8B03D7B1C7DA4E900149B4F /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0720;
+				ORGANIZATIONNAME = Parrot;
+				TargetAttributes = {
+					F8B03D821C7DA4E900149B4F = {
+						CreatedOnToolsVersion = 7.2;
+					};
+				};
+			};
+			buildConfigurationList = F8B03D7E1C7DA4E900149B4F /* Build configuration list for PBXProject "SDKSample" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = F8B03D7A1C7DA4E900149B4F;
+			productRefGroup = F8B03D841C7DA4E900149B4F /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				F8B03D821C7DA4E900149B4F /* SDKSample */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		F8B03D811C7DA4E900149B4F /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F8B03D961C7DA4E900149B4F /* LaunchScreen.storyboard in Resources */,
+				F8B03D931C7DA4E900149B4F /* Assets.xcassets in Resources */,
+				F8B03D911C7DA4E900149B4F /* Main.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		F828FA811C8765710075E867 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "LATEST_SDK_VERSION='3.8.3'\nSDK_PACKET_NAME='ARSDK3_iOS_3_8_3.zip'\nSDK_DOWNLOAD_ADDRESS=\"https://github.com/Parrot-Developers/arsdk_manifests/releases/download/ARSDK3_version_3_8_3/$SDK_PACKET_NAME\"\n\nPREBUILT_FOLDER_PATH='ARSDK3_iOS'\nSDK_VERSION_FILE='sdk_version.txt'\nVERSION_FILEPATH=\"$PREBUILT_FOLDER_PATH/$SDK_VERSION_FILE\"\nshould_download=YES\n\nif [ \"${CONFIGURATION}\" != \"DebugWithLocalSDK\" ]; then\n    installed_version=$(cat $VERSION_FILEPATH 2>/dev/null)\n\n    if [ x\"$installed_version\" = x\"$LATEST_SDK_VERSION\" ]; then\n        should_download=NO\n    fi\n\n    if [ x\"$should_download\" = xYES ] ; then\n        echo \"Installing the version $LATEST_SDK_VERSION of the ARSDK\"\n\n        #remove current sdk\n        rm -rf $PREBUILT_FOLDER_PATH\n\n        #download and unzip latest sdk\n        wget $SDK_DOWNLOAD_ADDRESS\n        unzip $SDK_PACKET_NAME -d $PREBUILT_FOLDER_PATH\n\n        #write the current version in the version file\n        echo $LATEST_SDK_VERSION > $VERSION_FILEPATH\n\n        #remove downloaded zip file\n        rm $SDK_PACKET_NAME\n    fi\nfi\n\n";
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		F8B03D7F1C7DA4E900149B4F /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F8838E691C80A51300B49443 /* SDCardModule.m in Sources */,
+				F8B03D8B1C7DA4E900149B4F /* AppDelegate.m in Sources */,
+				F828FA731C860BEB0075E867 /* JSVideoView.m in Sources */,
+				F8B03DC21C7DA90900149B4F /* BebopVC.m in Sources */,
+				F8B03D881C7DA4E900149B4F /* main.m in Sources */,
+				F8F74D441C7DEAB700DC5FA1 /* BebopDrone.m in Sources */,
+				F828FA701C8608B90075E867 /* JSVC.m in Sources */,
+				F828FA761C86EB630075E867 /* MiniDrone.m in Sources */,
+				F828FA791C86F14C0075E867 /* MiniDroneVC.m in Sources */,
+				F828FA6A1C8604150075E867 /* JSDrone.m in Sources */,
+				F8B03DBF1C7DA82600149B4F /* DeviceListVC.m in Sources */,
+				F828FA801C8750070075E867 /* SkyControllerVC.m in Sources */,
+				F8838E571C80874900B49443 /* BebopVideoView.m in Sources */,
+				F828FA7D1C8729860075E867 /* SkyController.m in Sources */,
+				F8F74D301C7DC7BE00DC5FA1 /* DroneDiscoverer.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXVariantGroup section */
+		F8B03D8F1C7DA4E900149B4F /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				F8B03D901C7DA4E900149B4F /* Base */,
+			);
+			name = Main.storyboard;
+			sourceTree = "<group>";
+		};
+		F8B03D941C7DA4E900149B4F /* LaunchScreen.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				F8B03D951C7DA4E900149B4F /* Base */,
+			);
+			name = LaunchScreen.storyboard;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		F828FA821C8770830075E867 /* DebugWithLocalSDK */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = DebugWithLocalSDK;
+		};
+		F828FA831C8770830075E867 /* DebugWithLocalSDK */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				"DEAD_CODE_STRIPPING[arch=*]" = YES;
+				ENABLE_BITCODE = NO;
+				"HEADER_SEARCH_PATHS[sdk=iphoneos*]" = "../../../../out/iOS-iphoneos/staging/usr/include";
+				"HEADER_SEARCH_PATHS[sdk=iphonesimulator*]" = "../../../../out/iOS-iphonesimulator/staging/usr/include";
+				INFOPLIST_FILE = SDKSample/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				"LIBRARY_SEARCH_PATHS[sdk=iphoneos*]" = "../../../../out/iOS-iphoneos/staging/usr/lib";
+				"LIBRARY_SEARCH_PATHS[sdk=iphonesimulator*]" = "../../../../out/iOS-iphonesimulator/staging/usr/lib";
+				OTHER_CFLAGS = "";
+				OTHER_LDFLAGS = (
+					"-larcommands",
+					"-larcontroller",
+					"-lardiscovery",
+					"-larnetwork",
+					"-larnetworkal",
+					"-larsal",
+					"-larstream",
+					"-larstream2",
+					"-larmavlink",
+					"-ljson",
+					"-larmedia",
+					"-larutils",
+					"-lcurl",
+					"-lardatatransfer",
+					"-lcrypto",
+					"-lz",
+					"-lssl",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.parrot.SDKSample;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = DebugWithLocalSDK;
+		};
+		F8B03DAE1C7DA4E900149B4F /* DebugWithPrecompiledSDK */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = DebugWithPrecompiledSDK;
+		};
+		F8B03DAF1C7DA4E900149B4F /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		F8B03DB11C7DA4E900149B4F /* DebugWithPrecompiledSDK */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				"DEAD_CODE_STRIPPING[arch=*]" = YES;
+				ENABLE_BITCODE = NO;
+				"HEADER_SEARCH_PATHS[sdk=iphoneos*]" = "ARSDK3_iOS/iOS-iphoneos/staging/usr/include";
+				"HEADER_SEARCH_PATHS[sdk=iphonesimulator*]" = "ARSDK3_iOS/iOS-iphonesimulator/staging/usr/include";
+				INFOPLIST_FILE = SDKSample/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				"LIBRARY_SEARCH_PATHS[sdk=iphoneos*]" = "ARSDK3_iOS/iOS-iphoneos/staging/usr/lib";
+				"LIBRARY_SEARCH_PATHS[sdk=iphonesimulator*]" = "ARSDK3_iOS/iOS-iphonesimulator/staging/usr/lib";
+				OTHER_CFLAGS = "";
+				OTHER_LDFLAGS = (
+					"-larcommands",
+					"-larcontroller",
+					"-lardiscovery",
+					"-larnetwork",
+					"-larnetworkal",
+					"-larsal",
+					"-larstream",
+					"-larstream2",
+					"-larmavlink",
+					"-ljson",
+					"-larmedia",
+					"-larutils",
+					"-lcurl",
+					"-lardatatransfer",
+					"-lcrypto",
+					"-lz",
+					"-lssl",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.parrot.SDKSample;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = DebugWithPrecompiledSDK;
+		};
+		F8B03DB21C7DA4E900149B4F /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				"DEAD_CODE_STRIPPING[arch=*]" = YES;
+				ENABLE_BITCODE = NO;
+				"HEADER_SEARCH_PATHS[sdk=iphoneos*]" = "ARSDK3_iOS/iOS-iphoneos/staging/usr/include";
+				"HEADER_SEARCH_PATHS[sdk=iphonesimulator*]" = "ARSDK3_iOS/iOS-iphonesimulator/staging/usr/include";
+				INFOPLIST_FILE = SDKSample/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				"LIBRARY_SEARCH_PATHS[sdk=iphoneos*]" = "ARSDK3_iOS/iOS-iphoneos/staging/usr/lib";
+				"LIBRARY_SEARCH_PATHS[sdk=iphonesimulator*]" = "ARSDK3_iOS/iOS-iphonesimulator/staging/usr/lib";
+				OTHER_CFLAGS = "";
+				OTHER_LDFLAGS = (
+					"-larcommands",
+					"-larcontroller",
+					"-lardiscovery",
+					"-larnetwork",
+					"-larnetworkal",
+					"-larsal",
+					"-larstream",
+					"-larstream2",
+					"-larmavlink",
+					"-ljson",
+					"-larmedia",
+					"-larutils",
+					"-lcurl",
+					"-lardatatransfer",
+					"-lcrypto",
+					"-lz",
+					"-lssl",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.parrot.SDKSample;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		F8B03D7E1C7DA4E900149B4F /* Build configuration list for PBXProject "SDKSample" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F8B03DAE1C7DA4E900149B4F /* DebugWithPrecompiledSDK */,
+				F828FA821C8770830075E867 /* DebugWithLocalSDK */,
+				F8B03DAF1C7DA4E900149B4F /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		F8B03DB01C7DA4E900149B4F /* Build configuration list for PBXNativeTarget "SDKSample" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F8B03DB11C7DA4E900149B4F /* DebugWithPrecompiledSDK */,
+				F828FA831C8770830075E867 /* DebugWithLocalSDK */,
+				F8B03DB21C7DA4E900149B4F /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = F8B03D7B1C7DA4E900149B4F /* Project object */;
+}
