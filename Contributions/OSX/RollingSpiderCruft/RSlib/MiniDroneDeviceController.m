@@ -419,7 +419,7 @@ typedef struct
     
     // Send isPilotingChanged command
     sentStatus = NO;
-    cmdError = ARCOMMANDS_Generator_GenerateCommonControllerStateIsPilotingChanged(cmdbuf, sizeof(cmdbuf), &actualSize, (inHud ? 1 : 0));
+    cmdError = ARCOMMANDS_Generator_GenerateCommonControllerIsPiloting(cmdbuf, sizeof(cmdbuf), &actualSize, (inHud ? 1 : 0));
     if (cmdError == ARCOMMANDS_GENERATOR_OK)
     {
         sentStatus = [self sendData:cmdbuf withSize:actualSize onBufferWithId:[MiniDroneARNetworkConfig c2dAckId]withSendPolicy:ARNETWORK_SEND_POLICY_RETRY withCompletionBlock:nil];
