@@ -241,25 +241,33 @@ public class SkyControllerDrone {
     }
 
     public void takeOff() {
-        if ((mDeviceController != null) && (mSkyControllerState.equals(ARCONTROLLER_DEVICE_STATE_ENUM.ARCONTROLLER_DEVICE_STATE_RUNNING))) {
+        if ((mDeviceController != null) &&
+                (mSkyControllerState.equals(ARCONTROLLER_DEVICE_STATE_ENUM.ARCONTROLLER_DEVICE_STATE_RUNNING)) &&
+                (mDeviceController.getExtensionState().equals(ARCONTROLLER_DEVICE_STATE_ENUM.ARCONTROLLER_DEVICE_STATE_RUNNING))) {
             mDeviceController.getFeatureARDrone3().sendPilotingTakeOff();
         }
     }
 
     public void land() {
-        if ((mDeviceController != null) && (mSkyControllerState.equals(ARCONTROLLER_DEVICE_STATE_ENUM.ARCONTROLLER_DEVICE_STATE_RUNNING))) {
+        if ((mDeviceController != null) &&
+                (mSkyControllerState.equals(ARCONTROLLER_DEVICE_STATE_ENUM.ARCONTROLLER_DEVICE_STATE_RUNNING)) &&
+                (mDeviceController.getExtensionState().equals(ARCONTROLLER_DEVICE_STATE_ENUM.ARCONTROLLER_DEVICE_STATE_RUNNING))) {
             mDeviceController.getFeatureARDrone3().sendPilotingLanding();
         }
     }
 
     public void emergency() {
-        if ((mDeviceController != null) && (mSkyControllerState.equals(ARCONTROLLER_DEVICE_STATE_ENUM.ARCONTROLLER_DEVICE_STATE_RUNNING))) {
+        if ((mDeviceController != null) &&
+                (mSkyControllerState.equals(ARCONTROLLER_DEVICE_STATE_ENUM.ARCONTROLLER_DEVICE_STATE_RUNNING)) &&
+                (mDeviceController.getExtensionState().equals(ARCONTROLLER_DEVICE_STATE_ENUM.ARCONTROLLER_DEVICE_STATE_RUNNING))) {
             mDeviceController.getFeatureARDrone3().sendPilotingEmergency();
         }
     }
 
     public void takePicture() {
-        if ((mDeviceController != null) && (mSkyControllerState.equals(ARCONTROLLER_DEVICE_STATE_ENUM.ARCONTROLLER_DEVICE_STATE_RUNNING))) {
+        if ((mDeviceController != null) &&
+                (mSkyControllerState.equals(ARCONTROLLER_DEVICE_STATE_ENUM.ARCONTROLLER_DEVICE_STATE_RUNNING)) &&
+                (mDeviceController.getExtensionState().equals(ARCONTROLLER_DEVICE_STATE_ENUM.ARCONTROLLER_DEVICE_STATE_RUNNING))) {
             mDeviceController.getFeatureARDrone3().sendMediaRecordPictureV2();
         }
     }

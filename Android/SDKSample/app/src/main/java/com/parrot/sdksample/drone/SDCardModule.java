@@ -128,11 +128,15 @@ public class SDCardModule {
                     ArrayList<ARDataTransferMedia> mediaList = getMediaList();
 
                     ArrayList<ARDataTransferMedia> mediasFromRun = null;
+                    mNbMediasToDownload = 0;
                     if ((mediaList != null) && !mIsCancelled) {
                         mediasFromRun = getRunIdMatchingMedias(mediaList, runId);
+                        mNbMediasToDownload = mediasFromRun.size();
                     }
 
-                    if ((mediasFromRun != null) && !mIsCancelled) {
+                    notifyMatchingMediasFound(mNbMediasToDownload);
+
+                    if ((mediasFromRun != null) && (mNbMediasToDownload != 0) && !mIsCancelled) {
                         downloadMedias(mediasFromRun);
                     }
 
@@ -152,12 +156,16 @@ public class SDCardModule {
                     ArrayList<ARDataTransferMedia> mediaList = getMediaList();
 
                     ArrayList<ARDataTransferMedia> mediasFromDate = null;
+                    mNbMediasToDownload = 0;
                     if ((mediaList != null) && !mIsCancelled) {
                         GregorianCalendar today = new GregorianCalendar();
                         mediasFromDate = getDateMatchingMedias(mediaList, today);
+                        mNbMediasToDownload = mediasFromDate.size();
                     }
 
-                    if ((mediasFromDate != null) && !mIsCancelled) {
+                    notifyMatchingMediasFound(mNbMediasToDownload);
+
+                    if ((mediasFromDate != null) && (mNbMediasToDownload != 0) && !mIsCancelled) {
                         downloadMedias(mediasFromDate);
                     }
 
@@ -212,8 +220,9 @@ public class SDCardModule {
         return mediaList;
     }
 
-    private ArrayList<ARDataTransferMedia> getRunIdMatchingMedias(ArrayList<ARDataTransferMedia> mediaList,
-                                                                  String runId) {
+    private @NonNull ArrayList<ARDataTransferMedia> getRunIdMatchingMedias(
+            ArrayList<ARDataTransferMedia> mediaList,
+            String runId) {
         ArrayList<ARDataTransferMedia> matchingMedias = new ArrayList<>();
         for (ARDataTransferMedia media : mediaList) {
             if (media.getName().contains(runId)) {
@@ -233,10 +242,10 @@ public class SDCardModule {
                                                                  GregorianCalendar matchingCal) {
         ArrayList<ARDataTransferMedia> matchingMedias = new ArrayList<>();
         Calendar mediaCal = new GregorianCalendar();
+        SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HHmmss", Locale.getDefault());
         for (ARDataTransferMedia media : mediaList) {
             // convert date in string to calendar
             String dateStr = media.getDate();
-            SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HHmmss", Locale.getDefault());
             try {
                 Date mediaDate = dateFormatter.parse(dateStr);
                 mediaCal.setTime(mediaDate);
@@ -261,9 +270,7 @@ public class SDCardModule {
     }
 
     private void downloadMedias(@NonNull ArrayList<ARDataTransferMedia> matchingMedias) {
-        mNbMediasToDownload = matchingMedias.size();
         mCurrentDownloadIndex = 1;
-        notifyMatchingMediasFound(mNbMediasToDownload);
 
         ARDataTransferMediasDownloader mediasDownloader = null;
         if (mDataTransferManager != null)
