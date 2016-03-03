@@ -27,6 +27,7 @@ public class MiniDroneActivity extends AppCompatActivity {
 
     private TextView mBatteryLabel;
     private Button mTakeOffLandBt;
+    private Button mDownloadBt;
 
     private int mNbMaxDownload;
     private int mCurrentDownloadIndex;
@@ -55,6 +56,7 @@ public class MiniDroneActivity extends AppCompatActivity {
             mConnectionProgressDialog = new ProgressDialog(this, R.style.AppCompatAlertDialogStyle);
             mConnectionProgressDialog.setIndeterminate(true);
             mConnectionProgressDialog.setMessage("Connecting ...");
+            mConnectionProgressDialog.setCancelable(false);
             mConnectionProgressDialog.show();
 
             // if the connection to the MiniDrone fails, finish the activity
@@ -71,11 +73,14 @@ public class MiniDroneActivity extends AppCompatActivity {
             mConnectionProgressDialog = new ProgressDialog(this, R.style.AppCompatAlertDialogStyle);
             mConnectionProgressDialog.setIndeterminate(true);
             mConnectionProgressDialog.setMessage("Disconnecting ...");
+            mConnectionProgressDialog.setCancelable(false);
             mConnectionProgressDialog.show();
 
             if (!mMiniDrone.disconnect()) {
                 finish();
             }
+        } else {
+            finish();
         }
     }
 
@@ -109,7 +114,9 @@ public class MiniDroneActivity extends AppCompatActivity {
             }
         });
 
-        findViewById(R.id.downloadBt).setOnClickListener(new View.OnClickListener() {
+        mDownloadBt = (Button)findViewById(R.id.downloadBt);
+        mDownloadBt.setEnabled(false);
+        mDownloadBt.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 mMiniDrone.getLastFlightMedias();
 
@@ -353,14 +360,17 @@ public class MiniDroneActivity extends AppCompatActivity {
                 case ARCOMMANDS_MINIDRONE_PILOTINGSTATE_FLYINGSTATECHANGED_STATE_LANDED:
                     mTakeOffLandBt.setText("Take off");
                     mTakeOffLandBt.setEnabled(true);
+                    mDownloadBt.setEnabled(true);
                     break;
                 case ARCOMMANDS_MINIDRONE_PILOTINGSTATE_FLYINGSTATECHANGED_STATE_FLYING:
                 case ARCOMMANDS_MINIDRONE_PILOTINGSTATE_FLYINGSTATECHANGED_STATE_HOVERING:
                     mTakeOffLandBt.setText("Land");
                     mTakeOffLandBt.setEnabled(true);
+                    mDownloadBt.setEnabled(false);
                     break;
                 default:
                     mTakeOffLandBt.setEnabled(false);
+                    mDownloadBt.setEnabled(false);
             }
         }
 
