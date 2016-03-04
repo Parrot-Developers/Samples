@@ -7,3 +7,7 @@
 /build
 /captures
 /.idea/
+/buildWithLocalSDK/.idea/
+/buildWithPrecompiledSDK/.idea/
+/buildWithLocalSDK/build/
+/buildWithPrecompiledSDK/build/

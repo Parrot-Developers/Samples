@@ -1,0 +1,31 @@
+include 'libARSAL'
+project(':libARSAL').projectDir = new File('../../../../libARSAL')
+include 'libARNetworkAL'
+project(':libARNetworkAL').projectDir = new File('../../../../libARNetworkAL')
+include 'libARNetwork'
+project(':libARNetwork').projectDir = new File('../../../../libARNetwork')
+include 'libARCommands'
+project(':libARCommands').projectDir = new File('../../../../libARCommands')
+include 'libARStream'
+project(':libARStream').projectDir = new File('../../../../libARStream')
+include 'libARStream2'
+project(':libARStream2').projectDir = new File('../../../../libARStream2')
+include 'libARDiscovery'
+project(':libARDiscovery').projectDir = new File('../../../../libARDiscovery')
+include 'libARUtils'
+project(':libARUtils').projectDir = new File('../../../../libARUtils')
+include 'libARDataTransfer'
+project(':libARDataTransfer').projectDir = new File('../../../../libARDataTransfer')
+include 'libARMedia'
+project(':libARMedia').projectDir = new File('../../../../libARMedia')
+include 'libARUpdater'
+project(':libARUpdater').projectDir = new File('../../../../libARUpdater')
+include 'libARMavlink'
+project(':libARMavlink').projectDir = new File('../../../../libARMavlink')
+include 'libARController'
+project(':libARController').projectDir = new File('../../../../libARController')
+include 'arsdk'
+project(':arsdk').projectDir = new File('../../../../ARSDK3/arsdk/')
+
+include ':app'
+project(':app').projectDir = new File('../app/')
