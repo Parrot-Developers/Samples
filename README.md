@@ -2,22 +2,62 @@ Samples
 =======
 This repo contains sample files to show you how to use the SDK. 
 
-Runnable samples
+Mobile samples
 ---------------
 
-### iOS
-#### [RSPilotingNewAPI](https://github.com/ARDroneSDK3/Samples/tree/master/iOS/RSPilotingNewAPI)
-This example enables you to **discover** and **connect** to a RollingSpider and **send and receive commands** to pilot it and get its battery level.<br/> **It uses the new and simplified API (ARController)**
+The mobile samples use the following architecture:<br/> 
+![alt mobile_uml](https://raw.githubusercontent.com/Parrot-Developers/Samples/master/Android/uml/mobile_uml_classes.png)
 
-#### [BebopPilotingNewAPI](https://github.com/ARDroneSDK3/Samples/tree/master/iOS/BebopPilotingNewAPI)
-This example enables you to **discover** and **connect** to a Bebop drone and **send and receive commands** to pilot it, get its battery level and display video stream.<br/> **It uses the new and simplified API (ARController)**
+They are standalone, this means that you can clone this repo and use them without compiling the SDK. To enable this, they will use the precompiled SDK libraries.
+
+The mobile samples show you how to connect, pilot, take pictures, display video stream if available, and download medias from the drone.
+
+They support the following drones:
+
+* Bebop 2
+* Bebop 
+* JumpingSumo 
+* Jumping Race
+* Jumping Night
+* MiniDrone Rolling Spider
+* Airborne Cargo
+* Airborne Night
+
+
+*What if you want to only build an app for the Bebop?
+Simply delete other files than*
+
+* *DeviceListActivity*
+* *DroneDiscoverer*
+* *BebopActivity*
+* *BebopVideoView*
+* *BebopDrone*
+* *SDCardModule*
+
+
+### iOS
+#### [SDKSample](https://github.com/ARDroneSDK3/Samples/tree/master/iOS/SDKSample)
+**Use the precompiled SDK (hosted on Github)**:<br/>
+Use the buildWithPrecompiledSDK configuration to use the precompiled libraries. (Scheme->Edit Scheme
+
+**Use your own compiled SDK**:<br/>
+Use the buildWithLocalSDK configuration to use the precompiled libraries. 
 
 ### Android
-#### [BebopDronePilotingNewAPI](https://github.com/ARDroneSDK3/Samples/tree/master/Android/BebopDronePilotingNewAPI)
-This example enables you to **discover** and **connect** to a Bebop drone, **send and receive commands** to pilot it and get its battery level and other states.<br/> **It uses the new and simplified API (ARController)**
+#### [SDKSample](https://github.com/ARDroneSDK3/Samples/tree/master/Android/SDKSample)
 
-#### [RollingSpiderPilotingNewAPI](https://github.com/ARDroneSDK3/Samples/tree/master/Android/RollingSpiderPilotingNewAPI)
-This example enables you to **discover** and **connect** to a RollingSpider, **send and receive commands** to pilot it and get its battery level and other states.<br/> **It uses the new and simplified API (ARController)**
+**Use the precompiled SDK (hosted on JCenter)**:<br/>
+With Android Studio, open the settings.gradle located in `SDKSample/buildWithPrecompiledSDK`. 
+
+**Use your own compiled SDK**:<br/>
+You can build this sample with Alchemy. In your `<SDK>` execute this command:
+
+`./build.sh -p android-forall -t build-sample`
+
+Otherwise, if you want to use Android Studio build, first execute this command in `<SDK>`:
+`./build.sh -p android-forall -t build-sample-jni`
+
+Then, in Android Studio, open the settings.gradle located in `SDKSample/buildWithLocalSDK`.
 
 ### Unix
 #### [JSPilotingNewAPI](https://github.com/ARDroneSDK3/Samples/tree/master/Unix/JSPilotingNewAPI)
