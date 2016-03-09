@@ -76,7 +76,7 @@ void onDisconnectNetwork (ARNETWORK_Manager_t *manager, ARNETWORKAL_Manager_t *a
 void stopNetwork (DEVICE_MANAGER_t *deviceManager);
 
 void registerARCommandsCallbacks (IHM_t *ihm);
-void unregisterARCommandsCallbacks();
+void unregisterARCommandsCallbacks(void);
 
 void *looperRun(void* data);
 void *readerRun(void* data);

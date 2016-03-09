@@ -170,7 +170,6 @@ ARCODECS_Manager_t* ARCODECS_Manager_New (ARCODECS_Manager_GetNextDataCallback_t
 ARCODECS_Manager_Frame_t* ARCODECS_Manager_Decode(ARCODECS_Manager_t *manager, eARCODECS_ERROR *error)
 {
     ARCODECS_Manager_Frame_t *outputFrame = NULL;
-    int ret;
     eARCODECS_ERROR err = ARCODECS_OK;
     
     if(manager == NULL)
@@ -325,7 +324,7 @@ ARCODECS_Manager_FFMPEGDecoder_t *ARCODECS_Manager_NewFFMPEGDecoder (eARCODECS_E
     /* No else: skipped by an error */
     if(localError == ARCODECS_OK)
     {
-        ffmpegDecoder->decodedFrame = avcodec_alloc_frame();
+        ffmpegDecoder->decodedFrame = av_frame_alloc();
         if (ffmpegDecoder->decodedFrame == NULL)
         {
             localError = ARCODECS_ERROR_ALLOC;
@@ -360,7 +359,7 @@ void ARCODECS_Manager_DeleteFFMPEGDecoder (ARCODECS_Manager_FFMPEGDecoder_t **ff
         {
             if((*ffmpegDecoder)->decodedFrame != NULL)
             {
-                avcodec_free_frame (&((*ffmpegDecoder)->decodedFrame));
+                av_frame_free (&((*ffmpegDecoder)->decodedFrame));
             }
             /* No else: No decodedFrame to free */
             

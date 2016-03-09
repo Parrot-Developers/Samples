@@ -82,8 +82,6 @@
  *
  *****************************************/
 
-static char fifo_file_name[256] = "";
-
 static ARNETWORK_IOBufferParam_t c2dParams[] = {
     {
         .ID = JS_NET_CD_NONACK_ID,
@@ -379,11 +377,6 @@ int startNetwork (JS_MANAGER_t *jsManager)
 
 void stopNetwork (JS_MANAGER_t *jsManager)
 {
-    int failed = 0;
-    eARNETWORK_ERROR netError = ARNETWORK_OK;
-    eARNETWORKAL_ERROR netAlError = ARNETWORKAL_OK;
-    int pingDelay = 0; // 0 means default, -1 means no ping
-
     ARSAL_PRINT(ARSAL_PRINT_INFO, TAG, "- Stop ARNetwork");
 
     // ARNetwork cleanup
@@ -466,9 +459,6 @@ int startVideo(JS_MANAGER_t *jsManager)
 
 void stopVideo(JS_MANAGER_t *jsManager)
 {
-    int failed = 0;
-    eARSTREAM_ERROR err = ARSTREAM_OK;
-
     ARSAL_PRINT(ARSAL_PRINT_INFO, TAG, "- Stop ARStream");
 
     if (jsManager->streamReader)

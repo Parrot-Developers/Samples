@@ -173,7 +173,7 @@ static int commandBufferIds[] = {
 };
 static const size_t numOfCommandBufferIds = sizeof(commandBufferIds) / sizeof(int);
 
-void *readerRun (void* data)
+static void *readerRun (void* data)
 {
     BD_MANAGER_t *deviceManager = NULL;
     int bufferId = 0;
@@ -349,7 +349,7 @@ int main (int argc, char *argv[])
     if (!failed)
     {
         // Create and start reader threads.
-        int readerThreadIndex = 0;
+        unsigned int readerThreadIndex = 0;
         for (readerThreadIndex = 0 ; readerThreadIndex < numOfCommandBufferIds ; readerThreadIndex++)
         {
             // initialize reader thread data
@@ -375,7 +375,7 @@ int main (int argc, char *argv[])
         if (deviceManager->readerThreads != NULL)
         {
             // Stop reader Threads
-            int readerThreadIndex = 0;
+            unsigned int readerThreadIndex = 0;
             for (readerThreadIndex = 0 ; readerThreadIndex < numOfCommandBufferIds ; readerThreadIndex++)
             {
                 if (deviceManager->readerThreads[readerThreadIndex] != NULL)
@@ -514,11 +514,6 @@ int startNetwork (BD_MANAGER_t *deviceManager)
 
 void stopNetwork (BD_MANAGER_t *deviceManager)
 {
-    int failed = 0;
-    eARNETWORK_ERROR netError = ARNETWORK_OK;
-    eARNETWORKAL_ERROR netAlError = ARNETWORKAL_OK;
-    int pingDelay = 0; // 0 means default, -1 means no ping
-
     ARSAL_PRINT(ARSAL_PRINT_INFO, TAG, "- Stop ARNetwork");
 
     // ARNetwork cleanup
@@ -601,9 +596,6 @@ int startVideo(BD_MANAGER_t *deviceManager)
 
 void stopVideo(BD_MANAGER_t *deviceManager)
 {
-    int failed = 0;
-    eARSTREAM_ERROR err = ARSTREAM_OK;
-
     ARSAL_PRINT(ARSAL_PRINT_INFO, TAG, "- Stop ARStream");
 
     if (deviceManager->streamReader)

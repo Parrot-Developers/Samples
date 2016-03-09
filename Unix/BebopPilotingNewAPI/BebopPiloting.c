@@ -389,7 +389,6 @@ void stateChanged (eARCONTROLLER_DEVICE_STATE newState, eARCONTROLLER_ERROR erro
 void commandReceived (eARCONTROLLER_DICTIONARY_KEY commandKey, ARCONTROLLER_DICTIONARY_ELEMENT_t *elementDictionary, void *customData)
 {
     ARCONTROLLER_Device_t *deviceController = customData;
-    eARCONTROLLER_ERROR error = ARCONTROLLER_OK;
     
     if (deviceController != NULL)
     {

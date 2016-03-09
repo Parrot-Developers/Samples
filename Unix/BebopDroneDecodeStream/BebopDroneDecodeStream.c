@@ -202,7 +202,7 @@ int gIHMRun = 0;
 char gErrorStr[ERROR_STR_LENGTH];
 
 // reader thread
-void *readerRun (void* data)
+static void *readerRun (void* data)
 {
     BD_MANAGER_t *deviceManager = NULL;
     int bufferId = 0;
@@ -328,7 +328,7 @@ void* Decode_RunDataThread(void *customData)
                                         (const uint8_t *const *)src_data, src_linesize,
                                         PIX_FMT_YUV420P, decodedFrame->width, decodedFrame->height, 1);*/
                 
-                AVFrame *avFrame = avcodec_alloc_frame();
+                AVFrame *avFrame = av_frame_alloc();
                 if (avFrame != NULL)
                 {
                     avFrame->width = decodedFrame->width;
@@ -345,7 +345,7 @@ void* Decode_RunDataThread(void *customData)
                     avFrame->data[2] = decodedFrame->componentArray[2].data;
 
                     avpicture_layout((AVPicture*)avFrame, PIX_FMT_YUV420P, decodedFrame->width, decodedFrame->height, decodedOut, pic_size);
-                    avcodec_free_frame(&avFrame);
+                    av_frame_free(&avFrame);
                 }
                 
                 if (decodedOut != NULL)
@@ -368,7 +368,7 @@ void* Decode_RunDataThread(void *customData)
 }
 
 // looper thread
-void *looperRun (void* data)
+static void *looperRun (void* data)
 {
     BD_MANAGER_t *deviceManager = (BD_MANAGER_t *)data;
     
@@ -548,7 +548,7 @@ int main (int argc, char *argv[])
     if (!failed)
     {
         // Create and start reader threads.
-        int readerThreadIndex = 0;
+        unsigned int readerThreadIndex = 0;
         for (readerThreadIndex = 0 ; readerThreadIndex < numOfCommandBufferIds ; readerThreadIndex++)
         {
             // initialize reader thread data
@@ -622,7 +622,7 @@ int main (int argc, char *argv[])
         if (deviceManager->readerThreads != NULL)
         {
             // Stop reader Threads
-            int readerThreadIndex = 0;
+            unsigned int readerThreadIndex = 0;
             for (readerThreadIndex = 0 ; readerThreadIndex < numOfCommandBufferIds ; readerThreadIndex++)
             {
                 if (deviceManager->readerThreads[readerThreadIndex] != NULL)
@@ -809,11 +809,6 @@ int startNetwork (BD_MANAGER_t *deviceManager)
 
 void stopNetwork (BD_MANAGER_t *deviceManager)
 {
-    int failed = 0;
-    eARNETWORK_ERROR netError = ARNETWORK_OK;
-    eARNETWORKAL_ERROR netAlError = ARNETWORKAL_OK;
-    int pingDelay = 0; // 0 means default, -1 means no ping
-
     ARSAL_PRINT(ARSAL_PRINT_INFO, TAG, "- Stop ARNetwork");
 
     // ARNetwork cleanup
@@ -898,9 +893,6 @@ int startVideo(BD_MANAGER_t *deviceManager)
 
 void stopVideo(BD_MANAGER_t *deviceManager)
 {
-    int failed = 0;
-    eARSTREAM_ERROR err = ARSTREAM_OK;
-
     ARSAL_PRINT(ARSAL_PRINT_INFO, TAG, "- Stop ARStream");
 
     if (deviceManager->streamReader)
@@ -1259,7 +1251,7 @@ void registerARCommandsCallbacks (BD_MANAGER_t *deviceManager)
     // ADD HERE THE CALLBACKS YOU ARE INTERESTED IN
 }
 
-void unregisterARCommandsCallbacks ()
+void unregisterARCommandsCallbacks (void)
 {
     ARCOMMANDS_Decoder_SetCommonCommonStateBatteryStateChangedCallback (NULL, NULL);
     ARCOMMANDS_Decoder_SetARDrone3PilotingStateFlyingStateChangedCallback(NULL, NULL);
@@ -1536,7 +1528,6 @@ void flushFifo(BD_MANAGER_t *deviceManager)
 {
     ARSAL_Mutex_Lock (&(deviceManager->mutex));
     
-    int shouldContinue = 1;
     int currentRawFrameIdx = deviceManager->fifoReadIdx;
     do
     {
