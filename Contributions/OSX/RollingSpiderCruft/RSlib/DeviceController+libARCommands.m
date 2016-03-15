@@ -404,7 +404,7 @@ static void common_camerasettingsstate_camerasettingschanged_callback(float fov,
     ARCOMMANDS_Decoder_SetCommonOverHeatStateOverHeatChangedCallback(common_overheatstate_overheatchanged_callback, (__bridge void *)(self));
     ARCOMMANDS_Decoder_SetCommonOverHeatStateOverHeatRegulationChangedCallback(common_overheatstate_overheatregulationchanged_callback, (__bridge void *)(self));
     // Command class ControllerState
-    ARCOMMANDS_Decoder_SetCommonControllerStateIsPilotingChangedCallback(common_controllerstate_ispilotingchanged_callback, (__bridge void *)(self));
+    ARCOMMANDS_Decoder_SetCommonControllerIsPilotingCallback(common_controllerstate_ispilotingchanged_callback, (__bridge void *)(self));
     // Command class WifiSettingsState
     ARCOMMANDS_Decoder_SetCommonWifiSettingsStateOutdoorSettingsChangedCallback(common_wifisettingsstate_outdoorsettingschanged_callback, (__bridge void *)(self));
     // Command class MavlinkState
@@ -444,7 +444,7 @@ static void common_camerasettingsstate_camerasettingschanged_callback(float fov,
     ARCOMMANDS_Decoder_SetCommonOverHeatStateOverHeatChangedCallback(NULL, NULL);
     ARCOMMANDS_Decoder_SetCommonOverHeatStateOverHeatRegulationChangedCallback(NULL, NULL);
     // Command class ControllerState
-    ARCOMMANDS_Decoder_SetCommonControllerStateIsPilotingChangedCallback(NULL, NULL);
+    ARCOMMANDS_Decoder_SetCommonControllerIsPilotingCallback(NULL, NULL);
     // Command class WifiSettingsState
     ARCOMMANDS_Decoder_SetCommonWifiSettingsStateOutdoorSettingsChangedCallback(NULL, NULL);
     // Command class MavlinkState
