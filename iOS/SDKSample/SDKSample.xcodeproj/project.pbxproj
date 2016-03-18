@@ -373,6 +373,9 @@
 					"-lcrypto",
 					"-lz",
 					"-lssl",
+					"-lmux",
+					"-lpomp",
+					"-lulog",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.parrot.SDKSample;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -492,6 +495,9 @@
 					"-lcrypto",
 					"-lz",
 					"-lssl",
+					"-lmux",
+					"-lpomp",
+					"-lulog",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.parrot.SDKSample;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -529,6 +535,9 @@
 					"-lcrypto",
 					"-lz",
 					"-lssl",
+					"-lmux",
+					"-lpomp",
+					"-lulog",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.parrot.SDKSample;
 				PRODUCT_NAME = "$(TARGET_NAME)";
