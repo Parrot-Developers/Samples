@@ -1,5 +1,7 @@
 include 'libARSAL'
 project(':libARSAL').projectDir = new File('../../../../libARSAL')
+include 'libmux'
+project(':libmux').projectDir = new File('../../../../libmux/android')
 include 'libARNetworkAL'
 project(':libARNetworkAL').projectDir = new File('../../../../libARNetworkAL')
 include 'libARNetwork'
