@@ -86,6 +86,12 @@
 
 #define ERROR_STR_LENGTH 2048
 
+/** Handle older ffmpeg/libav versions */
+#if LIBAVCODEC_VERSION_INT < AV_VERSION_INT(55,28,1)
+#define av_frame_alloc  avcodec_alloc_frame
+#define av_frame_free   avcodec_free_frame
+#endif
+
 int getNextDataCallback(uint8_t **data, void *customData);
 void* Decode_RunDataThread(void *customData);
 RawFrame_t *getFreeRawFrame(BD_MANAGER_t *deviceManager);
