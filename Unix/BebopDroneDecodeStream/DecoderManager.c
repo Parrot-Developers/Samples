@@ -18,6 +18,10 @@
 #define av_frame_free   avcodec_free_frame
 #endif
 
+#ifndef AV_PIX_FMT_YUV420P
+#define AV_PIX_FMT_YUV420P PIX_FMT_YUV420P
+#endif
+
 #include <libARSAL/ARSAL_Print.h>
 
 /*****************************************
@@ -312,7 +316,7 @@ ARCODECS_Manager_FFMPEGDecoder_t *ARCODECS_Manager_NewFFMPEGDecoder (eARCODECS_E
     if(localError == ARCODECS_OK)
     {
         /* initialize the codec context */
-        ffmpegDecoder->codecCtx->pix_fmt = PIX_FMT_YUV420P;
+        ffmpegDecoder->codecCtx->pix_fmt = AV_PIX_FMT_YUV420P;
         ffmpegDecoder->codecCtx->skip_frame = AVDISCARD_DEFAULT;
         ffmpegDecoder->codecCtx->error_concealment = FF_EC_GUESS_MVS | FF_EC_DEBLOCK;
         ffmpegDecoder->codecCtx->skip_loop_filter = AVDISCARD_DEFAULT;
