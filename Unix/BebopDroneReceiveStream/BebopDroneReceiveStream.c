@@ -1,32 +1,32 @@
 /*
-    Copyright (C) 2014 Parrot SA
+  Copyright (C) 2014 Parrot SA
 
-    Redistribution and use in source and binary forms, with or without
-    modification, are permitted provided that the following conditions
-    are met:
-    * Redistributions of source code must retain the above copyright
-      notice, this list of conditions and the following disclaimer.
-    * Redistributions in binary form must reproduce the above copyright
-      notice, this list of conditions and the following disclaimer in
-      the documentation and/or other materials provided with the 
-      distribution.
-    * Neither the name of Parrot nor the names
-      of its contributors may be used to endorse or promote products
-      derived from this software without specific prior written
-      permission.
+  Redistribution and use in source and binary forms, with or without
+  modification, are permitted provided that the following conditions
+  are met:
+  * Redistributions of source code must retain the above copyright
+  notice, this list of conditions and the following disclaimer.
+  * Redistributions in binary form must reproduce the above copyright
+  notice, this list of conditions and the following disclaimer in
+  the documentation and/or other materials provided with the
+  distribution.
+  * Neither the name of Parrot nor the names
+  of its contributors may be used to endorse or promote products
+  derived from this software without specific prior written
+  permission.
 
-    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-    "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-    LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
-    FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
-    COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
-    INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
-    BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
-    OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED 
-    AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
-    OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
-    OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
-    SUCH DAMAGE.
+  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+  FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+  COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+  INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+  BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
+  OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
+  AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+  OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
+  OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+  SUCH DAMAGE.
 */
 /**
  * @file BebopDroneReceiveStream.c
@@ -45,6 +45,7 @@
 #include <string.h>
 #include <unistd.h>
 #include <signal.h>
+#include <errno.h>
 
 #include <libARSAL/ARSAL.h>
 #include <libARSAL/ARSAL_Print.h>
@@ -77,6 +78,13 @@
 
 #define BD_NET_DC_VIDEO_FRAG_SIZE 65000
 #define BD_NET_DC_VIDEO_MAX_NUMBER_OF_FRAG 4
+
+#define FIFO_DIR_PATTERN "/tmp/arsdk_XXXXXX"
+#define FIFO_NAME "arsdk_fifo"
+
+static char fifo_dir[] = FIFO_DIR_PATTERN;
+static char fifo_name[128] = "";
+static int g_exit = 0;
 
 /*****************************************
  *
@@ -178,7 +186,7 @@ static void *readerRun (void* data)
     BD_MANAGER_t *deviceManager = NULL;
     int bufferId = 0;
     int failed = 0;
-    
+
     // Allocate some space for incoming data.
     const size_t maxLength = 128 * 1024;
     void *readData = malloc (maxLength);
@@ -186,7 +194,7 @@ static void *readerRun (void* data)
     {
         failed = 1;
     }
-    
+
     if (!failed)
     {
         // get thread data.
@@ -194,7 +202,7 @@ static void *readerRun (void* data)
         {
             bufferId = ((READER_THREAD_DATA_t *)data)->readerBufferId;
             deviceManager = ((READER_THREAD_DATA_t *)data)->deviceManager;
-            
+
             if (deviceManager == NULL)
             {
                 failed = 1;
@@ -205,7 +213,7 @@ static void *readerRun (void* data)
             failed = 1;
         }
     }
-    
+
     if (!failed)
     {
         while (deviceManager->run)
@@ -213,7 +221,7 @@ static void *readerRun (void* data)
             eARNETWORK_ERROR netError = ARNETWORK_OK;
             int length = 0;
             int skip = 0;
-            
+
             // read data
             netError = ARNETWORK_Manager_ReadDataWithTimeout (deviceManager->netManager, bufferId, readData, maxLength, &length, 1000);
             if (netError != ARNETWORK_OK)
@@ -224,7 +232,7 @@ static void *readerRun (void* data)
                 }
                 skip = 1;
             }
-            
+
             if (!skip)
             {
                 // Forward data to the CommandsManager
@@ -239,14 +247,19 @@ static void *readerRun (void* data)
             }
         }
     }
-    
+
     if (readData != NULL)
     {
         free (readData);
         readData = NULL;
     }
-    
+
     return NULL;
+}
+
+static void signal_handler(int signal)
+{
+    g_exit = 1;
 }
 
 int main (int argc, char *argv[])
@@ -257,16 +270,50 @@ int main (int argc, char *argv[])
 
     pid_t child = 0;
 
+    /* Set signal handlers */
+    struct sigaction sig_action = {
+        .sa_handler = signal_handler,
+    };
+
+    int ret = sigaction(SIGINT, &sig_action, NULL);
+    if (ret < 0)
+    {
+        ARSAL_PRINT(ARSAL_PRINT_ERROR, "ERROR", "Unable to set SIGINT handler : %d(%s)",
+                    errno, strerror(errno));
+        return 1;
+    }
+    ret = sigaction(SIGPIPE, &sig_action, NULL);
+    if (ret < 0)
+    {
+        ARSAL_PRINT(ARSAL_PRINT_ERROR, "ERROR", "Unable to set SIGPIPE handler : %d(%s)",
+                    errno, strerror(errno));
+        return 1;
+    }
+
+
+    if (mkdtemp(fifo_dir) == NULL)
+    {
+        ARSAL_PRINT(ARSAL_PRINT_ERROR, "ERROR", "Mkdtemp failed.");
+        return 1;
+    }
+    snprintf(fifo_name, sizeof(fifo_name), "%s/%s", fifo_dir, FIFO_NAME);
+
+    if(mkfifo(fifo_name, 0666) < 0)
+    {
+        ARSAL_PRINT(ARSAL_PRINT_ERROR, "ERROR", "Mkfifo failed: %d, %s", errno, strerror(errno));
+        return 1;
+    }
+
     ARSAL_PRINT(ARSAL_PRINT_INFO, TAG, "-- Bebop Drone Receive Video Stream --");
-    
+
     // fork the process to launch ffplay
     if ((child = fork()) == 0)
     {
-        execlp("mplayer", "mplayer", "video_fifo", NULL);
+        execlp("mplayer", "mplayer", fifo_name, NULL);
         ARSAL_PRINT(ARSAL_PRINT_ERROR, TAG, "Missing mplayer, you will not see the video. Please install mplayer.");
         return -1;
     }
-    
+
     ARSAL_PRINT (ARSAL_PRINT_INFO, TAG, "-- Starting --");
 
     if (deviceManager != NULL)
@@ -284,7 +331,7 @@ int main (int argc, char *argv[])
         deviceManager->arstreamAckDelay = 0; // Should be read from json
         deviceManager->arstreamFragSize = BD_NET_DC_VIDEO_FRAG_SIZE; // Should be read from json
         deviceManager->arstreamFragNb   = BD_NET_DC_VIDEO_MAX_NUMBER_OF_FRAG; // Should be read from json
-        deviceManager->video_out = fopen("./video_fifo", "w");
+        deviceManager->video_out = fopen(fifo_name, "w");
         deviceManager->run = 1;
     }
     else
@@ -326,26 +373,26 @@ int main (int argc, char *argv[])
     {
         // allocate reader thread array.
         deviceManager->readerThreads = calloc(numOfCommandBufferIds, sizeof(ARSAL_Thread_t));
-        
+
         if (deviceManager->readerThreads == NULL)
         {
             ARSAL_PRINT(ARSAL_PRINT_ERROR, TAG, "Allocation of reader threads failed.");
             failed = 1;
         }
     }
-    
+
     if (!failed)
     {
         // allocate reader thread data array.
         deviceManager->readerThreadsData = calloc(numOfCommandBufferIds, sizeof(READER_THREAD_DATA_t));
-        
+
         if (deviceManager->readerThreadsData == NULL)
         {
             ARSAL_PRINT(ARSAL_PRINT_ERROR, TAG, "Allocation of reader threads data failed.");
             failed = 1;
         }
     }
-    
+
     if (!failed)
     {
         // Create and start reader threads.
@@ -355,7 +402,7 @@ int main (int argc, char *argv[])
             // initialize reader thread data
             deviceManager->readerThreadsData[readerThreadIndex].deviceManager = deviceManager;
             deviceManager->readerThreadsData[readerThreadIndex].readerBufferId = commandBufferIds[readerThreadIndex];
-            
+
             if (ARSAL_Thread_Create(&(deviceManager->readerThreads[readerThreadIndex]), readerRun, &(deviceManager->readerThreadsData[readerThreadIndex])) != 0)
             {
                 ARSAL_PRINT(ARSAL_PRINT_ERROR, TAG, "Creation of reader thread failed.");
@@ -365,7 +412,9 @@ int main (int argc, char *argv[])
     }
 
     // Run for 2 minutes
-    sleep(120);
+    int i = 120;
+    while (!g_exit && i--)
+        sleep(1);
 
     if (deviceManager != NULL)
     {
@@ -385,12 +434,12 @@ int main (int argc, char *argv[])
                     deviceManager->readerThreads[readerThreadIndex] = NULL;
                 }
             }
-            
+
             // free reader thread array
             free (deviceManager->readerThreads);
             deviceManager->readerThreads = NULL;
         }
-        
+
         if (deviceManager->readerThreadsData != NULL)
         {
             // free reader thread data array
@@ -410,6 +459,9 @@ int main (int argc, char *argv[])
     {
         kill(child, SIGKILL);
     }
+
+    unlink(fifo_name);
+    rmdir(fifo_dir);
 
     return 0;
 }
@@ -632,36 +684,36 @@ uint8_t *frameCompleteCallback (eARSTREAM_READER_CAUSE cause, uint8_t *frame, ui
 {
     uint8_t *ret = NULL;
     BD_MANAGER_t *deviceManager = (BD_MANAGER_t *)custom;
-    
+
     switch(cause)
     {
-        case ARSTREAM_READER_CAUSE_FRAME_COMPLETE:
-            /* Here, the h264 video frame is in the "frame" pointer, with size "frameSize" bytes
-             You can do what you want, but keep it as short as possible, as the video is blocked until you return from this callback.
-             Typically, you will either copy the frame and return the same buffer to the library, or store the buffer
-             in a fifo for pending operations, and provide a new one.
-             In this sample, we do nothing and just pass the buffer back*/
-            
-            ret = deviceManager->videoFrame;
-            *newBufferCapacity = deviceManager->videoFrameSize;
-            
-            /* Again, don't write files in this thread, that is just for the example :) */
-            fwrite(frame, frameSize, 1, deviceManager->video_out);
-            fflush (deviceManager->video_out);
-            break;
-        case ARSTREAM_READER_CAUSE_FRAME_TOO_SMALL:
-            /* This case should not happen, as we've allocated a frame pointer to the maximum possible size. */
-            ret = deviceManager->videoFrame;
-            *newBufferCapacity = deviceManager->videoFrameSize;
-            break;
-        case ARSTREAM_READER_CAUSE_COPY_COMPLETE:
-            /* Same as before ... but return value are ignored, so we just do nothing */
-            break;
-        case ARSTREAM_READER_CAUSE_CANCEL:
-            /* Called when the library closes, return values ignored, so do nothing here */
-            break;
-        default:
-            break;
+    case ARSTREAM_READER_CAUSE_FRAME_COMPLETE:
+        /* Here, the h264 video frame is in the "frame" pointer, with size "frameSize" bytes
+           You can do what you want, but keep it as short as possible, as the video is blocked until you return from this callback.
+           Typically, you will either copy the frame and return the same buffer to the library, or store the buffer
+           in a fifo for pending operations, and provide a new one.
+           In this sample, we do nothing and just pass the buffer back*/
+
+        ret = deviceManager->videoFrame;
+        *newBufferCapacity = deviceManager->videoFrameSize;
+
+        /* Again, don't write files in this thread, that is just for the example :) */
+        fwrite(frame, frameSize, 1, deviceManager->video_out);
+        fflush (deviceManager->video_out);
+        break;
+    case ARSTREAM_READER_CAUSE_FRAME_TOO_SMALL:
+        /* This case should not happen, as we've allocated a frame pointer to the maximum possible size. */
+        ret = deviceManager->videoFrame;
+        *newBufferCapacity = deviceManager->videoFrameSize;
+        break;
+    case ARSTREAM_READER_CAUSE_COPY_COMPLETE:
+        /* Same as before ... but return value are ignored, so we just do nothing */
+        break;
+    case ARSTREAM_READER_CAUSE_CANCEL:
+        /* Called when the library closes, return values ignored, so do nothing here */
+        break;
+    default:
+        break;
     }
 
     return ret;
@@ -674,22 +726,22 @@ int sendBeginStream(BD_MANAGER_t *deviceManager)
     int32_t cmdSize = 0;
     eARCOMMANDS_GENERATOR_ERROR cmdError;
     eARNETWORK_ERROR netError = ARNETWORK_ERROR;
-    
+
     ARSAL_PRINT(ARSAL_PRINT_INFO, TAG, "- Send Streaming Begin");
-    
+
     // Send Streaming begin command
     cmdError = ARCOMMANDS_Generator_GenerateARDrone3MediaStreamingVideoEnable(cmdBuffer, sizeof(cmdBuffer), &cmdSize, 1);
     if (cmdError == ARCOMMANDS_GENERATOR_OK)
     {
         netError = ARNETWORK_Manager_SendData(deviceManager->netManager, BD_NET_CD_ACK_ID, cmdBuffer, cmdSize, NULL, &(arnetworkCmdCallback), 1);
     }
-    
+
     if ((cmdError != ARCOMMANDS_GENERATOR_OK) || (netError != ARNETWORK_OK))
     {
         ARSAL_PRINT(ARSAL_PRINT_WARNING, TAG, "Failed to send Streaming command. cmdError:%d netError:%s", cmdError, ARNETWORK_Error_ToString(netError));
         sentStatus = 0;
     }
-    
+
     return sentStatus;
 }
 
