@@ -92,6 +92,10 @@
 #define av_frame_free   avcodec_free_frame
 #endif
 
+#ifndef AV_PIX_FMT_YUV420P
+#define AV_PIX_FMT_YUV420P PIX_FMT_YUV420P
+#endif
+
 int getNextDataCallback(uint8_t **data, void *customData);
 void* Decode_RunDataThread(void *customData);
 RawFrame_t *getFreeRawFrame(BD_MANAGER_t *deviceManager);
@@ -313,7 +317,7 @@ void* Decode_RunDataThread(void *customData)
                 //ARSAL_PRINT(ARSAL_PRINT_ERROR, TAG, "Frame has been decoded ");
                 
                 // this part is only needed to copy the YUV frame into the file
-                int pic_size = avpicture_get_size(PIX_FMT_YUV420P, decodedFrame->width, decodedFrame->height);
+                int pic_size = avpicture_get_size(AV_PIX_FMT_YUV420P, decodedFrame->width, decodedFrame->height);
                 
                 uint8_t *decodedOut = malloc(pic_size);
                 
@@ -332,7 +336,7 @@ void* Decode_RunDataThread(void *customData)
                 
                 av_image_copy_to_buffer(decodedOut, pic_size,
                                         (const uint8_t *const *)src_data, src_linesize,
-                                        PIX_FMT_YUV420P, decodedFrame->width, decodedFrame->height, 1);*/
+                                        AV_PIX_FMT_YUV420P, decodedFrame->width, decodedFrame->height, 1);*/
                 
                 AVFrame *avFrame = av_frame_alloc();
                 if (avFrame != NULL)
@@ -341,7 +345,7 @@ void* Decode_RunDataThread(void *customData)
                     avFrame->height = decodedFrame->height;
                     avFrame->format = AV_PIX_FMT_YUV420P;
 
-                    avpicture_fill((AVPicture*)avFrame, NULL, PIX_FMT_YUV420P, decodedFrame->width, decodedFrame->height);
+                    avpicture_fill((AVPicture*)avFrame, NULL, AV_PIX_FMT_YUV420P, decodedFrame->width, decodedFrame->height);
                     avFrame->linesize[0] = decodedFrame->componentArray[0].lineSize;
                     avFrame->linesize[1] = decodedFrame->componentArray[1].lineSize;
                     avFrame->linesize[2] = decodedFrame->componentArray[2].lineSize;
@@ -350,7 +354,7 @@ void* Decode_RunDataThread(void *customData)
                     avFrame->data[1] = decodedFrame->componentArray[1].data;
                     avFrame->data[2] = decodedFrame->componentArray[2].data;
 
-                    avpicture_layout((AVPicture*)avFrame, PIX_FMT_YUV420P, decodedFrame->width, decodedFrame->height, decodedOut, pic_size);
+                    avpicture_layout((AVPicture*)avFrame, AV_PIX_FMT_YUV420P, decodedFrame->width, decodedFrame->height, decodedOut, pic_size);
                     av_frame_free(&avFrame);
                 }
                 
