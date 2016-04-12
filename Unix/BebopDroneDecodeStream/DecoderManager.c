@@ -18,10 +18,6 @@
 #define av_frame_free   avcodec_free_frame
 #endif
 
-#ifndef AV_PIX_FMT_YUV420P
-#define AV_PIX_FMT_YUV420P PIX_FMT_YUV420P
-#endif
-
 #include <libARSAL/ARSAL_Print.h>
 
 /*****************************************

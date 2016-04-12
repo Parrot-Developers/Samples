@@ -98,10 +98,6 @@ static char fifo_name[128] = "";
 #define av_frame_free   avcodec_free_frame
 #endif
 
-#ifndef AV_PIX_FMT_YUV420P
-#define AV_PIX_FMT_YUV420P PIX_FMT_YUV420P
-#endif
-
 int getNextDataCallback(uint8_t **data, void *customData);
 void* Decode_RunDataThread(void *customData);
 RawFrame_t *getFreeRawFrame(BD_MANAGER_t *deviceManager);
