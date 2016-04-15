@@ -14,6 +14,7 @@
 @property (nonatomic, assign) int spsSize;
 @property (nonatomic, assign) int ppsSize;
 @property (nonatomic, assign) BOOL canDisplayVideo;
+@property (nonatomic, assign) BOOL lastDecodeHasFailed;
 
 @end
 @implementation BebopVideoView
@@ -45,6 +46,7 @@
 - (void)customInit {
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(enteredBackground:) name:UIApplicationDidEnterBackgroundNotification object: nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(enterForeground:) name:UIApplicationWillEnterForegroundNotification object: nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(decodingDidFail:) name:AVSampleBufferDisplayLayerFailedToDecodeNotification object:nil];
     
     _canDisplayVideo = YES;
     
@@ -67,6 +69,7 @@
     
     [[NSNotificationCenter defaultCenter] removeObserver:self name: UIApplicationDidEnterBackgroundNotification object: nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name: UIApplicationWillEnterForegroundNotification object: nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name: AVSampleBufferDisplayLayerFailedToDecodeNotification object: nil];
 }
 
 - (void)layoutSubviews {
@@ -79,6 +82,7 @@
     BOOL success = NO;
     
     if (codec.type == ARCONTROLLER_STREAM_CODEC_TYPE_H264) {
+        _lastDecodeHasFailed = NO;
         if (_canDisplayVideo) {
             
             uint8_t* props[] = {
@@ -117,9 +121,9 @@
 
 - (BOOL)displayFrame:(ARCONTROLLER_Frame_t *)frame
 {
-    BOOL success = YES;
+    BOOL success = !_lastDecodeHasFailed;
     
-    if (_canDisplayVideo) {
+    if (success && _canDisplayVideo) {
         CMBlockBufferRef blockBufferRef = NULL;
         //CMSampleTimingInfo timing = kCMTimingInfoInvalid;
         CMSampleBufferRef sampleBufferRef = NULL;
@@ -211,6 +215,10 @@
 
 - (void)enterForeground:(NSNotification*)notification {
     _canDisplayVideo = YES;
+}
+
+- (void)decodingDidFail:(NSNotification*)notification {
+    _lastDecodeHasFailed = YES;
 }
 
 @end
