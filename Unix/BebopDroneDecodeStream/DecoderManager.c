@@ -12,6 +12,12 @@
 #include <libavformat/avformat.h>
 #include <libswscale/swscale.h>
 
+/** Handle older ffmpeg/libav versions */
+#if LIBAVCODEC_VERSION_INT < AV_VERSION_INT(55,28,1)
+#define av_frame_alloc  avcodec_alloc_frame
+#define av_frame_free   avcodec_free_frame
+#endif
+
 #include <libARSAL/ARSAL_Print.h>
 
 /*****************************************
@@ -170,7 +176,6 @@ ARCODECS_Manager_t* ARCODECS_Manager_New (ARCODECS_Manager_GetNextDataCallback_t
 ARCODECS_Manager_Frame_t* ARCODECS_Manager_Decode(ARCODECS_Manager_t *manager, eARCODECS_ERROR *error)
 {
     ARCODECS_Manager_Frame_t *outputFrame = NULL;
-    int ret;
     eARCODECS_ERROR err = ARCODECS_OK;
     
     if(manager == NULL)
@@ -307,7 +312,7 @@ ARCODECS_Manager_FFMPEGDecoder_t *ARCODECS_Manager_NewFFMPEGDecoder (eARCODECS_E
     if(localError == ARCODECS_OK)
     {
         /* initialize the codec context */
-        ffmpegDecoder->codecCtx->pix_fmt = PIX_FMT_YUV420P;
+        ffmpegDecoder->codecCtx->pix_fmt = AV_PIX_FMT_YUV420P;
         ffmpegDecoder->codecCtx->skip_frame = AVDISCARD_DEFAULT;
         ffmpegDecoder->codecCtx->error_concealment = FF_EC_GUESS_MVS | FF_EC_DEBLOCK;
         ffmpegDecoder->codecCtx->skip_loop_filter = AVDISCARD_DEFAULT;
@@ -325,7 +330,7 @@ ARCODECS_Manager_FFMPEGDecoder_t *ARCODECS_Manager_NewFFMPEGDecoder (eARCODECS_E
     /* No else: skipped by an error */
     if(localError == ARCODECS_OK)
     {
-        ffmpegDecoder->decodedFrame = avcodec_alloc_frame();
+        ffmpegDecoder->decodedFrame = av_frame_alloc();
         if (ffmpegDecoder->decodedFrame == NULL)
         {
             localError = ARCODECS_ERROR_ALLOC;
@@ -360,7 +365,7 @@ void ARCODECS_Manager_DeleteFFMPEGDecoder (ARCODECS_Manager_FFMPEGDecoder_t **ff
         {
             if((*ffmpegDecoder)->decodedFrame != NULL)
             {
-                avcodec_free_frame (&((*ffmpegDecoder)->decodedFrame));
+                av_frame_free (&((*ffmpegDecoder)->decodedFrame));
             }
             /* No else: No decodedFrame to free */
             

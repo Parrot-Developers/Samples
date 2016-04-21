@@ -141,12 +141,12 @@ static const size_t numOfCommandBufferIds = sizeof(commandBufferIds) / sizeof(in
 
 static int idToIndex(ARNETWORK_IOBufferParam_t* params, size_t num_params, int id)
 {
-    int i = 0;
+    size_t i = 0;
     for (i = 0; i < num_params; i ++)
     {
         if (params[i].ID == id)
         {
-            return i;
+            return (int)i;
         }
     }
     return -1;
@@ -259,7 +259,7 @@ int main (int argc, char *argv[])
     if (!failed)
     {
         // Create and start reader threads.
-        int readerThreadIndex = 0;
+        unsigned int readerThreadIndex = 0;
         for (readerThreadIndex = 0 ; readerThreadIndex < numOfCommandBufferIds ; readerThreadIndex++)
         {
             // initialize reader thread data
@@ -301,7 +301,7 @@ int main (int argc, char *argv[])
         if (deviceManager->readerThreads != NULL)
         {
             // Stop reader Threads
-            int readerThreadIndex = 0;
+            unsigned int readerThreadIndex = 0;
             for (readerThreadIndex = 0 ; readerThreadIndex < numD2cParams ; readerThreadIndex++)
             {
                 if (deviceManager->readerThreads[readerThreadIndex] != NULL)
@@ -458,13 +458,6 @@ int startNetwork (DEVICE_MANAGER_t *deviceManager)
 
 void stopNetwork (DEVICE_MANAGER_t *deviceManager)
 {
-    int failed = 0;
-    eARNETWORK_ERROR netError = ARNETWORK_OK;
-    eARNETWORKAL_ERROR netAlError = ARNETWORKAL_OK;
-    int pingDelay = 0; // 0 means default, -1 means no ping
-    
-    //ARSAL_PRINT(ARSAL_PRINT_INFO, TAG, "- Stop ARNetwork");
-    
     // ARNetwork cleanup
     if (deviceManager->netManager != NULL)
     {
@@ -500,7 +493,7 @@ void registerARCommandsCallbacks (IHM_t *ihm)
     ARCOMMANDS_Decoder_SetCommonCommonStateBatteryStateChangedCallback(batteryStateChangedCallback, ihm);
 }
 
-void unregisterARCommandsCallbacks ()
+void unregisterARCommandsCallbacks (void)
 {
     ARCOMMANDS_Decoder_SetCommonCommonStateBatteryStateChangedCallback (NULL, NULL);
 }

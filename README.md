@@ -41,7 +41,12 @@ Simply delete other files than*
 Use the buildWithPrecompiledSDK configuration to use the precompiled libraries. (Scheme->Edit Scheme
 
 **Use your own compiled SDK**:<br/>
-Use the buildWithLocalSDK configuration to use the precompiled libraries. 
+You can build this sample with Alchemy. In your `<SDK>` execute this command:
+
+`./build.sh -p arsdk-ios -t build-sample`
+
+If you prefer to build directly from XCode, use the buildWithLocalSDK configuration to use the precompiled libraries. 
+
 
 ### Android
 #### [SDKSample](https://github.com/ARDroneSDK3/Samples/tree/master/Android/SDKSample)
@@ -52,10 +57,10 @@ With Android Studio, open the settings.gradle located in `SDKSample/buildWithPre
 **Use your own compiled SDK**:<br/>
 You can build this sample with Alchemy. In your `<SDK>` execute this command:
 
-`./build.sh -p android-forall -t build-sample`
+`./build.sh -p arsdk-android -t build-sample`
 
 Otherwise, if you want to use Android Studio build, first execute this command in `<SDK>`:
-`./build.sh -p android-forall -t build-sample-jni`
+`./build.sh -p arsdk-android -t build-sample-jni`
 
 Then, in Android Studio, open the settings.gradle located in `SDKSample/buildWithLocalSDK`.
 

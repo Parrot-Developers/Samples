@@ -1,32 +1,32 @@
 /*
-    Copyright (C) 2014 Parrot SA
+  Copyright (C) 2014 Parrot SA
 
-    Redistribution and use in source and binary forms, with or without
-    modification, are permitted provided that the following conditions
-    are met:
-    * Redistributions of source code must retain the above copyright
-      notice, this list of conditions and the following disclaimer.
-    * Redistributions in binary form must reproduce the above copyright
-      notice, this list of conditions and the following disclaimer in
-      the documentation and/or other materials provided with the 
-      distribution.
-    * Neither the name of Parrot nor the names
-      of its contributors may be used to endorse or promote products
-      derived from this software without specific prior written
-      permission.
+  Redistribution and use in source and binary forms, with or without
+  modification, are permitted provided that the following conditions
+  are met:
+  * Redistributions of source code must retain the above copyright
+  notice, this list of conditions and the following disclaimer.
+  * Redistributions in binary form must reproduce the above copyright
+  notice, this list of conditions and the following disclaimer in
+  the documentation and/or other materials provided with the
+  distribution.
+  * Neither the name of Parrot nor the names
+  of its contributors may be used to endorse or promote products
+  derived from this software without specific prior written
+  permission.
 
-    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-    "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-    LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
-    FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
-    COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
-    INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
-    BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
-    OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED 
-    AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
-    OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
-    OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
-    SUCH DAMAGE.
+  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+  FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+  COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+  INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+  BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
+  OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
+  AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+  OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
+  OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+  SUCH DAMAGE.
 */
 /**
  * @file JumpingSumoReceiveStream.c
@@ -45,6 +45,7 @@
 #include <string.h>
 #include <unistd.h>
 #include <signal.h>
+#include <errno.h>
 
 #include <libARSAL/ARSAL.h>
 #include <libARSAL/ARSAL_Print.h>
@@ -76,13 +77,18 @@
 
 #define DISPLAY_WITH_FFPLAY 1
 
+#define FIFO_DIR_PATTERN "/tmp/arsdk_XXXXXX"
+#define FIFO_NAME "arsdk_fifo"
+
 /*****************************************
  *
  *             implementation :
  *
  *****************************************/
 
-static char fifo_file_name[256] = "";
+static char fifo_dir[] = FIFO_DIR_PATTERN;
+static char fifo_name[128] = "";
+int g_exit = 0;
 
 static ARNETWORK_IOBufferParam_t c2dParams[] = {
     {
@@ -152,6 +158,11 @@ static ARNETWORK_IOBufferParam_t d2cParams[] = {
 };
 static const size_t numD2cParams = sizeof(d2cParams) / sizeof(ARNETWORK_IOBufferParam_t);
 
+static void signal_handler(int signal)
+{
+    g_exit = 1;
+}
+
 int main (int argc, char *argv[])
 {
     /* local declarations */
@@ -161,14 +172,48 @@ int main (int argc, char *argv[])
 
     pid_t child = 0;
 
+    /* Set signal handlers */
+    struct sigaction sig_action = {
+        .sa_handler = signal_handler,
+    };
+
+    int ret = sigaction(SIGINT, &sig_action, NULL);
+    if (ret < 0)
+    {
+        ARSAL_PRINT(ARSAL_PRINT_ERROR, "ERROR", "Unable to set SIGINT handler : %d(%s)",
+                    errno, strerror(errno));
+        return 1;
+    }
+    ret = sigaction(SIGPIPE, &sig_action, NULL);
+    if (ret < 0)
+    {
+        ARSAL_PRINT(ARSAL_PRINT_ERROR, "ERROR", "Unable to set SIGPIPE handler : %d(%s)",
+                    errno, strerror(errno));
+        return 1;
+    }
+
+
+    if (mkdtemp(fifo_dir) == NULL)
+    {
+        ARSAL_PRINT(ARSAL_PRINT_ERROR, "ERROR", "Mkdtemp failed.");
+        return 1;
+    }
+    snprintf(fifo_name, sizeof(fifo_name), "%s/%s", fifo_dir, FIFO_NAME);
+
+    if(mkfifo(fifo_name, 0666) < 0)
+    {
+        ARSAL_PRINT(ARSAL_PRINT_ERROR, "ERROR", "Mkfifo failed: %d, %s", errno, strerror(errno));
+        return 1;
+    }
+
     ARSAL_PRINT(ARSAL_PRINT_INFO, TAG, "-- Jumping Sumo Receive Video Stream --");
-    
+
     if (DISPLAY_WITH_FFPLAY)
     {
         // fork the process to launch ffplay
         if ((child = fork()) == 0)
         {
-            execlp("ffplay", "ffplay", "-i", "video_fifo", "-f", "mjpeg", NULL);
+            execlp("ffplay", "ffplay", "-i", fifo_name, "-f", "mjpeg", NULL);
             ARSAL_PRINT(ARSAL_PRINT_ERROR, TAG, "Missing avplay, you will not see the video. Please install avplay.");
             return -1;
         }
@@ -178,7 +223,7 @@ int main (int argc, char *argv[])
         // create the video folder to store video images
         char answer = 'N';
         ARSAL_PRINT(ARSAL_PRINT_INFO, TAG, "Do you want to write image files on your file system ? You should have at least 50Mb. Y or N");
-        scanf("%c", &answer);
+        scanf(" %c", &answer);
         if (answer == 'Y' || answer == 'y')
         {
             ARSAL_PRINT(ARSAL_PRINT_INFO, TAG, "You choose to write image files.");
@@ -190,7 +235,7 @@ int main (int argc, char *argv[])
             ARSAL_PRINT(ARSAL_PRINT_INFO, TAG, "You did not choose to write image files.");
         }
     }
-    
+
     ARSAL_PRINT (ARSAL_PRINT_INFO, TAG, "-- Starting --");
 
     if (jsManager != NULL)
@@ -208,10 +253,10 @@ int main (int argc, char *argv[])
         jsManager->arstreamAckDelay = 0; // Should be read from json
         jsManager->arstreamFragSize = 65000; // Should be read from json
         jsManager->arstreamFragNb   = 4; // Should be read from json
-        
+
         if (DISPLAY_WITH_FFPLAY)
         {
-            jsManager->video_out = fopen("./video_fifo", "w");
+            jsManager->video_out = fopen(fifo_name, "w");
         }
         jsManager->frameNb = 0;
         jsManager->writeImgs = writeImgs;
@@ -250,7 +295,9 @@ int main (int argc, char *argv[])
 
         cmdSend = sendBeginStream(jsManager);
 
-        sleep(30);
+        int i = 30;
+        while (!g_exit && i--)
+            sleep(1);
     }
 
 
@@ -275,6 +322,9 @@ int main (int argc, char *argv[])
             kill(child, SIGKILL);
         }
     }
+
+    unlink(fifo_name);
+    rmdir(fifo_dir);
 
     return 0;
 }
@@ -379,11 +429,6 @@ int startNetwork (JS_MANAGER_t *jsManager)
 
 void stopNetwork (JS_MANAGER_t *jsManager)
 {
-    int failed = 0;
-    eARNETWORK_ERROR netError = ARNETWORK_OK;
-    eARNETWORKAL_ERROR netAlError = ARNETWORKAL_OK;
-    int pingDelay = 0; // 0 means default, -1 means no ping
-
     ARSAL_PRINT(ARSAL_PRINT_INFO, TAG, "- Stop ARNetwork");
 
     // ARNetwork cleanup
@@ -466,9 +511,6 @@ int startVideo(JS_MANAGER_t *jsManager)
 
 void stopVideo(JS_MANAGER_t *jsManager)
 {
-    int failed = 0;
-    eARSTREAM_ERROR err = ARSTREAM_OK;
-
     ARSAL_PRINT(ARSAL_PRINT_INFO, TAG, "- Stop ARStream");
 
     if (jsManager->streamReader)
@@ -505,52 +547,52 @@ uint8_t *frameCompleteCallback (eARSTREAM_READER_CAUSE cause, uint8_t *frame, ui
 {
     uint8_t *ret = NULL;
     JS_MANAGER_t *jsManager = (JS_MANAGER_t *)custom;
-    
+
     switch(cause)
     {
-        case ARSTREAM_READER_CAUSE_FRAME_COMPLETE:
-            /* Here, the mjpeg video frame is in the "frame" pointer, with size "frameSize" bytes
-             You can do what you want, but keep it as short as possible, as the video is blocked until you return from this callback.
-             Typically, you will either copy the frame and return the same buffer to the library, or store the buffer
-             in a fifo for pending operations, and provide a new one.
-             In this sample, we do nothing and just pass the buffer back*/
-            
-            ret = jsManager->videoFrame;
-            *newBufferCapacity = jsManager->videoFrameSize;
-            
-            /* Again, don't write files in this thread, that is just for the example :) */
-            if (DISPLAY_WITH_FFPLAY)
-            {
-                // write img files
-                fwrite(frame, frameSize, 1, jsManager->video_out);
-                fflush (jsManager->video_out);
-            }
-            else if (jsManager->writeImgs)
-            {
-                
-                char filename[20];
-                snprintf(filename, sizeof(filename), "video/img_%d.jpg", jsManager->frameNb);
-                
-                jsManager->frameNb++;
-                FILE *img = fopen(filename, "w");
-                fwrite(frame, frameSize, 1, img);
-                fclose(img);
-            }
-            
-            break;
-        case ARSTREAM_READER_CAUSE_FRAME_TOO_SMALL:
-            /* This case should not happen, as we've allocated a frame pointer to the maximum possible size. */
-            ret = jsManager->videoFrame;
-            *newBufferCapacity = jsManager->videoFrameSize;
-            break;
-        case ARSTREAM_READER_CAUSE_COPY_COMPLETE:
-            /* Same as before ... but return value are ignored, so we just do nothing */
-            break;
-        case ARSTREAM_READER_CAUSE_CANCEL:
-            /* Called when the library closes, return values ignored, so do nothing here */
-            break;
-        default:
-            break;
+    case ARSTREAM_READER_CAUSE_FRAME_COMPLETE:
+        /* Here, the mjpeg video frame is in the "frame" pointer, with size "frameSize" bytes
+           You can do what you want, but keep it as short as possible, as the video is blocked until you return from this callback.
+           Typically, you will either copy the frame and return the same buffer to the library, or store the buffer
+           in a fifo for pending operations, and provide a new one.
+           In this sample, we do nothing and just pass the buffer back*/
+
+        ret = jsManager->videoFrame;
+        *newBufferCapacity = jsManager->videoFrameSize;
+
+        /* Again, don't write files in this thread, that is just for the example :) */
+        if (DISPLAY_WITH_FFPLAY)
+        {
+            // write img files
+            fwrite(frame, frameSize, 1, jsManager->video_out);
+            fflush (jsManager->video_out);
+        }
+        else if (jsManager->writeImgs)
+        {
+
+            char filename[20];
+            snprintf(filename, sizeof(filename), "video/img_%d.jpg", jsManager->frameNb);
+
+            jsManager->frameNb++;
+            FILE *img = fopen(filename, "w");
+            fwrite(frame, frameSize, 1, img);
+            fclose(img);
+        }
+
+        break;
+    case ARSTREAM_READER_CAUSE_FRAME_TOO_SMALL:
+        /* This case should not happen, as we've allocated a frame pointer to the maximum possible size. */
+        ret = jsManager->videoFrame;
+        *newBufferCapacity = jsManager->videoFrameSize;
+        break;
+    case ARSTREAM_READER_CAUSE_COPY_COMPLETE:
+        /* Same as before ... but return value are ignored, so we just do nothing */
+        break;
+    case ARSTREAM_READER_CAUSE_CANCEL:
+        /* Called when the library closes, return values ignored, so do nothing here */
+        break;
+    default:
+        break;
     }
 
     return ret;
@@ -563,22 +605,22 @@ int sendBeginStream(JS_MANAGER_t *jsManager)
     int32_t cmdSize = 0;
     eARCOMMANDS_GENERATOR_ERROR cmdError;
     eARNETWORK_ERROR netError = ARNETWORK_ERROR;
-    
+
     ARSAL_PRINT(ARSAL_PRINT_INFO, TAG, "- Send Streaming Begin");
-    
+
     // Send Streaming begin command
     cmdError = ARCOMMANDS_Generator_GenerateJumpingSumoMediaStreamingVideoEnable(cmdBuffer, sizeof(cmdBuffer), &cmdSize, 1);
     if (cmdError == ARCOMMANDS_GENERATOR_OK)
     {
         netError = ARNETWORK_Manager_SendData(jsManager->netManager, JS_NET_CD_ACK_ID, cmdBuffer, cmdSize, NULL, &(arnetworkCmdCallback), 1);
     }
-    
+
     if ((cmdError != ARCOMMANDS_GENERATOR_OK) || (netError != ARNETWORK_OK))
     {
         ARSAL_PRINT(ARSAL_PRINT_WARNING, TAG, "Failed to send Streaming command. cmdError:%d netError:%s", cmdError, ARNETWORK_Error_ToString(netError));
         sentStatus = 0;
     }
-    
+
     return sentStatus;
 }
 

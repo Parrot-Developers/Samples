@@ -144,7 +144,7 @@ int sendBeginStream(BD_MANAGER_t *deviceManager);
 
 /** Commands callback part **/
 void registerARCommandsCallbacks (BD_MANAGER_t *deviceManager);
-void unregisterARCommandsCallbacks();
+void unregisterARCommandsCallbacks(void);
 void batteryStateChangedCallback (uint8_t percent, void *custom);
 void flyingStateChangedCallback (eARCOMMANDS_ARDRONE3_PILOTINGSTATE_FLYINGSTATECHANGED_STATE state, void *custom);
 
