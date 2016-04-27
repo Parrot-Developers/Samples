@@ -81,6 +81,13 @@ public class JSActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    public void onDestroy()
+    {
+        mJSDrone.dispose();
+        super.onDestroy();
+    }
+
     private void initIHM() {
         mVideoView = (JSVideoView) findViewById(R.id.videoView);
 

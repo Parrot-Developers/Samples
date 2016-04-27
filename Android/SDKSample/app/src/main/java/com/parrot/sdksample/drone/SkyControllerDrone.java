@@ -146,6 +146,7 @@ public class SkyControllerDrone {
             ARDiscoveryDevice discoveryDevice = createDiscoveryDevice(deviceService, productType);
             if (discoveryDevice != null) {
                 mDeviceController = createDeviceController(discoveryDevice);
+                discoveryDevice.dispose();
             }
 
             try
@@ -169,6 +170,12 @@ public class SkyControllerDrone {
         } else {
             Log.e(TAG, "DeviceService type is not supported by SkyControllerDrone");
         }
+    }
+
+    public void dispose()
+    {
+        if (mDeviceController != null)
+            mDeviceController.dispose();
     }
 
     //region Listener functions

@@ -123,6 +123,7 @@ public class JSDrone {
             ARDiscoveryDevice discoveryDevice = createDiscoveryDevice(deviceService, mProductType);
             if (discoveryDevice != null) {
                 mDeviceController = createDeviceController(discoveryDevice);
+                discoveryDevice.dispose();
             }
 
             try
@@ -146,6 +147,12 @@ public class JSDrone {
         } else {
             Log.e(TAG, "DeviceService type is not supported by JSDrone");
         }
+    }
+
+    public void dispose()
+    {
+        if (mDeviceController != null)
+            mDeviceController.dispose();
     }
 
     //region Listener functions

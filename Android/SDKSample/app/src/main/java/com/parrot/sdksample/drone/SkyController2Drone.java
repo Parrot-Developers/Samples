@@ -5,38 +5,48 @@ import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
-import com.parrot.arsdk.arcommands.ARCOMMANDS_MINIDRONE_MEDIARECORDEVENT_PICTUREEVENTCHANGED_ERROR_ENUM;
-import com.parrot.arsdk.arcommands.ARCOMMANDS_MINIDRONE_PILOTINGSTATE_FLYINGSTATECHANGED_STATE_ENUM;
+import com.parrot.arsdk.arcommands.ARCOMMANDS_ARDRONE3_MEDIARECORDEVENT_PICTUREEVENTCHANGED_ERROR_ENUM;
+import com.parrot.arsdk.arcommands.ARCOMMANDS_ARDRONE3_PILOTINGSTATE_FLYINGSTATECHANGED_STATE_ENUM;
 import com.parrot.arsdk.arcontroller.ARCONTROLLER_DEVICE_STATE_ENUM;
 import com.parrot.arsdk.arcontroller.ARCONTROLLER_DICTIONARY_KEY_ENUM;
 import com.parrot.arsdk.arcontroller.ARCONTROLLER_ERROR_ENUM;
 import com.parrot.arsdk.arcontroller.ARControllerArgumentDictionary;
+import com.parrot.arsdk.arcontroller.ARControllerCodec;
 import com.parrot.arsdk.arcontroller.ARControllerDictionary;
 import com.parrot.arsdk.arcontroller.ARControllerException;
 import com.parrot.arsdk.arcontroller.ARDeviceController;
 import com.parrot.arsdk.arcontroller.ARDeviceControllerListener;
+import com.parrot.arsdk.arcontroller.ARDeviceControllerStreamListener;
+import com.parrot.arsdk.arcontroller.ARFeatureARDrone3;
 import com.parrot.arsdk.arcontroller.ARFeatureCommon;
-import com.parrot.arsdk.arcontroller.ARFeatureMiniDrone;
+import com.parrot.arsdk.arcontroller.ARFeatureSkyController;
+import com.parrot.arsdk.arcontroller.ARFrame;
 import com.parrot.arsdk.ardiscovery.ARDISCOVERY_PRODUCT_ENUM;
-import com.parrot.arsdk.ardiscovery.ARDISCOVERY_PRODUCT_FAMILY_ENUM;
 import com.parrot.arsdk.ardiscovery.ARDiscoveryDevice;
-import com.parrot.arsdk.ardiscovery.ARDiscoveryDeviceBLEService;
 import com.parrot.arsdk.ardiscovery.ARDiscoveryDeviceService;
 import com.parrot.arsdk.ardiscovery.ARDiscoveryException;
 import com.parrot.arsdk.ardiscovery.ARDiscoveryService;
-import com.parrot.arsdk.arsal.ARSALBLEManager;
+import com.parrot.arsdk.ardiscovery.UsbAccessoryMux;
 import com.parrot.arsdk.arutils.ARUtilsException;
 import com.parrot.arsdk.arutils.ARUtilsManager;
+import com.parrot.mux.Mux;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class MiniDrone {
-    private static final String TAG = "MiniDrone";
+public class SkyController2Drone {
+    private static final String TAG = "SkyController2Drone";
 
     private static final int DEVICE_PORT = 21;
 
     public interface Listener {
+        /**
+         * Called when the connection to the SkyController2 changes
+         * Called in the main thread
+         * @param state the state of the SkyController2
+         */
+        void onSkyController2ConnectionChanged(ARCONTROLLER_DEVICE_STATE_ENUM state);
+
         /**
          * Called when the connection to the drone changes
          * Called in the main thread
@@ -45,25 +55,46 @@ public class MiniDrone {
         void onDroneConnectionChanged(ARCONTROLLER_DEVICE_STATE_ENUM state);
 
         /**
+         * Called when the SkyController2 battery charge changes
+         * Called in the main thread
+         * @param batteryPercentage the battery remaining (in percent)
+         */
+        void onSkyController2BatteryChargeChanged(int batteryPercentage);
+
+        /**
          * Called when the battery charge changes
          * Called in the main thread
          * @param batteryPercentage the battery remaining (in percent)
          */
-        void onBatteryChargeChanged(int batteryPercentage);
+        void onDroneBatteryChargeChanged(int batteryPercentage);
 
         /**
          * Called when the piloting state changes
          * Called in the main thread
          * @param state the piloting state of the drone
          */
-        void onPilotingStateChanged(ARCOMMANDS_MINIDRONE_PILOTINGSTATE_FLYINGSTATECHANGED_STATE_ENUM state);
+        void onPilotingStateChanged(ARCOMMANDS_ARDRONE3_PILOTINGSTATE_FLYINGSTATECHANGED_STATE_ENUM state);
 
         /**
          * Called when a picture is taken
          * Called on a separate thread
          * @param error ERROR_OK if picture has been taken, otherwise describe the error
          */
-        void onPictureTaken(ARCOMMANDS_MINIDRONE_MEDIARECORDEVENT_PICTUREEVENTCHANGED_ERROR_ENUM error);
+        void onPictureTaken(ARCOMMANDS_ARDRONE3_MEDIARECORDEVENT_PICTUREEVENTCHANGED_ERROR_ENUM error);
+
+        /**
+         * Called when the video decoder should be configured
+         * Called on a separate thread
+         * @param codec the codec to configure the decoder with
+         */
+        void configureDecoder(ARControllerCodec codec);
+
+        /**
+         * Called when a video frame has been received
+         * Called on a separate thread
+         * @param frame the video frame
+         */
+        void onFrameReceived(ARFrame frame);
 
         /**
          * Called before medias will be downloaded
@@ -92,38 +123,55 @@ public class MiniDrone {
 
     private final Handler mHandler;
 
-    private final Context mContext;
-
     private ARDeviceController mDeviceController;
     private SDCardModule mSDCardModule;
-    private ARCONTROLLER_DEVICE_STATE_ENUM mState;
-    private ARCOMMANDS_MINIDRONE_PILOTINGSTATE_FLYINGSTATECHANGED_STATE_ENUM mFlyingState;
+    private ARCONTROLLER_DEVICE_STATE_ENUM mSkyController2State;
+    private ARCONTROLLER_DEVICE_STATE_ENUM mDroneState;
+    private ARCOMMANDS_ARDRONE3_PILOTINGSTATE_FLYINGSTATECHANGED_STATE_ENUM mFlyingState;
     private String mCurrentRunId;
-    private ARDISCOVERY_PRODUCT_ENUM mProductType;
+    private Context mContext;
 
-    public MiniDrone(Context context, @NonNull ARDiscoveryDeviceService deviceService) {
+    public SkyController2Drone(Context context, @NonNull ARDiscoveryDeviceService deviceService) {
 
-        mContext = context;
         mListeners = new ArrayList<>();
 
         // needed because some callbacks will be called on the main thread
         mHandler = new Handler(context.getMainLooper());
+        mContext = context;
 
-        mState = ARCONTROLLER_DEVICE_STATE_ENUM.ARCONTROLLER_DEVICE_STATE_STOPPED;
+        mSkyController2State = ARCONTROLLER_DEVICE_STATE_ENUM.ARCONTROLLER_DEVICE_STATE_STOPPED;
+        mDroneState = ARCONTROLLER_DEVICE_STATE_ENUM.ARCONTROLLER_DEVICE_STATE_STOPPED;
 
         // if the product type of the deviceService match with the types supported
-        mProductType = ARDiscoveryService.getProductFromProductID(deviceService.getProductID());
-        ARDISCOVERY_PRODUCT_FAMILY_ENUM family = ARDiscoveryService.getProductFamily(mProductType);
-        if (ARDISCOVERY_PRODUCT_FAMILY_ENUM.ARDISCOVERY_PRODUCT_FAMILY_MINIDRONE.equals(family)) {
+        ARDISCOVERY_PRODUCT_ENUM productType = ARDiscoveryService.getProductFromProductID(deviceService.getProductID());
+        if (ARDISCOVERY_PRODUCT_ENUM.ARDISCOVERY_PRODUCT_SKYCONTROLLER_2.equals(productType)) {
 
-            ARDiscoveryDevice discoveryDevice = createDiscoveryDevice(context, deviceService, mProductType);
+            ARDiscoveryDevice discoveryDevice = createDiscoveryDevice(deviceService, productType);
             if (discoveryDevice != null) {
                 mDeviceController = createDeviceController(discoveryDevice);
                 discoveryDevice.dispose();
             }
 
+            try
+            {
+                ARUtilsManager ftpListManager = new ARUtilsManager();
+                ARUtilsManager ftpQueueManager = new ARUtilsManager();
+
+                Mux mux = UsbAccessoryMux.get(context.getApplicationContext()).getMux();
+
+                ftpListManager.initWifiFtp(mux.newMuxRef(), DEVICE_PORT, ARUtilsManager.FTP_ANONYMOUS, "");
+                ftpQueueManager.initWifiFtp(mux.newMuxRef(), DEVICE_PORT, ARUtilsManager.FTP_ANONYMOUS, "");
+
+                mSDCardModule = new SDCardModule(ftpListManager, ftpQueueManager);
+                mSDCardModule.addListener(mSDCardModuleListener);
+            }
+            catch (ARUtilsException e)
+            {
+                Log.e(TAG, "Exception", e);
+            }
+
         } else {
-            Log.e(TAG, "DeviceService type is not supported by MiniDrone");
+            Log.e(TAG, "DeviceService type is not supported by SkyController2Drone");
         }
     }
 
@@ -147,11 +195,11 @@ public class MiniDrone {
      * Connect to the drone
      * @return true if operation was successful.
      *              Returning true doesn't mean that device is connected.
-     *              You can be informed of the actual connection through {@link Listener#onDroneConnectionChanged}
+     *              You can be informed of the actual connection through {@link Listener#onSkyController2ConnectionChanged}
      */
     public boolean connect() {
         boolean success = false;
-        if ((mDeviceController != null) && (ARCONTROLLER_DEVICE_STATE_ENUM.ARCONTROLLER_DEVICE_STATE_STOPPED.equals(mState))) {
+        if ((mDeviceController != null) && (ARCONTROLLER_DEVICE_STATE_ENUM.ARCONTROLLER_DEVICE_STATE_STOPPED.equals(mSkyController2State))) {
             ARCONTROLLER_ERROR_ENUM error = mDeviceController.start();
             if (error == ARCONTROLLER_ERROR_ENUM.ARCONTROLLER_OK) {
                 success = true;
@@ -164,11 +212,11 @@ public class MiniDrone {
      * Disconnect from the drone
      * @return true if operation was successful.
      *              Returning true doesn't mean that device is disconnected.
-     *              You can be informed of the actual disconnection through {@link Listener#onDroneConnectionChanged}
+     *              You can be informed of the actual disconnection through {@link Listener#onSkyController2ConnectionChanged}
      */
     public boolean disconnect() {
         boolean success = false;
-        if ((mDeviceController != null) && (ARCONTROLLER_DEVICE_STATE_ENUM.ARCONTROLLER_DEVICE_STATE_RUNNING.equals(mState))) {
+        if ((mDeviceController != null) && (ARCONTROLLER_DEVICE_STATE_ENUM.ARCONTROLLER_DEVICE_STATE_RUNNING.equals(mSkyController2State))) {
             ARCONTROLLER_ERROR_ENUM error = mDeviceController.stop();
             if (error == ARCONTROLLER_ERROR_ENUM.ARCONTROLLER_OK) {
                 success = true;
@@ -181,88 +229,55 @@ public class MiniDrone {
      * Get the current connection state
      * @return the connection state of the drone
      */
-    public ARCONTROLLER_DEVICE_STATE_ENUM getConnectionState() {
-        return mState;
+    public ARCONTROLLER_DEVICE_STATE_ENUM getSkyController2ConnectionState() {
+        return mSkyController2State;
+    }
+
+    /**
+     * Get the current connection state
+     * @return the connection state of the drone
+     */
+    public ARCONTROLLER_DEVICE_STATE_ENUM getDroneConnectionState() {
+        return mDroneState;
     }
 
     /**
      * Get the current flying state
      * @return the flying state
      */
-    public ARCOMMANDS_MINIDRONE_PILOTINGSTATE_FLYINGSTATECHANGED_STATE_ENUM getFlyingState() {
+    public ARCOMMANDS_ARDRONE3_PILOTINGSTATE_FLYINGSTATECHANGED_STATE_ENUM getFlyingState() {
         return mFlyingState;
     }
 
     public void takeOff() {
-        if ((mDeviceController != null) && (mState.equals(ARCONTROLLER_DEVICE_STATE_ENUM.ARCONTROLLER_DEVICE_STATE_RUNNING))) {
-            mDeviceController.getFeatureMiniDrone().sendPilotingTakeOff();
+        if ((mDeviceController != null) &&
+                (mSkyController2State.equals(ARCONTROLLER_DEVICE_STATE_ENUM.ARCONTROLLER_DEVICE_STATE_RUNNING)) &&
+                (mDeviceController.getExtensionState().equals(ARCONTROLLER_DEVICE_STATE_ENUM.ARCONTROLLER_DEVICE_STATE_RUNNING))) {
+            mDeviceController.getFeatureARDrone3().sendPilotingTakeOff();
         }
     }
 
     public void land() {
-        if ((mDeviceController != null) && (mState.equals(ARCONTROLLER_DEVICE_STATE_ENUM.ARCONTROLLER_DEVICE_STATE_RUNNING))) {
-            mDeviceController.getFeatureMiniDrone().sendPilotingLanding();
+        if ((mDeviceController != null) &&
+                (mSkyController2State.equals(ARCONTROLLER_DEVICE_STATE_ENUM.ARCONTROLLER_DEVICE_STATE_RUNNING)) &&
+                (mDeviceController.getExtensionState().equals(ARCONTROLLER_DEVICE_STATE_ENUM.ARCONTROLLER_DEVICE_STATE_RUNNING))) {
+            mDeviceController.getFeatureARDrone3().sendPilotingLanding();
         }
     }
 
     public void emergency() {
-        if ((mDeviceController != null) && (mState.equals(ARCONTROLLER_DEVICE_STATE_ENUM.ARCONTROLLER_DEVICE_STATE_RUNNING))) {
-            mDeviceController.getFeatureMiniDrone().sendPilotingEmergency();
+        if ((mDeviceController != null) &&
+                (mSkyController2State.equals(ARCONTROLLER_DEVICE_STATE_ENUM.ARCONTROLLER_DEVICE_STATE_RUNNING)) &&
+                (mDeviceController.getExtensionState().equals(ARCONTROLLER_DEVICE_STATE_ENUM.ARCONTROLLER_DEVICE_STATE_RUNNING))) {
+            mDeviceController.getFeatureARDrone3().sendPilotingEmergency();
         }
     }
 
     public void takePicture() {
-        if ((mDeviceController != null) && (mState.equals(ARCONTROLLER_DEVICE_STATE_ENUM.ARCONTROLLER_DEVICE_STATE_RUNNING))) {
-            // RollingSpider (not evo) are still using old deprecated command
-            if (ARDISCOVERY_PRODUCT_ENUM.ARDISCOVERY_PRODUCT_MINIDRONE.equals(mProductType)) {
-                mDeviceController.getFeatureMiniDrone().sendMediaRecordPicture((byte)0);
-            } else {
-                mDeviceController.getFeatureMiniDrone().sendMediaRecordPictureV2();
-            }
-        }
-    }
-
-    /**
-     * Set the forward/backward angle of the drone
-     * Note that {@link MiniDrone#setFlag(byte)} should be set to 1 in order to take in account the pitch value
-     * @param pitch value in percentage from -100 to 100
-     */
-    public void setPitch(byte pitch) {
-        if ((mDeviceController != null) && (mState.equals(ARCONTROLLER_DEVICE_STATE_ENUM.ARCONTROLLER_DEVICE_STATE_RUNNING))) {
-            mDeviceController.getFeatureMiniDrone().setPilotingPCMDPitch(pitch);
-        }
-    }
-
-    /**
-     * Set the side angle of the drone
-     * Note that {@link MiniDrone#setFlag(byte)} should be set to 1 in order to take in account the roll value
-     * @param roll value in percentage from -100 to 100
-     */
-    public void setRoll(byte roll) {
-        if ((mDeviceController != null) && (mState.equals(ARCONTROLLER_DEVICE_STATE_ENUM.ARCONTROLLER_DEVICE_STATE_RUNNING))) {
-            mDeviceController.getFeatureMiniDrone().setPilotingPCMDRoll(roll);
-        }
-    }
-
-    public void setYaw(byte yaw) {
-        if ((mDeviceController != null) && (mState.equals(ARCONTROLLER_DEVICE_STATE_ENUM.ARCONTROLLER_DEVICE_STATE_RUNNING))) {
-            mDeviceController.getFeatureMiniDrone().setPilotingPCMDYaw(yaw);
-        }
-    }
-
-    public void setGaz(byte gaz) {
-        if ((mDeviceController != null) && (mState.equals(ARCONTROLLER_DEVICE_STATE_ENUM.ARCONTROLLER_DEVICE_STATE_RUNNING))) {
-            mDeviceController.getFeatureMiniDrone().setPilotingPCMDGaz(gaz);
-        }
-    }
-
-    /**
-     * Take in account or not the pitch and roll values
-     * @param flag 1 if the pitch and roll values should be used, 0 otherwise
-     */
-    public void setFlag(byte flag) {
-        if ((mDeviceController != null) && (mState.equals(ARCONTROLLER_DEVICE_STATE_ENUM.ARCONTROLLER_DEVICE_STATE_RUNNING))) {
-            mDeviceController.getFeatureMiniDrone().setPilotingPCMDFlag(flag);
+        if ((mDeviceController != null) &&
+                (mSkyController2State.equals(ARCONTROLLER_DEVICE_STATE_ENUM.ARCONTROLLER_DEVICE_STATE_RUNNING)) &&
+                (mDeviceController.getExtensionState().equals(ARCONTROLLER_DEVICE_STATE_ENUM.ARCONTROLLER_DEVICE_STATE_RUNNING))) {
+            mDeviceController.getFeatureARDrone3().sendMediaRecordPictureV2();
         }
     }
 
@@ -272,22 +287,6 @@ public class MiniDrone {
      * If no run id is available, download all medias of the day
      */
     public void getLastFlightMedias() {
-        try
-        {
-            ARUtilsManager ftpListManager = new ARUtilsManager();
-            ARUtilsManager ftpQueueManager = new ARUtilsManager();
-
-            ftpListManager.initBLEFtp(mContext, ARSALBLEManager.getInstance(mContext).getGatt(), DEVICE_PORT);
-            ftpQueueManager.initBLEFtp(mContext, ARSALBLEManager.getInstance(mContext).getGatt(), DEVICE_PORT);
-
-            mSDCardModule = new SDCardModule(ftpListManager, ftpQueueManager);
-            mSDCardModule.addListener(mSDCardModuleListener);
-        }
-        catch (ARUtilsException e)
-        {
-            Log.e(TAG, "Exception", e);
-        }
-
         String runId = mCurrentRunId;
         if ((runId != null) && !runId.isEmpty()) {
             mSDCardModule.getFlightMedias(runId);
@@ -298,18 +297,15 @@ public class MiniDrone {
     }
 
     public void cancelGetLastFlightMedias() {
-        if (mSDCardModule != null) {
-            mSDCardModule.cancelGetFlightMedias();
-        }
+        mSDCardModule.cancelGetFlightMedias();
     }
 
-    private ARDiscoveryDevice createDiscoveryDevice(Context context, @NonNull ARDiscoveryDeviceService service, ARDISCOVERY_PRODUCT_ENUM productType) {
+    private ARDiscoveryDevice createDiscoveryDevice(@NonNull ARDiscoveryDeviceService service, ARDISCOVERY_PRODUCT_ENUM productType) {
         ARDiscoveryDevice device = null;
         try {
             device = new ARDiscoveryDevice();
 
-            ARDiscoveryDeviceBLEService bleDeviceService = (ARDiscoveryDeviceBLEService) service.getDevice();
-            device.initBLE(productType, context.getApplicationContext(), bleDeviceService.getBluetoothDevice());
+            device.initUSB(productType, UsbAccessoryMux.get(mContext.getApplicationContext()).getMux());
 
         } catch (ARDiscoveryException e) {
             Log.e(TAG, "Exception", e);
@@ -325,6 +321,7 @@ public class MiniDrone {
             deviceController = new ARDeviceController(discoveryDevice);
 
             deviceController.addListener(mDeviceControllerListener);
+            deviceController.addStreamListener(mStreamListener);
         } catch (ARControllerException e) {
             Log.e(TAG, "Exception", e);
         }
@@ -333,31 +330,59 @@ public class MiniDrone {
     }
 
     //region notify listener block
-    private void notifyConnectionChanged(ARCONTROLLER_DEVICE_STATE_ENUM state) {
+    private void notifySkyController2ConnectionChanged(ARCONTROLLER_DEVICE_STATE_ENUM state) {
+        List<Listener> listenersCpy = new ArrayList<>(mListeners);
+        for (Listener listener : listenersCpy) {
+            listener.onSkyController2ConnectionChanged(state);
+        }
+    }
+
+    private void notifyDroneConnectionChanged(ARCONTROLLER_DEVICE_STATE_ENUM state) {
         List<Listener> listenersCpy = new ArrayList<>(mListeners);
         for (Listener listener : listenersCpy) {
             listener.onDroneConnectionChanged(state);
         }
     }
 
-    private void notifyBatteryChanged(int battery) {
+    private void notifySkyController2BatteryChanged(int battery) {
         List<Listener> listenersCpy = new ArrayList<>(mListeners);
         for (Listener listener : listenersCpy) {
-            listener.onBatteryChargeChanged(battery);
+            listener.onSkyController2BatteryChargeChanged(battery);
         }
     }
 
-    private void notifyPilotingStateChanged(ARCOMMANDS_MINIDRONE_PILOTINGSTATE_FLYINGSTATECHANGED_STATE_ENUM state) {
+    private void notifyDroneBatteryChanged(int battery) {
+        List<Listener> listenersCpy = new ArrayList<>(mListeners);
+        for (Listener listener : listenersCpy) {
+            listener.onDroneBatteryChargeChanged(battery);
+        }
+    }
+
+    private void notifyPilotingStateChanged(ARCOMMANDS_ARDRONE3_PILOTINGSTATE_FLYINGSTATECHANGED_STATE_ENUM state) {
         List<Listener> listenersCpy = new ArrayList<>(mListeners);
         for (Listener listener : listenersCpy) {
             listener.onPilotingStateChanged(state);
         }
     }
 
-    private void notifyPictureTaken(ARCOMMANDS_MINIDRONE_MEDIARECORDEVENT_PICTUREEVENTCHANGED_ERROR_ENUM error) {
+    private void notifyPictureTaken(ARCOMMANDS_ARDRONE3_MEDIARECORDEVENT_PICTUREEVENTCHANGED_ERROR_ENUM error) {
         List<Listener> listenersCpy = new ArrayList<>(mListeners);
         for (Listener listener : listenersCpy) {
             listener.onPictureTaken(error);
+        }
+    }
+
+    private void notifyConfigureDecoder(ARControllerCodec codec) {
+        List<Listener> listenersCpy = new ArrayList<>(mListeners);
+        for (Listener listener : listenersCpy) {
+            listener.configureDecoder(codec);
+        }
+    }
+
+    private void notifyFrameReceived(ARFrame frame) {
+        List<Listener> listenersCpy = new ArrayList<>(mListeners);
+        for (Listener listener : listenersCpy) {
+            listener.onFrameReceived(frame);
         }
     }
 
@@ -418,22 +443,29 @@ public class MiniDrone {
     private final ARDeviceControllerListener mDeviceControllerListener = new ARDeviceControllerListener() {
         @Override
         public void onStateChanged(ARDeviceController deviceController, ARCONTROLLER_DEVICE_STATE_ENUM newState, ARCONTROLLER_ERROR_ENUM error) {
-            mState = newState;
-            if (ARCONTROLLER_DEVICE_STATE_ENUM.ARCONTROLLER_DEVICE_STATE_STOPPED.equals(mState)) {
-                if (mSDCardModule != null) {
-                    mSDCardModule.cancelGetFlightMedias();
-                }
-            }
+            mSkyController2State = newState;
             mHandler.post(new Runnable() {
                 @Override
                 public void run() {
-                    notifyConnectionChanged(mState);
+                    notifySkyController2ConnectionChanged(mSkyController2State);
                 }
             });
         }
 
         @Override
         public void onExtensionStateChanged(ARDeviceController deviceController, ARCONTROLLER_DEVICE_STATE_ENUM newState, ARDISCOVERY_PRODUCT_ENUM product, String name, ARCONTROLLER_ERROR_ENUM error) {
+            mDroneState = newState;
+            if (ARCONTROLLER_DEVICE_STATE_ENUM.ARCONTROLLER_DEVICE_STATE_RUNNING.equals(mDroneState)) {
+                mDeviceController.getFeatureARDrone3().sendMediaStreamingVideoEnable((byte) 1);
+            } else if (ARCONTROLLER_DEVICE_STATE_ENUM.ARCONTROLLER_DEVICE_STATE_STOPPED.equals(mDroneState)) {
+                mSDCardModule.cancelGetFlightMedias();
+            }
+            mHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    notifyDroneConnectionChanged(mDroneState);
+                }
+            });
         }
 
         @Override
@@ -446,16 +478,29 @@ public class MiniDrone {
                     mHandler.post(new Runnable() {
                         @Override
                         public void run() {
-                            notifyBatteryChanged(battery);
+                            notifyDroneBatteryChanged(battery);
+                        }
+                    });
+                }
+            }
+            // if event received is the skyController2 battery update
+            if ((commandKey == ARCONTROLLER_DICTIONARY_KEY_ENUM.ARCONTROLLER_DICTIONARY_KEY_SKYCONTROLLER_SKYCONTROLLERSTATE_BATTERYCHANGED) && (elementDictionary != null)) {
+                ARControllerArgumentDictionary<Object> args = elementDictionary.get(ARControllerDictionary.ARCONTROLLER_DICTIONARY_SINGLE_KEY);
+                if (args != null) {
+                    final int battery = (Integer) args.get(ARFeatureSkyController.ARCONTROLLER_DICTIONARY_KEY_SKYCONTROLLER_SKYCONTROLLERSTATE_BATTERYCHANGED_PERCENT);
+                    mHandler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            notifySkyController2BatteryChanged(battery);
                         }
                     });
                 }
             }
             // if event received is the flying state update
-            else if ((commandKey == ARCONTROLLER_DICTIONARY_KEY_ENUM.ARCONTROLLER_DICTIONARY_KEY_MINIDRONE_PILOTINGSTATE_FLYINGSTATECHANGED) && (elementDictionary != null)) {
+            else if ((commandKey == ARCONTROLLER_DICTIONARY_KEY_ENUM.ARCONTROLLER_DICTIONARY_KEY_ARDRONE3_PILOTINGSTATE_FLYINGSTATECHANGED) && (elementDictionary != null)) {
                 ARControllerArgumentDictionary<Object> args = elementDictionary.get(ARControllerDictionary.ARCONTROLLER_DICTIONARY_SINGLE_KEY);
                 if (args != null) {
-                    final ARCOMMANDS_MINIDRONE_PILOTINGSTATE_FLYINGSTATECHANGED_STATE_ENUM state = ARCOMMANDS_MINIDRONE_PILOTINGSTATE_FLYINGSTATECHANGED_STATE_ENUM.getFromValue((Integer) args.get(ARFeatureMiniDrone.ARCONTROLLER_DICTIONARY_KEY_MINIDRONE_PILOTINGSTATE_FLYINGSTATECHANGED_STATE));
+                    final ARCOMMANDS_ARDRONE3_PILOTINGSTATE_FLYINGSTATECHANGED_STATE_ENUM state = ARCOMMANDS_ARDRONE3_PILOTINGSTATE_FLYINGSTATECHANGED_STATE_ENUM.getFromValue((Integer) args.get(ARFeatureARDrone3.ARCONTROLLER_DICTIONARY_KEY_ARDRONE3_PILOTINGSTATE_FLYINGSTATECHANGED_STATE));
 
                     mHandler.post(new Runnable() {
                         @Override
@@ -467,10 +512,10 @@ public class MiniDrone {
                 }
             }
             // if event received is the picture notification
-            else if ((commandKey == ARCONTROLLER_DICTIONARY_KEY_ENUM.ARCONTROLLER_DICTIONARY_KEY_MINIDRONE_MEDIARECORDEVENT_PICTUREEVENTCHANGED) && (elementDictionary != null)){
+            else if ((commandKey == ARCONTROLLER_DICTIONARY_KEY_ENUM.ARCONTROLLER_DICTIONARY_KEY_ARDRONE3_MEDIARECORDEVENT_PICTUREEVENTCHANGED) && (elementDictionary != null)){
                 ARControllerArgumentDictionary<Object> args = elementDictionary.get(ARControllerDictionary.ARCONTROLLER_DICTIONARY_SINGLE_KEY);
                 if (args != null) {
-                    final ARCOMMANDS_MINIDRONE_MEDIARECORDEVENT_PICTUREEVENTCHANGED_ERROR_ENUM error = ARCOMMANDS_MINIDRONE_MEDIARECORDEVENT_PICTUREEVENTCHANGED_ERROR_ENUM.getFromValue((Integer)args.get(ARFeatureMiniDrone.ARCONTROLLER_DICTIONARY_KEY_MINIDRONE_MEDIARECORDEVENT_PICTUREEVENTCHANGED_ERROR));
+                    final ARCOMMANDS_ARDRONE3_MEDIARECORDEVENT_PICTUREEVENTCHANGED_ERROR_ENUM error = ARCOMMANDS_ARDRONE3_MEDIARECORDEVENT_PICTUREEVENTCHANGED_ERROR_ENUM.getFromValue((Integer)args.get(ARFeatureARDrone3.ARCONTROLLER_DICTIONARY_KEY_ARDRONE3_MEDIARECORDEVENT_PICTUREEVENTCHANGED_ERROR));
                     mHandler.post(new Runnable() {
                         @Override
                         public void run() {
@@ -493,5 +538,22 @@ public class MiniDrone {
                 }
             }
         }
+    };
+
+    private final ARDeviceControllerStreamListener mStreamListener = new ARDeviceControllerStreamListener() {
+        @Override
+        public ARCONTROLLER_ERROR_ENUM configureDecoder(ARDeviceController deviceController, final ARControllerCodec codec) {
+            notifyConfigureDecoder(codec);
+            return ARCONTROLLER_ERROR_ENUM.ARCONTROLLER_OK;
+        }
+
+        @Override
+        public ARCONTROLLER_ERROR_ENUM onFrameReceived(ARDeviceController deviceController, final ARFrame frame) {
+            notifyFrameReceived(frame);
+            return ARCONTROLLER_ERROR_ENUM.ARCONTROLLER_OK;
+        }
+
+        @Override
+        public void onFrameTimeout(ARDeviceController deviceController) {}
     };
 }

@@ -87,6 +87,13 @@ public class BebopActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    public void onDestroy()
+    {
+        mBebopDrone.dispose();
+        super.onDestroy();
+    }
+
     private void initIHM() {
         mVideoView = (BebopVideoView) findViewById(R.id.videoView);
 

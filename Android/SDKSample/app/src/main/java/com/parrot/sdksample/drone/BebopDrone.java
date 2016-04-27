@@ -131,6 +131,7 @@ public class BebopDrone {
             ARDiscoveryDevice discoveryDevice = createDiscoveryDevice(deviceService, productType);
             if (discoveryDevice != null) {
                 mDeviceController = createDeviceController(discoveryDevice);
+                discoveryDevice.dispose();
             }
 
             try
@@ -154,6 +155,12 @@ public class BebopDrone {
         } else {
             Log.e(TAG, "DeviceService type is not supported by BebopDrone");
         }
+    }
+
+    public void dispose()
+    {
+        if (mDeviceController != null)
+            mDeviceController.dispose();
     }
 
     //region Listener functions

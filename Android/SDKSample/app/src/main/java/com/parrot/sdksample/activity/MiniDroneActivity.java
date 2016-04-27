@@ -84,6 +84,13 @@ public class MiniDroneActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    public void onDestroy()
+    {
+        mMiniDrone.dispose();
+        super.onDestroy();
+    }
+
     private void initIHM() {
 
         findViewById(R.id.emergencyBt).setOnClickListener(new View.OnClickListener() {
