@@ -16,6 +16,12 @@ allprojects {
     repositories {
         jcenter()
     }
+    // product name: must be the name of a product definition directory in product
+    ext.product = "arsdk"
+    // workspace root directory
+    ext.root_dir = gradle.ext.root_dir
+    // put all build files into workspace out
+    buildDir = "${ext.root_dir}/out/${ext.product}-android/gradle/${project.name}"
 }
 
 ext {
