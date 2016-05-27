@@ -1,3 +1,6 @@
+// root workspace dir
+gradle.ext.root_dir = "${rootDir}/../../../../../"
+
 include 'libARSAL'
 project(':libARSAL').projectDir = new File('../../../../libARSAL')
 include 'libARNetworkAL'
