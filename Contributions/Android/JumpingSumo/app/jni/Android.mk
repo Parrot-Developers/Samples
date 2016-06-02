@@ -7,7 +7,9 @@ LOCAL_PATH := $(call my-dir)
 # changes after each include
 ZPATH := $(LOCAL_PATH)
 
-include $(ZPATH)/prebuilts.mk
+# Rename armeabi-v7a to armeabi_v7a, note there should be no space in subst arguments
+MY_ARCH_ABI := $(subst -,_,$(TARGET_ARCH_ABI))
+include $(ZPATH)/../../../../out/Android-$(MY_ARCH_ABI)/sdk/Android.mk
 
 include $(ZPATH)/../../../../../../libARCommands/Android.mk
 include $(ZPATH)/../../../../../../libARController/Android.mk
