@@ -6,6 +6,7 @@ import android.support.annotation.NonNull;
 import android.util.Log;
 
 import com.parrot.arsdk.arcommands.ARCOMMANDS_JUMPINGSUMO_MEDIARECORDEVENT_PICTUREEVENTCHANGED_ERROR_ENUM;
+import com.parrot.arsdk.arcontroller.ARAudioFrame;
 import com.parrot.arsdk.arcontroller.ARCONTROLLER_DEVICE_STATE_ENUM;
 import com.parrot.arsdk.arcontroller.ARCONTROLLER_DICTIONARY_KEY_ENUM;
 import com.parrot.arsdk.arcontroller.ARCONTROLLER_ERROR_ENUM;
@@ -26,6 +27,7 @@ import com.parrot.arsdk.ardiscovery.ARDiscoveryDeviceNetService;
 import com.parrot.arsdk.ardiscovery.ARDiscoveryDeviceService;
 import com.parrot.arsdk.ardiscovery.ARDiscoveryException;
 import com.parrot.arsdk.ardiscovery.ARDiscoveryService;
+import com.parrot.arsdk.arsal.ARNativeData;
 import com.parrot.arsdk.arutils.ARUtilsException;
 import com.parrot.arsdk.arutils.ARUtilsFtpConnection;
 import com.parrot.arsdk.arutils.ARUtilsManager;
@@ -37,6 +39,8 @@ public class JSDrone {
     private static final String TAG = "JSDrone";
 
     private static final int DEVICE_PORT = 21;
+
+    private int audioStreamBitField;
 
     public interface Listener {
         /**
@@ -61,6 +65,14 @@ public class JSDrone {
         void onPictureTaken(ARCOMMANDS_JUMPINGSUMO_MEDIARECORDEVENT_PICTUREEVENTCHANGED_ERROR_ENUM error);
 
         /**
+         * Called when audio state received
+         * Called on a separate thread
+         * @param inputEnabled true if the audio stream input is enabled else false
+         * @param outputEnabled true if the audio stream output is enabled else false
+         */
+        void onAudioStateReceived(boolean inputEnabled, boolean outputEnabled);
+
+        /**
          * Called when the video decoder should be configured
          * Called on a separate thread
          * @param codec the codec to configure the decoder with
@@ -73,6 +85,20 @@ public class JSDrone {
          * @param frame the video frame
          */
         void onFrameReceived(ARFrame frame);
+
+        /**
+         * Called when the audio decoder should be configured
+         * Called on a separate thread
+         * @param codec the codec to configure the decoder with
+         */
+        void configureAudioDecoder(ARControllerCodec codec);
+
+        /**
+         * Called when a audio frame has been received
+         * Called on a separate thread
+         * @param frame the audio frame
+         */
+        void onAudioFrameReceived(ARFrame frame);
 
         /**
          * Called before medias will be downloaded
@@ -213,6 +239,14 @@ public class JSDrone {
         }
     }
 
+    public void setAudioStreamEnabled(boolean input, boolean output) {
+        byte value = (byte)((input ? 1 : 0) | (output ? 2 : 0));
+
+        if ((mDeviceController != null) && (mState.equals(ARCONTROLLER_DEVICE_STATE_ENUM.ARCONTROLLER_DEVICE_STATE_RUNNING))) {
+            mDeviceController.getFeatureCommon().sendAudioControllerReadyForStreaming(value);
+        }
+    }
+
     /**
      * Set the speed of the Jumping Sumo
      * Note that {@link JSDrone#setFlag(byte)} should be set to 1 in order to take in account the speed value
@@ -287,11 +321,60 @@ public class JSDrone {
 
             deviceController.addListener(mDeviceControllerListener);
             deviceController.addStreamListener(mStreamListener);
+            deviceController.addAudioStreamListener(mAudioStreamListener);
         } catch (ARControllerException e) {
             Log.e(TAG, "Exception", e);
         }
 
         return deviceController;
+    }
+
+    public void sendStreamingFrame(ARNativeData data) {
+        if ((mDeviceController != null) && (mState.equals(ARCONTROLLER_DEVICE_STATE_ENUM.ARCONTROLLER_DEVICE_STATE_RUNNING))) {
+            mDeviceController.sendStreamingFrame(data);
+        }
+    }
+
+    public boolean hasOutputVideoStream() {
+        boolean res = false;
+
+        if ((mDeviceController != null) && (mState.equals(ARCONTROLLER_DEVICE_STATE_ENUM.ARCONTROLLER_DEVICE_STATE_RUNNING))) {
+            try {
+                res = mDeviceController.hasOutputVideoStream();
+            } catch (ARControllerException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return res;
+    }
+
+    public boolean hasOutputAudioStream() {
+        boolean res = false;
+
+        if (mDeviceController != null) {
+            try {
+                res = mDeviceController.hasOutputAudioStream();
+            } catch (ARControllerException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return res;
+    }
+
+    public boolean hasInputAudioStream() {
+        boolean res = false;
+
+        if (mDeviceController != null) {
+            try {
+                res = mDeviceController.hasInputAudioStream();
+            } catch (ARControllerException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return res;
     }
 
     //region notify listener block
@@ -316,6 +399,13 @@ public class JSDrone {
         }
     }
 
+    private void notifyAudioState(boolean inputEnabled, boolean outputEnabled) {
+        List<Listener> listenersCpy = new ArrayList<>(mListeners);
+        for (Listener listener : listenersCpy) {
+            listener.onAudioStateReceived(inputEnabled, outputEnabled);
+        }
+    }
+
     private void notifyConfigureDecoder(ARControllerCodec codec) {
         List<Listener> listenersCpy = new ArrayList<>(mListeners);
         for (Listener listener : listenersCpy) {
@@ -327,6 +417,20 @@ public class JSDrone {
         List<Listener> listenersCpy = new ArrayList<>(mListeners);
         for (Listener listener : listenersCpy) {
             listener.onFrameReceived(frame);
+        }
+    }
+
+    private void notifyConfigureAudioDecoder(ARControllerCodec codec) {
+        List<Listener> listenersCpy = new ArrayList<>(mListeners);
+        for (Listener listener : listenersCpy) {
+            listener.configureAudioDecoder(codec);
+        }
+    }
+
+    private void notifyAudioFrameReceived(ARFrame frame) {
+        List<Listener> listenersCpy = new ArrayList<>(mListeners);
+        for (Listener listener : listenersCpy) {
+            listener.onAudioFrameReceived(frame);
         }
     }
 
@@ -447,6 +551,22 @@ public class JSDrone {
                     });
                 }
             }
+            // if event received is the audio state notification
+            else if ((commandKey == ARCONTROLLER_DICTIONARY_KEY_ENUM.ARCONTROLLER_DICTIONARY_KEY_COMMON_AUDIOSTATE_AUDIOSTREAMINGRUNNING) && (elementDictionary != null)){
+                ARControllerArgumentDictionary<Object> args = elementDictionary.get(ARControllerDictionary.ARCONTROLLER_DICTIONARY_SINGLE_KEY);
+                if (args != null) {
+                    final int state = (Integer) args.get(ARFeatureCommon.ARCONTROLLER_DICTIONARY_KEY_COMMON_AUDIOSTATE_AUDIOSTREAMINGRUNNING_RUNNING);
+                    final boolean inputEnabled = (state & 0x01) != 0;
+                    final boolean outputEnabled = (state & 0x02) != 0;
+
+                    mHandler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            notifyAudioState(inputEnabled, outputEnabled);
+                        }
+                    });
+                }
+            }
         }
     };
 
@@ -460,6 +580,23 @@ public class JSDrone {
         @Override
         public ARCONTROLLER_ERROR_ENUM onFrameReceived(ARDeviceController deviceController, final ARFrame frame) {
             notifyFrameReceived(frame);
+            return ARCONTROLLER_ERROR_ENUM.ARCONTROLLER_OK;
+        }
+
+        @Override
+        public void onFrameTimeout(ARDeviceController deviceController) {}
+    };
+
+    private final ARDeviceControllerStreamListener mAudioStreamListener = new ARDeviceControllerStreamListener() {
+        @Override
+        public ARCONTROLLER_ERROR_ENUM configureDecoder(ARDeviceController deviceController, final ARControllerCodec codec) {
+            notifyConfigureAudioDecoder(codec);
+            return ARCONTROLLER_ERROR_ENUM.ARCONTROLLER_OK;
+        }
+
+        @Override
+        public ARCONTROLLER_ERROR_ENUM onFrameReceived(ARDeviceController deviceController, final ARFrame frame) {
+            notifyAudioFrameReceived(frame);
             return ARCONTROLLER_ERROR_ENUM.ARCONTROLLER_OK;
         }
 

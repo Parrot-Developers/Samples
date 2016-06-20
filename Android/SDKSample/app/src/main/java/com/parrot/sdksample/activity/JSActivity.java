@@ -8,14 +8,20 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 
 import com.parrot.arsdk.arcommands.ARCOMMANDS_JUMPINGSUMO_MEDIARECORDEVENT_PICTUREEVENTCHANGED_ERROR_ENUM;
 import com.parrot.arsdk.arcontroller.ARCONTROLLER_DEVICE_STATE_ENUM;
+import com.parrot.arsdk.arcontroller.ARCONTROLLER_STREAM_CODEC_TYPE_ENUM;
 import com.parrot.arsdk.arcontroller.ARControllerCodec;
 import com.parrot.arsdk.arcontroller.ARFrame;
+import com.parrot.arsdk.ardiscovery.ARDISCOVERY_PRODUCT_ENUM;
 import com.parrot.arsdk.ardiscovery.ARDiscoveryDeviceService;
+import com.parrot.arsdk.arsal.ARNativeData;
 import com.parrot.sdksample.R;
+import com.parrot.sdksample.audio.AudioPlayer;
+import com.parrot.sdksample.audio.AudioRecorder;
 import com.parrot.sdksample.drone.JSDrone;
 import com.parrot.sdksample.view.JSVideoView;
 
@@ -27,24 +33,37 @@ public class JSActivity extends AppCompatActivity {
     private ProgressDialog mDownloadProgressDialog;
 
     private JSVideoView mVideoView;
+    private AudioPlayer mAudioPlayer;
+    private AudioRecorder mAudioRecorder;
 
     private TextView mBatteryLabel;
 
     private int mNbMaxDownload;
     private int mCurrentDownloadIndex;
 
+    private Button mAudioBt;
+    private enum AudioState {
+        MUTE,
+        INPUT,
+        BIDIRECTIONAL,
+    }
+    private AudioState mAudioState = AudioState.MUTE;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_js);
 
-        initIHM();
-
         Intent intent = getIntent();
         ARDiscoveryDeviceService service = intent.getParcelableExtra(DeviceListActivity.EXTRA_DEVICE_SERVICE);
+
         mJSDrone = new JSDrone(this, service);
         mJSDrone.addListener(mJSListener);
 
+        initIHM();
+
+        mAudioPlayer = new AudioPlayer();
+        mAudioRecorder = new AudioRecorder(mAudioListener);
     }
 
     @Override
@@ -81,8 +100,49 @@ public class JSActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    public void onDestroy()
+    {
+        mAudioPlayer.stop();
+        mAudioPlayer.release();
+
+        mAudioRecorder.stop();
+        mAudioRecorder.release();
+
+        super.onDestroy();
+    }
+
     private void initIHM() {
         mVideoView = (JSVideoView) findViewById(R.id.videoView);
+
+        mAudioBt = (Button) findViewById(R.id.audioBt);
+        mAudioBt.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                /*change audio state*/
+                switch(mAudioState){
+                    case MUTE:
+                        setAudioState(AudioState.INPUT);
+                        break;
+
+                    case INPUT:
+                        if (mJSDrone.hasOutputAudioStream()) {
+                            setAudioState(AudioState.BIDIRECTIONAL);
+                        } else {
+                            setAudioState(AudioState.MUTE);
+                        }
+                        break;
+
+                    case BIDIRECTIONAL:
+                        setAudioState(AudioState.MUTE);
+                        break;
+                }
+            }
+        });
+
+        if ((!mJSDrone.hasInputAudioStream()) && (!mJSDrone.hasOutputAudioStream())) {
+            findViewById(R.id.audioTxt).setVisibility(View.GONE);
+            mAudioBt.setVisibility(View.GONE);
+        }
 
         findViewById(R.id.takePictureBt).setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
@@ -211,6 +271,28 @@ public class JSActivity extends AppCompatActivity {
         mBatteryLabel = (TextView) findViewById(R.id.batteryLabel);
     }
 
+    private void setAudioState(AudioState audioState){
+
+        mAudioState = audioState;
+
+        switch(mAudioState){
+            case MUTE:
+                mAudioBt.setText("MUTE");
+                mJSDrone.setAudioStreamEnabled(false, false);
+                break;
+
+            case INPUT:
+                mAudioBt.setText("INPUT");
+                mJSDrone.setAudioStreamEnabled(true, false);
+                break;
+
+            case BIDIRECTIONAL:
+                mAudioBt.setText("IN/OUTPUT");
+                mJSDrone.setAudioStreamEnabled(true, true);
+                break;
+        }
+    }
+
     private final JSDrone.Listener mJSListener = new JSDrone.Listener() {
         @Override
         public void onDroneConnectionChanged(ARCONTROLLER_DEVICE_STATE_ENUM state) {
@@ -248,6 +330,36 @@ public class JSActivity extends AppCompatActivity {
         @Override
         public void onFrameReceived(ARFrame frame) {
             mVideoView.displayFrame(frame);
+        }
+
+        @Override
+        public void onAudioStateReceived(boolean inputEnabled, boolean outputEnabled) {
+            if (inputEnabled) {
+                mAudioPlayer.start();
+            } else {
+                mAudioPlayer.stop();
+            }
+
+            if (outputEnabled) {
+                mAudioRecorder.start();
+            } else {
+                mAudioRecorder.stop();
+            }
+        }
+
+        @Override
+        public void configureAudioDecoder(ARControllerCodec codec) {
+            if (codec.getType() == ARCONTROLLER_STREAM_CODEC_TYPE_ENUM.ARCONTROLLER_STREAM_CODEC_TYPE_PCM16LE) {
+
+                ARControllerCodec.PCM16LE codecPCM16le = codec.getAsPCM16LE();
+
+                mAudioPlayer.configureCodec(codecPCM16le.getSampleRate());
+            }
+        }
+
+        @Override
+        public void onAudioFrameReceived(ARFrame frame) {
+            mAudioPlayer.onDataReceived(frame);
         }
 
         @Override
@@ -290,6 +402,13 @@ public class JSActivity extends AppCompatActivity {
                 mDownloadProgressDialog.dismiss();
                 mDownloadProgressDialog = null;
             }
+        }
+    };
+
+    private final AudioRecorder.Listener mAudioListener = new AudioRecorder.Listener() {
+        @Override
+        public void sendFrame(ARNativeData data) {
+            mJSDrone.sendStreamingFrame(data);
         }
     };
 }
