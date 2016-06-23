@@ -6,8 +6,12 @@
 #import <UIKit/UIKit.h>
 #import <libARDiscovery/ARDISCOVERY_BonjourDiscovery.h>
 
-@interface JSVC : UIViewController
+#import "AudioStreamAUBackend.h"
+
+@interface JSVC : UIViewController <AudioStreamAUBackendRecordDelegate>
 
 @property (nonatomic, strong) ARService *service;
+
+- (void)audioStreamAUBackend:(AudioStreamAUBackend*)backend didAcquireNewBuffer:(uint8_t*)buf withSize:(size_t)size;
 
 @end

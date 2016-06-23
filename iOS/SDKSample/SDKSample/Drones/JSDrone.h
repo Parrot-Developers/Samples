@@ -45,6 +45,23 @@
 - (BOOL)jsDrone:(JSDrone*)jsDrone didReceiveFrame:(ARCONTROLLER_Frame_t*)frame;
 
 /**
+ * Called when the audio decoder should be configured
+ * Called on separate thread
+ * @param jumpingDrone the drone concerned
+ * @param codec the codec information about the stream
+ * @return true if configuration went well, false otherwise
+ */
+- (BOOL)jsDrone:(JSDrone*)jsDrone configureAudioDecoder:(ARCONTROLLER_Stream_Codec_t)codec;
+
+/**
+ * Called when a audio frame has been received
+ * Called on separate thread
+ * @param jumpingDrone the drone concerned
+ * @param frame the frame received
+ */
+- (BOOL)jsDrone:(JSDrone*)jsDrone didReceiveAudioFrame:(ARCONTROLLER_Frame_t*)frame;
+
+/**
  * Called before medias will be downloaded
  * Called on the main thread
  * @param jumpingDrone the drone concerned
@@ -69,6 +86,15 @@
  */
 - (void)jsDrone:(JSDrone*)jsDrone mediaDownloadDidFinish:(NSString*)mediaName;
 
+
+/**
+ * Called when the audio state did change
+ * Called on the main thread
+ * @param jumpingDrone the drone concerned
+ * @param state the state of the audio
+ */
+- (void)jsDrone:(JSDrone*)jsDrone audioStateDidChangeWithInput:(BOOL)inputEnabled output:(BOOL)outputEnabled;
+
 @end
 
 @interface JSDrone : NSObject
@@ -86,4 +112,8 @@
 - (void)setFlag:(uint8_t)flag;
 - (void)downloadMedias;
 - (void)cancelDownloadMedias;
+- (void)setAudioStreamEnabledWithInput:(BOOL)inputEnabled output:(BOOL)outputEnabled;
+- (void)sendAudioStreamFrame:(uint8_t*)data withSize:(size_t)size;
+- (BOOL)hasInputAudioStream;
+- (BOOL)hasOutputAudioStream;
 @end
