@@ -88,6 +88,16 @@
                                                                 didReceiveFrameCallback, NULL , (__bridge void *)(self));
         }
         
+        // add the received audio frame callback to be informed when a frame should be displayed
+        if (error == ARCONTROLLER_OK) {
+            error = ARCONTROLLER_Device_SetAudioStreamCallbacks(_deviceController, configAudioDecoderCallback,
+                                                                didReceiveAudioFrameCallback, NULL , (__bridge void *)(self));
+            if (error == ARCONTROLLER_ERROR_NO_AUDIO) {
+                /* This device has no audio stream */
+                error = ARCONTROLLER_OK;
+            }
+        }
+        
         // start the device controller (the callback stateChanged should be called soon)
         if (error == ARCONTROLLER_OK) {
             error = ARCONTROLLER_Device_Start (_deviceController);
@@ -272,6 +282,26 @@ static void onCommandReceived (eARCONTROLLER_DICTIONARY_KEY commandKey, ARCONTRO
             }
         }
     }
+    // if the command received is audio state changed
+    else if ((commandKey == ARCONTROLLER_DICTIONARY_KEY_COMMON_AUDIOSTATE_AUDIOSTREAMINGRUNNING) &&
+             (elementDictionary != NULL)) {
+        ARCONTROLLER_DICTIONARY_ARG_t *arg = NULL;
+        ARCONTROLLER_DICTIONARY_ELEMENT_t *element = NULL;
+        
+        HASH_FIND_STR (elementDictionary, ARCONTROLLER_DICTIONARY_SINGLE_KEY, element);
+        if (element != NULL) {
+            HASH_FIND_STR (element->arguments, ARCONTROLLER_DICTIONARY_KEY_COMMON_AUDIOSTATE_AUDIOSTREAMINGRUNNING_RUNNING, arg);
+            if (arg != NULL) {
+                uint8_t state = arg->value.U8;
+                BOOL inputEnabled = (state & 0X01) != 0;
+                BOOL outputEnabled = (state & 0X02) != 0;
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [jsDrone.delegate jsDrone:jsDrone audioStateDidChangeWithInput:inputEnabled output:outputEnabled];
+                });
+
+            }
+        }
+    }
 }
 
 static eARCONTROLLER_ERROR configDecoderCallback (ARCONTROLLER_Stream_Codec_t codec, void *customData) {
@@ -290,6 +320,21 @@ static eARCONTROLLER_ERROR didReceiveFrameCallback (ARCONTROLLER_Frame_t *frame,
     return (success) ? ARCONTROLLER_OK : ARCONTROLLER_ERROR;
 }
 
+static eARCONTROLLER_ERROR configAudioDecoderCallback (ARCONTROLLER_Stream_Codec_t codec, void *customData) {
+    JSDrone *jsDrone = (__bridge JSDrone*)customData;
+    
+    BOOL success = [jsDrone.delegate jsDrone:jsDrone configureAudioDecoder:codec];
+    
+    return (success) ? ARCONTROLLER_OK : ARCONTROLLER_ERROR;
+}
+
+static eARCONTROLLER_ERROR didReceiveAudioFrameCallback (ARCONTROLLER_Frame_t *frame, void *customData) {
+    JSDrone *jsDrone = (__bridge JSDrone*)customData;
+
+    BOOL success = [jsDrone.delegate jsDrone:jsDrone didReceiveAudioFrame:frame];
+
+    return (success) ? ARCONTROLLER_OK : ARCONTROLLER_ERROR;
+}
 
 #pragma mark resolveService
 - (BOOL)resolveService:(ARService*)service {
@@ -335,6 +380,40 @@ static eARCONTROLLER_ERROR didReceiveFrameCallback (ARCONTROLLER_Frame_t *frame,
 
 - (void)sdcardModule:(SDCardModule*)module mediaDownloadDidFinish:(NSString*)mediaName {
     [_delegate jsDrone:self mediaDownloadDidFinish:mediaName];
+}
+
+- (void)setAudioStreamEnabledWithInput:(BOOL)input output:(BOOL)output {
+    int val = (input ? 1 : 0) | (output ? 2 : 0);
+
+    if (_deviceController && (_connectionState == ARCONTROLLER_DEVICE_STATE_RUNNING)) {
+        _deviceController->common->sendAudioControllerReadyForStreaming(_deviceController->common, val);
+    }
+}
+
+- (void)sendAudioStreamFrame:(uint8_t*)data withSize:(size_t)size {
+    if (_deviceController && (_connectionState == ARCONTROLLER_DEVICE_STATE_RUNNING)) {
+        ARCONTROLLER_Device_SendStreamFrame(_deviceController, data, size);
+    }
+}
+
+- (BOOL)hasInputAudioStream {
+    int res = 0;
+
+    if (_deviceController) {
+        res = ARCONTROLLER_Device_HasInputAudioStream(_deviceController, NULL);
+    }
+
+    return (res != 0);
+}
+
+- (BOOL)hasOutputAudioStream {
+    int res = 0;
+
+    if (_deviceController) {
+        res = ARCONTROLLER_Device_HasOutputAudioStream(_deviceController, NULL);
+    }
+
+    return (res != 0);
 }
 
 @end

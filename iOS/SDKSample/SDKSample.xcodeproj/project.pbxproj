@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		1D36FF8F1D185277005CAADC /* AudioStreamAUBackend.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D36FF8E1D185277005CAADC /* AudioStreamAUBackend.m */; };
 		F828FA6A1C8604150075E867 /* JSDrone.m in Sources */ = {isa = PBXBuildFile; fileRef = F828FA691C8604150075E867 /* JSDrone.m */; };
 		F828FA701C8608B90075E867 /* JSVC.m in Sources */ = {isa = PBXBuildFile; fileRef = F828FA6F1C8608B90075E867 /* JSVC.m */; };
 		F828FA731C860BEB0075E867 /* JSVideoView.m in Sources */ = {isa = PBXBuildFile; fileRef = F828FA721C860BEB0075E867 /* JSVideoView.m */; };
@@ -29,6 +30,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		1D36FF8D1D185277005CAADC /* AudioStreamAUBackend.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AudioStreamAUBackend.h; path = Audio/AudioStreamAUBackend.h; sourceTree = "<group>"; };
+		1D36FF8E1D185277005CAADC /* AudioStreamAUBackend.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AudioStreamAUBackend.m; path = Audio/AudioStreamAUBackend.m; sourceTree = "<group>"; };
 		F828FA681C8604150075E867 /* JSDrone.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSDrone.h; path = Drones/JSDrone.h; sourceTree = "<group>"; };
 		F828FA691C8604150075E867 /* JSDrone.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSDrone.m; path = Drones/JSDrone.m; sourceTree = "<group>"; };
 		F828FA6E1C8608B90075E867 /* JSVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSVC.h; path = ViewControllers/JSVC.h; sourceTree = "<group>"; };
@@ -78,6 +81,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		1D36FF831D185164005CAADC /* Audio */ = {
+			isa = PBXGroup;
+			children = (
+				1D36FF8D1D185277005CAADC /* AudioStreamAUBackend.h */,
+				1D36FF8E1D185277005CAADC /* AudioStreamAUBackend.m */,
+			);
+			name = Audio;
+			sourceTree = "<group>";
+		};
 		F853F82F1CB7A8F8003E1A83 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
@@ -105,6 +117,7 @@
 		F8B03D851C7DA4E900149B4F /* SDKSample */ = {
 			isa = PBXGroup;
 			children = (
+				1D36FF831D185164005CAADC /* Audio */,
 				F8B03DBC1C7DA7CE00149B4F /* Views */,
 				F8B03DBB1C7DA7C400149B4F /* Discovery */,
 				F8B03DBA1C7DA7BE00149B4F /* Drones */,
@@ -271,6 +284,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				F8838E691C80A51300B49443 /* SDCardModule.m in Sources */,
+				1D36FF8F1D185277005CAADC /* AudioStreamAUBackend.m in Sources */,
 				F8B03D8B1C7DA4E900149B4F /* AppDelegate.m in Sources */,
 				F828FA731C860BEB0075E867 /* JSVideoView.m in Sources */,
 				F8B03DC21C7DA90900149B4F /* BebopVC.m in Sources */,

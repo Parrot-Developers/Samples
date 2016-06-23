@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="9531" systemVersion="14F27" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="R1G-7d-Ueb">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="10117" systemVersion="15F34" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="R1G-7d-Ueb">
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9529"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="10085"/>
         <capability name="Alignment constraints with different attributes" minToolsVersion="5.1"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
     </dependencies>
@@ -463,10 +463,10 @@
                                 <exclude reference="Spx-14-mLx"/>
                                 <exclude reference="9Nf-p6-kho"/>
                                 <exclude reference="raD-RW-tcj"/>
-                                <exclude reference="uuH-rM-AvO"/>
                                 <exclude reference="RTX-8h-K3K"/>
                                 <exclude reference="aX2-6P-bBE"/>
                                 <exclude reference="uw4-Jt-FE1"/>
+                                <exclude reference="uuH-rM-AvO"/>
                             </mask>
                         </variation>
                     </view>
@@ -497,7 +497,54 @@
                         <subviews>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="CNP-rT-Nfa" customClass="JSVideoView">
                                 <rect key="frame" x="0.0" y="64" width="600" height="544"/>
+                                <subviews>
+                                    <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Ngr-XB-o0c">
+                                        <rect key="frame" x="5" y="499" width="100" height="40"/>
+                                        <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="100" id="JMY-hW-qBO"/>
+                                            <constraint firstAttribute="height" constant="40" id="PuQ-z4-BlB"/>
+                                            <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="100" id="eHe-8L-Zxm"/>
+                                            <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="30" id="oOP-T7-K2a"/>
+                                        </constraints>
+                                        <state key="normal" title="MUTE">
+                                            <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                        </state>
+                                        <variation key="default">
+                                            <mask key="constraints">
+                                                <exclude reference="eHe-8L-Zxm"/>
+                                                <exclude reference="oOP-T7-K2a"/>
+                                            </mask>
+                                        </variation>
+                                        <connections>
+                                            <action selector="audioClicked:" destination="cdJ-MM-fkQ" eventType="touchUpInside" id="B9G-iX-f5c"/>
+                                        </connections>
+                                    </button>
+                                    <label hidden="YES" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Audio: " lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="3sp-5Z-eL3" userLabel="Audio:">
+                                        <rect key="frame" x="5" y="461" width="75" height="30"/>
+                                        <color key="backgroundColor" red="1" green="1" blue="1" alpha="0.29999999999999999" colorSpace="calibratedRGB"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="75" id="1kj-aA-FGj"/>
+                                            <constraint firstAttribute="height" constant="30" id="2le-Y1-Kmk"/>
+                                        </constraints>
+                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                        <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                </subviews>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <constraints>
+                                    <constraint firstItem="Ngr-XB-o0c" firstAttribute="leading" secondItem="CNP-rT-Nfa" secondAttribute="leading" constant="5" id="4HA-Us-xEU"/>
+                                    <constraint firstItem="3sp-5Z-eL3" firstAttribute="leading" secondItem="CNP-rT-Nfa" secondAttribute="leading" constant="5" id="Fh4-e5-W0r"/>
+                                    <constraint firstItem="Ngr-XB-o0c" firstAttribute="top" secondItem="3sp-5Z-eL3" secondAttribute="bottom" constant="8" id="UNi-5v-GhC"/>
+                                    <constraint firstAttribute="bottom" secondItem="Ngr-XB-o0c" secondAttribute="bottom" constant="5" id="Uc3-Gv-yEd"/>
+                                    <constraint firstAttribute="bottom" secondItem="Ngr-XB-o0c" secondAttribute="bottom" constant="5" id="uCY-JI-AMT"/>
+                                </constraints>
+                                <variation key="default">
+                                    <mask key="constraints">
+                                        <exclude reference="Uc3-Gv-yEd"/>
+                                    </mask>
+                                </variation>
                             </view>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="y1j-AY-9Oo">
                                 <rect key="frame" x="490" y="69" width="100" height="40"/>
@@ -535,8 +582,8 @@
                                 </state>
                                 <variation key="default">
                                     <mask key="constraints">
-                                        <exclude reference="sCd-Wb-gVJ"/>
                                         <exclude reference="nyZ-7X-fHX"/>
+                                        <exclude reference="sCd-Wb-gVJ"/>
                                     </mask>
                                 </variation>
                                 <connections>
@@ -593,8 +640,8 @@
                                 </state>
                                 <variation key="default">
                                     <mask key="constraints">
-                                        <exclude reference="lyM-GZ-Aza"/>
                                         <exclude reference="Dn1-Wc-qUa"/>
+                                        <exclude reference="lyM-GZ-Aza"/>
                                     </mask>
                                 </variation>
                                 <connections>
@@ -687,6 +734,8 @@
                     <navigationItem key="navigationItem" id="sLr-MG-RaU"/>
                     <simulatedOrientationMetrics key="simulatedOrientationMetrics" orientation="landscapeRight"/>
                     <connections>
+                        <outlet property="audioBt" destination="Ngr-XB-o0c" id="OsW-5u-v8h"/>
+                        <outlet property="audioLabel" destination="3sp-5Z-eL3" id="i2Z-4H-9o2"/>
                         <outlet property="batteryLabel" destination="dCS-ak-tVy" id="PPF-nk-tKq"/>
                         <outlet property="downloadMediasBt" destination="33i-4c-teJ" id="UGW-wH-bgB"/>
                         <outlet property="videoView" destination="CNP-rT-Nfa" id="n2F-iL-fGy"/>
@@ -786,8 +835,8 @@
                                 </state>
                                 <variation key="default">
                                     <mask key="constraints">
-                                        <exclude reference="vTC-NJ-cUO"/>
                                         <exclude reference="i7a-hd-ft2"/>
+                                        <exclude reference="vTC-NJ-cUO"/>
                                     </mask>
                                 </variation>
                                 <connections>
@@ -830,8 +879,8 @@
                                 <nil key="highlightedColor"/>
                                 <variation key="default">
                                     <mask key="constraints">
-                                        <exclude reference="rA4-Ew-AyU"/>
                                         <exclude reference="pfa-8L-eN2"/>
+                                        <exclude reference="rA4-Ew-AyU"/>
                                     </mask>
                                 </variation>
                             </label>
@@ -847,8 +896,8 @@
                                 </state>
                                 <variation key="default">
                                     <mask key="constraints">
-                                        <exclude reference="rFE-gd-Qzk"/>
                                         <exclude reference="1IK-Wf-KXJ"/>
+                                        <exclude reference="rFE-gd-Qzk"/>
                                     </mask>
                                 </variation>
                                 <connections>
@@ -899,8 +948,8 @@
                                 </state>
                                 <variation key="default">
                                     <mask key="constraints">
-                                        <exclude reference="s7B-7d-jcq"/>
                                         <exclude reference="mg3-Jb-hHG"/>
+                                        <exclude reference="s7B-7d-jcq"/>
                                     </mask>
                                 </variation>
                                 <connections>
@@ -921,8 +970,8 @@
                                 </state>
                                 <variation key="default">
                                     <mask key="constraints">
-                                        <exclude reference="zfq-8J-wl6"/>
                                         <exclude reference="cwL-aA-Tec"/>
+                                        <exclude reference="zfq-8J-wl6"/>
                                     </mask>
                                 </variation>
                                 <connections>
@@ -943,8 +992,8 @@
                                 </state>
                                 <variation key="default">
                                     <mask key="constraints">
-                                        <exclude reference="xKV-eA-31o"/>
                                         <exclude reference="GYc-UF-6F6"/>
+                                        <exclude reference="xKV-eA-31o"/>
                                     </mask>
                                 </variation>
                                 <connections>
@@ -1065,16 +1114,16 @@
                         <variation key="default">
                             <mask key="constraints">
                                 <exclude reference="tcd-f6-lF4"/>
-                                <exclude reference="pCp-sR-PT9"/>
                                 <exclude reference="jHv-ae-dpr"/>
+                                <exclude reference="pCp-sR-PT9"/>
                                 <exclude reference="l2a-57-nQk"/>
                                 <exclude reference="bRf-u6-ZMd"/>
-                                <exclude reference="Kfp-hf-35n"/>
                                 <exclude reference="4LS-8v-Xl2"/>
-                                <exclude reference="Ahe-l6-Fg1"/>
-                                <exclude reference="eKE-BS-Zuq"/>
-                                <exclude reference="eCt-gK-gNn"/>
+                                <exclude reference="Kfp-hf-35n"/>
                                 <exclude reference="OsV-Hq-GcG"/>
+                                <exclude reference="eCt-gK-gNn"/>
+                                <exclude reference="eKE-BS-Zuq"/>
+                                <exclude reference="Ahe-l6-Fg1"/>
                             </mask>
                         </variation>
                     </view>
@@ -1120,8 +1169,8 @@
                                 </state>
                                 <variation key="default">
                                     <mask key="constraints">
-                                        <exclude reference="fo0-fO-2WS"/>
                                         <exclude reference="BRS-e2-lD5"/>
+                                        <exclude reference="fo0-fO-2WS"/>
                                     </mask>
                                 </variation>
                                 <connections>
