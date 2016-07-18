@@ -392,7 +392,7 @@ static eARCONTROLLER_ERROR didReceiveAudioFrameCallback (ARCONTROLLER_Frame_t *f
 
 - (void)sendAudioStreamFrame:(uint8_t*)data withSize:(size_t)size {
     if (_deviceController && (_connectionState == ARCONTROLLER_DEVICE_STATE_RUNNING)) {
-        ARCONTROLLER_Device_SendStreamFrame(_deviceController, data, size);
+        ARCONTROLLER_Device_SendStreamFrame(_deviceController, data, (int)size);
     }
 }
 
