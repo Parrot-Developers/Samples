@@ -75,8 +75,6 @@ static OSStatus audio_render_input_notify_callback (void *inRefCon, AudioUnitRen
     if (status != 0)
     {
         NSLog(@"%@: AudioUnitRender() failed: %i", [self class], (int)status);
-
-        NSLog(@"self->ioUnit:%p flags:%ld inTimeStamp:%p inBusNumber:%ld", self->ioUnit, flags, inTimeStamp, inBusNumber);
     }
     else if (self->recordDelegate != nil)
     {
