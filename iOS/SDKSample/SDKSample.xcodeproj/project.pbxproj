@@ -15,7 +15,6 @@
 		F828FA791C86F14C0075E867 /* MiniDroneVC.m in Sources */ = {isa = PBXBuildFile; fileRef = F828FA781C86F14C0075E867 /* MiniDroneVC.m */; };
 		F828FA7D1C8729860075E867 /* SkyController.m in Sources */ = {isa = PBXBuildFile; fileRef = F828FA7C1C8729860075E867 /* SkyController.m */; };
 		F828FA801C8750070075E867 /* SkyControllerVC.m in Sources */ = {isa = PBXBuildFile; fileRef = F828FA7F1C8750070075E867 /* SkyControllerVC.m */; };
-		F853F82E1CB7A854003E1A83 /* ExternalAccessory.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F853F82D1CB7A854003E1A83 /* ExternalAccessory.framework */; };
 		F8838E571C80874900B49443 /* BebopVideoView.m in Sources */ = {isa = PBXBuildFile; fileRef = F8838E561C80874900B49443 /* BebopVideoView.m */; };
 		F8838E691C80A51300B49443 /* SDCardModule.m in Sources */ = {isa = PBXBuildFile; fileRef = F8838E681C80A51200B49443 /* SDCardModule.m */; };
 		F8B03D881C7DA4E900149B4F /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = F8B03D871C7DA4E900149B4F /* main.m */; };
@@ -46,7 +45,6 @@
 		F828FA7C1C8729860075E867 /* SkyController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SkyController.m; path = Drones/SkyController.m; sourceTree = "<group>"; };
 		F828FA7E1C8750070075E867 /* SkyControllerVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SkyControllerVC.h; path = ViewControllers/SkyControllerVC.h; sourceTree = "<group>"; };
 		F828FA7F1C8750070075E867 /* SkyControllerVC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SkyControllerVC.m; path = ViewControllers/SkyControllerVC.m; sourceTree = "<group>"; };
-		F853F82D1CB7A854003E1A83 /* ExternalAccessory.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ExternalAccessory.framework; path = System/Library/Frameworks/ExternalAccessory.framework; sourceTree = SDKROOT; };
 		F8838E551C80874900B49443 /* BebopVideoView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BebopVideoView.h; path = Views/BebopVideoView.h; sourceTree = "<group>"; };
 		F8838E561C80874900B49443 /* BebopVideoView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = BebopVideoView.m; path = Views/BebopVideoView.m; sourceTree = "<group>"; };
 		F8838E671C80A51200B49443 /* SDCardModule.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SDCardModule.h; path = Drones/SDCardModule.h; sourceTree = "<group>"; };
@@ -74,7 +72,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F853F82E1CB7A854003E1A83 /* ExternalAccessory.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -93,7 +90,6 @@
 		F853F82F1CB7A8F8003E1A83 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				F853F82D1CB7A854003E1A83 /* ExternalAccessory.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -405,9 +401,6 @@
 					"-lcrypto",
 					"-lz",
 					"-lssl",
-					"-lmux",
-					"-lpomp",
-					"-lulog",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.parrot.SDKSample;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -527,9 +520,6 @@
 					"-lcrypto",
 					"-lz",
 					"-lssl",
-					"-lmux",
-					"-lpomp",
-					"-lulog",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.parrot.SDKSample;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -567,9 +557,6 @@
 					"-lcrypto",
 					"-lz",
 					"-lssl",
-					"-lmux",
-					"-lpomp",
-					"-lulog",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.parrot.SDKSample;
 				PRODUCT_NAME = "$(TARGET_NAME)";
