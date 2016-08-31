@@ -11,11 +11,13 @@
 #import "JSVC.h"
 #import "MiniDroneVC.h"
 #import "SkyControllerVC.h"
+#import "SkyController2VC.h"
 
-#define BEBOP_SEGUE         @"bebopSegue"
-#define JS_SEGUE            @"jsSegue"
-#define MINIDRONE_SEGUE     @"miniDroneSegue"
-#define SKYCONTROLLER_SEGUE @"skyControllerSegue"
+#define BEBOP_SEGUE             @"bebopSegue"
+#define JS_SEGUE                @"jsSegue"
+#define MINIDRONE_SEGUE         @"miniDroneSegue"
+#define SKYCONTROLLER_SEGUE     @"skyControllerSegue"
+#define SKYCONTROLLER2_SEGUE    @"skyController2Segue"
 
 @interface DeviceListVC () <UITableViewDelegate, UITableViewDataSource, DroneDiscovererDelegate>
 
@@ -74,6 +76,10 @@
         SkyControllerVC *skyControllerVC = (SkyControllerVC*)[segue destinationViewController];
         
         [skyControllerVC setService:_selectedService];
+    } else if (([segue.identifier isEqualToString:SKYCONTROLLER2_SEGUE]) && (_selectedService != nil)) {
+        SkyController2VC *skyController2VC = (SkyController2VC*)[segue destinationViewController];
+
+        [skyController2VC setService:_selectedService];
     }
 }
 
@@ -133,16 +139,21 @@
             break;
         case ARDISCOVERY_PRODUCT_JS:
         case ARDISCOVERY_PRODUCT_JS_EVO_LIGHT:
-            case ARDISCOVERY_PRODUCT_JS_EVO_RACE:
+        case ARDISCOVERY_PRODUCT_JS_EVO_RACE:
             [self performSegueWithIdentifier:JS_SEGUE sender:self];
             break;
         case ARDISCOVERY_PRODUCT_MINIDRONE:
         case ARDISCOVERY_PRODUCT_MINIDRONE_EVO_BRICK:
         case ARDISCOVERY_PRODUCT_MINIDRONE_EVO_LIGHT:
+        case ARDISCOVERY_PRODUCT_MINIDRONE_WINGX:
+        case ARDISCOVERY_PRODUCT_MINIDRONE_DELOS3:
             [self performSegueWithIdentifier:MINIDRONE_SEGUE sender:self];
             break;
         case ARDISCOVERY_PRODUCT_SKYCONTROLLER:
             [self performSegueWithIdentifier:SKYCONTROLLER_SEGUE sender:self];
+            break;
+        case ARDISCOVERY_PRODUCT_SKYCONTROLLER_2:
+            [self performSegueWithIdentifier:SKYCONTROLLER2_SEGUE sender:self];
             break;
         default:
             break;

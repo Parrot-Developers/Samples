@@ -1,43 +1,49 @@
 //
-//  MiniDroneVC.m
+//  SkyController2VC.m
 //  SDKSample
 //
 
-#import "MiniDroneVC.h"
-#import "MiniDrone.h"
+#import "SkyController2VC.h"
+#import "SkyController2.h"
+#import "BebopVideoView.h"
 
-@interface MiniDroneVC ()<MiniDroneDelegate>
+@interface SkyController2VC ()<SkyController2Delegate>
 
 @property (nonatomic, strong) UIAlertView *connectionAlertView;
 @property (nonatomic, strong) UIAlertController *downloadAlertController;
 @property (nonatomic, strong) UIProgressView *downloadProgressView;
-@property (nonatomic, strong) MiniDrone *miniDrone;
+@property (nonatomic, strong) SkyController2 *skyController2;
 @property (nonatomic) dispatch_semaphore_t stateSem;
 
 @property (nonatomic, assign) NSUInteger nbMaxDownload;
 @property (nonatomic, assign) int currentDownloadIndex; // from 1 to nbMaxDownload
 
-@property (nonatomic, strong) IBOutlet UILabel *batteryLabel;
+@property (nonatomic, strong) IBOutlet BebopVideoView *videoView;
+@property (nonatomic, strong) IBOutlet UILabel *scBatteryLabel;
+@property (nonatomic, strong) IBOutlet UILabel *droneBatteryLabel;
 @property (nonatomic, strong) IBOutlet UIButton *takeOffLandBt;
 @property (nonatomic, strong) IBOutlet UIButton *downloadMediasBt;
+@property (nonatomic, strong) IBOutlet UIButton *emergencyButton;
+@property (nonatomic, strong) IBOutlet UIButton *takePictureButton;
+@property (nonatomic, strong) IBOutlet UILabel *droneConnectionLabel;
 
 @end
 
-@implementation MiniDroneVC
+@implementation SkyController2VC
 
 -(void)viewDidLoad {
     _stateSem = dispatch_semaphore_create(0);
-    
-    _miniDrone = [[MiniDrone alloc] initWithService:_service];
-    [_miniDrone setDelegate:self];
-    [_miniDrone connect];
-    
+
+    _skyController2 = [[SkyController2 alloc] initWithService:_service];
+    [_skyController2 setDelegate:self];
+    [_skyController2 connect];
+
     _connectionAlertView = [[UIAlertView alloc] initWithTitle:[_service name] message:@"Connecting ..."
                                            delegate:self cancelButtonTitle:nil otherButtonTitles:nil, nil];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
-    if ([_miniDrone connectionState] != ARCONTROLLER_DEVICE_STATE_RUNNING) {
+    if ([_skyController2 connectionState] != ARCONTROLLER_DEVICE_STATE_RUNNING) {
         [_connectionAlertView show];
     }
 }
@@ -50,14 +56,14 @@
     _connectionAlertView = [[UIAlertView alloc] initWithTitle:[_service name] message:@"Disconnecting ..."
                                            delegate:self cancelButtonTitle:nil otherButtonTitles:nil, nil];
     [_connectionAlertView show];
-    
+
     // in background, disconnect from the drone
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        [_miniDrone disconnect];
+        [_skyController2 disconnect];
         // wait for the disconnection to appear
         dispatch_semaphore_wait(_stateSem, DISPATCH_TIME_FOREVER);
-        _miniDrone = nil;
-        
+        _skyController2 = nil;
+
         // dismiss the alert view in main thread
         dispatch_async(dispatch_get_main_queue(), ^{
             [_connectionAlertView dismissWithClickedButtonIndex:0 animated:YES];
@@ -66,30 +72,56 @@
 }
 
 
-#pragma mark MiniDroneDelegate
--(void)miniDrone:(MiniDrone *)miniDrone connectionDidChange:(eARCONTROLLER_DEVICE_STATE)state {
+#pragma mark SkyControllerDroneDelegate
+-(void)skyController2:(SkyController2*)sc2 scConnectionDidChange:(eARCONTROLLER_DEVICE_STATE)state {
     switch (state) {
         case ARCONTROLLER_DEVICE_STATE_RUNNING:
             [_connectionAlertView dismissWithClickedButtonIndex:0 animated:YES];
             break;
         case ARCONTROLLER_DEVICE_STATE_STOPPED:
             dispatch_semaphore_signal(_stateSem);
-            
+
             // Go back
             [self.navigationController popViewControllerAnimated:YES];
-            
+
             break;
-            
+
         default:
             break;
     }
 }
 
-- (void)miniDrone:(MiniDrone*)miniDrone batteryDidChange:(int)batteryPercentage {
-    [_batteryLabel setText:[NSString stringWithFormat:@"%d%%", batteryPercentage]];
+-(void)skyController2:(SkyController2*)sc2 droneConnectionDidChange:(eARCONTROLLER_DEVICE_STATE)state {
+    switch (state) {
+        case ARCONTROLLER_DEVICE_STATE_RUNNING:
+            [_takeOffLandBt setHidden:NO];
+            [_downloadMediasBt setHidden:NO];
+            [_emergencyButton setHidden:NO];
+            [_takePictureButton setHidden:NO];
+            [_droneConnectionLabel setHidden:YES];
+            break;
+        case ARCONTROLLER_DEVICE_STATE_STOPPED:
+            [_takeOffLandBt setHidden:YES];
+            [_downloadMediasBt setHidden:YES];
+            [_emergencyButton setHidden:YES];
+            [_takePictureButton setHidden:YES];
+            [_droneConnectionLabel setHidden:NO];
+            break;
+
+        default:
+            break;
+    }
 }
 
-- (void)miniDrone:(MiniDrone*)miniDrone flyingStateDidChange:(eARCOMMANDS_MINIDRONE_PILOTINGSTATE_FLYINGSTATECHANGED_STATE)state {
+- (void)skyController2:(SkyController2*)sc2 scBatteryDidChange:(int)batteryPercentage {
+    [_scBatteryLabel setText:[NSString stringWithFormat:@"%d%%", batteryPercentage]];
+}
+
+- (void)skyController2:(SkyController2*)sc2 droneBatteryDidChange:(int)batteryPercentage {
+    [_droneBatteryLabel setText:[NSString stringWithFormat:@"%d%%", batteryPercentage]];
+}
+
+- (void)skyController2:(SkyController2*)sc2 flyingStateDidChange:(eARCOMMANDS_ARDRONE3_PILOTINGSTATE_FLYINGSTATECHANGED_STATE)state {
     switch (state) {
         case ARCOMMANDS_ARDRONE3_PILOTINGSTATE_FLYINGSTATECHANGED_STATE_LANDED:
             [_takeOffLandBt setTitle:@"Take off" forState:UIControlStateNormal];
@@ -108,17 +140,25 @@
     }
 }
 
-- (void)miniDrone:(MiniDrone*)miniDrone didFoundMatchingMedias:(NSUInteger)nbMedias {
+- (BOOL)skyController2:(SkyController2*)sc2 configureDecoder:(ARCONTROLLER_Stream_Codec_t)codec {
+    return [_videoView configureDecoder:codec];
+}
+
+- (BOOL)skyController2:(SkyController2*)sc2 didReceiveFrame:(ARCONTROLLER_Frame_t*)frame {
+    return [_videoView displayFrame:frame];
+}
+
+- (void)skyController2:(SkyController2*)sc2 didFoundMatchingMedias:(NSUInteger)nbMedias {
     _nbMaxDownload = nbMedias;
     _currentDownloadIndex = 1;
-    
+
     if (nbMedias > 0) {
         [_downloadAlertController setMessage:@"Downloading medias"];
         UIViewController *customVC = [[UIViewController alloc] init];
         _downloadProgressView = [[UIProgressView alloc] initWithProgressViewStyle:UIProgressViewStyleDefault];
         [_downloadProgressView setProgress:0];
         [customVC.view addSubview:_downloadProgressView];
-        
+
         [customVC.view addConstraint:[NSLayoutConstraint
                                       constraintWithItem:_downloadProgressView
                                       attribute:NSLayoutAttributeCenterX
@@ -135,7 +175,7 @@
                                       attribute:NSLayoutAttributeTop
                                       multiplier:1.0f
                                       constant:-20.0f]];
-        
+
         [_downloadAlertController setValue:customVC forKey:@"contentViewController"];
     } else {
         [_downloadAlertController dismissViewControllerAnimated:YES completion:^{
@@ -145,37 +185,37 @@
     }
 }
 
-- (void)miniDrone:(MiniDrone*)miniDrone media:(NSString*)mediaName downloadDidProgress:(int)progress {
+- (void)skyController2:(SkyController2*)sc2 media:(NSString*)mediaName downloadDidProgress:(int)progress {
     float completedProgress = ((_currentDownloadIndex - 1) / (float)_nbMaxDownload);
     float currentProgress = (progress / 100.f) / (float)_nbMaxDownload;
     [_downloadProgressView setProgress:(completedProgress + currentProgress)];
 }
 
-- (void)miniDrone:(MiniDrone*)miniDrone mediaDownloadDidFinish:(NSString*)mediaName {
+- (void)skyController2:(SkyController2*)sc2 mediaDownloadDidFinish:(NSString*)mediaName {
     _currentDownloadIndex++;
-    
+
     if (_currentDownloadIndex > _nbMaxDownload) {
         [_downloadAlertController dismissViewControllerAnimated:YES completion:^{
             _downloadProgressView = nil;
             _downloadAlertController = nil;
         }];
-        
+
     }
 }
 
 #pragma mark buttons click
 - (IBAction)emergencyClicked:(id)sender {
-    [_miniDrone emergency];
+    [_skyController2 emergency];
 }
 
 - (IBAction)takeOffLandClicked:(id)sender {
-    switch ([_miniDrone flyingState]) {
+    switch ([_skyController2 flyingState]) {
         case ARCOMMANDS_ARDRONE3_PILOTINGSTATE_FLYINGSTATECHANGED_STATE_LANDED:
-            [_miniDrone takeOff];
+            [_skyController2 takeOff];
             break;
         case ARCOMMANDS_ARDRONE3_PILOTINGSTATE_FLYINGSTATECHANGED_STATE_FLYING:
         case ARCOMMANDS_ARDRONE3_PILOTINGSTATE_FLYINGSTATECHANGED_STATE_HOVERING:
-            [_miniDrone land];
+            [_skyController2 land];
             break;
         default:
             break;
@@ -183,28 +223,27 @@
 }
 
 - (IBAction)takePictureClicked:(id)sender {
-    [_miniDrone takePicture];
+    [_skyController2 takePicture];
 }
 
 - (IBAction)downloadMediasClicked:(id)sender {
     [_downloadAlertController dismissViewControllerAnimated:YES completion:nil];
-    
+
     _downloadAlertController = [UIAlertController alertControllerWithTitle:@"Download"
                                                                    message:@"Fetching medias"
                                                             preferredStyle:UIAlertControllerStyleAlert];
-    
+
     UIAlertAction* cancelAction = [UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel
                                                          handler:^(UIAlertAction * action) {
-                                                             [_miniDrone cancelDownloadMedias];
+                                                             [_skyController2 cancelDownloadMedias];
                                                          }];
     [_downloadAlertController addAction:cancelAction];
-    
-    
+
     UIViewController *customVC = [[UIViewController alloc] init];
     UIActivityIndicatorView* spinner = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
     [spinner startAnimating];
     [customVC.view addSubview:spinner];
-    
+
     [customVC.view addConstraint:[NSLayoutConstraint
                                   constraintWithItem: spinner
                                   attribute:NSLayoutAttributeCenterX
@@ -221,85 +260,11 @@
                                   attribute:NSLayoutAttributeTop
                                   multiplier:1.0f
                                   constant:-20.0f]];
-    
-    
+
     [_downloadAlertController setValue:customVC forKey:@"contentViewController"];
-    
+
     [self presentViewController:_downloadAlertController animated:YES completion:nil];
-    
-    [_miniDrone downloadMedias];
-}
 
-- (IBAction)gazUpTouchDown:(id)sender {
-    [_miniDrone setGaz:50];
+    [_skyController2 downloadMedias];
 }
-
-- (IBAction)gazDownTouchDown:(id)sender {
-    [_miniDrone setGaz:-50];
-}
-
-- (IBAction)gazUpTouchUp:(id)sender {
-    [_miniDrone setGaz:0];
-}
-
-- (IBAction)gazDownTouchUp:(id)sender {
-    [_miniDrone setGaz:0];
-}
-
-- (IBAction)yawLeftTouchDown:(id)sender {
-    [_miniDrone setYaw:-50];
-}
-
-- (IBAction)yawRightTouchDown:(id)sender {
-    [_miniDrone setYaw:50];
-}
-
-- (IBAction)yawLeftTouchUp:(id)sender {
-    [_miniDrone setYaw:0];
-}
-
-- (IBAction)yawRightTouchUp:(id)sender {
-    [_miniDrone setYaw:0];
-}
-
-- (IBAction)rollLeftTouchDown:(id)sender {
-    [_miniDrone setFlag:1];
-    [_miniDrone setRoll:-50];
-}
-
-- (IBAction)rollRightTouchDown:(id)sender {
-    [_miniDrone setFlag:1];
-    [_miniDrone setRoll:50];
-}
-
-- (IBAction)rollLeftTouchUp:(id)sender {
-    [_miniDrone setFlag:0];
-    [_miniDrone setRoll:0];
-}
-
-- (IBAction)rollRightTouchUp:(id)sender {
-    [_miniDrone setFlag:0];
-    [_miniDrone setRoll:0];
-}
-
-- (IBAction)pitchForwardTouchDown:(id)sender {
-    [_miniDrone setFlag:1];
-    [_miniDrone setPitch:50];
-}
-
-- (IBAction)pitchBackTouchDown:(id)sender {
-    [_miniDrone setFlag:1];
-    [_miniDrone setPitch:-50];
-}
-
-- (IBAction)pitchForwardTouchUp:(id)sender {
-    [_miniDrone setFlag:0];
-    [_miniDrone setPitch:0];
-}
-
-- (IBAction)pitchBackTouchUp:(id)sender {
-    [_miniDrone setFlag:0];
-    [_miniDrone setPitch:0];
-}
-
 @end

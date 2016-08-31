@@ -79,7 +79,7 @@ typedef enum {
         
         // dismiss the alert view in main thread
         dispatch_async(dispatch_get_main_queue(), ^{
-            [_connectionAlertView dismissWithClickedButtonIndex:0 animated:TRUE];
+            [_connectionAlertView dismissWithClickedButtonIndex:0 animated:YES];
         });
     });
 }
@@ -113,7 +113,7 @@ typedef enum {
 -(void)jsDrone:(JSDrone *)jsDrone connectionDidChange:(eARCONTROLLER_DEVICE_STATE)state {
     switch (state) {
         case ARCONTROLLER_DEVICE_STATE_RUNNING:
-            [_connectionAlertView dismissWithClickedButtonIndex:0 animated:TRUE];
+            [_connectionAlertView dismissWithClickedButtonIndex:0 animated:YES];
 
             [self updateView];
             break;
