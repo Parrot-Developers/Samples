@@ -52,6 +52,10 @@
             android:name=".activity.MiniDroneActivity"
             android:screenOrientation="landscape"/>
 
+        <activity
+            android:name=".activity.SwingDroneActivity"
+            android:screenOrientation="landscape"/>
+
     </application>
 
 </manifest>

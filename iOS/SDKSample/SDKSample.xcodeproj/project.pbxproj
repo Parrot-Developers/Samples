@@ -17,6 +17,10 @@
 		F828FA801C8750070075E867 /* SkyControllerVC.m in Sources */ = {isa = PBXBuildFile; fileRef = F828FA7F1C8750070075E867 /* SkyControllerVC.m */; };
 		F8838E571C80874900B49443 /* BebopVideoView.m in Sources */ = {isa = PBXBuildFile; fileRef = F8838E561C80874900B49443 /* BebopVideoView.m */; };
 		F8838E691C80A51300B49443 /* SDCardModule.m in Sources */ = {isa = PBXBuildFile; fileRef = F8838E681C80A51200B49443 /* SDCardModule.m */; };
+		F8885C291D7DAB23001DFB77 /* SwingDrone.m in Sources */ = {isa = PBXBuildFile; fileRef = F8885C281D7DAB23001DFB77 /* SwingDrone.m */; };
+		F8885C2C1D7DAB39001DFB77 /* SwingDroneVC.m in Sources */ = {isa = PBXBuildFile; fileRef = F8885C2B1D7DAB39001DFB77 /* SwingDroneVC.m */; };
+		F8885C2D1D7DAB3E001DFB77 /* SwingDroneVC.m in Sources */ = {isa = PBXBuildFile; fileRef = F8885C2B1D7DAB39001DFB77 /* SwingDroneVC.m */; };
+		F8885C2E1D7DAB45001DFB77 /* SwingDrone.m in Sources */ = {isa = PBXBuildFile; fileRef = F8885C281D7DAB23001DFB77 /* SwingDrone.m */; };
 		F8A2E0D41D770782001E391E /* SkyController2.m in Sources */ = {isa = PBXBuildFile; fileRef = F8A2E0D31D770782001E391E /* SkyController2.m */; };
 		F8A2E0D71D770B2F001E391E /* SkyController2VC.m in Sources */ = {isa = PBXBuildFile; fileRef = F8A2E0D61D770B2F001E391E /* SkyController2VC.m */; };
 		F8A2E0DB1D772EF3001E391E /* SDCardModule.m in Sources */ = {isa = PBXBuildFile; fileRef = F8838E681C80A51200B49443 /* SDCardModule.m */; };
@@ -74,6 +78,10 @@
 		F8838E561C80874900B49443 /* BebopVideoView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = BebopVideoView.m; path = Views/BebopVideoView.m; sourceTree = "<group>"; };
 		F8838E671C80A51200B49443 /* SDCardModule.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SDCardModule.h; path = Drones/SDCardModule.h; sourceTree = "<group>"; };
 		F8838E681C80A51200B49443 /* SDCardModule.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SDCardModule.m; path = Drones/SDCardModule.m; sourceTree = "<group>"; };
+		F8885C271D7DAB23001DFB77 /* SwingDrone.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SwingDrone.h; path = Drones/SwingDrone.h; sourceTree = "<group>"; };
+		F8885C281D7DAB23001DFB77 /* SwingDrone.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SwingDrone.m; path = Drones/SwingDrone.m; sourceTree = "<group>"; };
+		F8885C2A1D7DAB39001DFB77 /* SwingDroneVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SwingDroneVC.h; path = ViewControllers/SwingDroneVC.h; sourceTree = "<group>"; };
+		F8885C2B1D7DAB39001DFB77 /* SwingDroneVC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SwingDroneVC.m; path = ViewControllers/SwingDroneVC.m; sourceTree = "<group>"; };
 		F8A2E0D01D76C1BD001E391E /* ExternalAccessory.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ExternalAccessory.framework; path = System/Library/Frameworks/ExternalAccessory.framework; sourceTree = SDKROOT; };
 		F8A2E0D21D770782001E391E /* SkyController2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SkyController2.h; path = Drones/SkyController2.h; sourceTree = "<group>"; };
 		F8A2E0D31D770782001E391E /* SkyController2.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SkyController2.m; path = Drones/SkyController2.m; sourceTree = "<group>"; };
@@ -184,6 +192,8 @@
 		F8B03DB91C7DA7B500149B4F /* ViewControllers */ = {
 			isa = PBXGroup;
 			children = (
+				F8885C2A1D7DAB39001DFB77 /* SwingDroneVC.h */,
+				F8885C2B1D7DAB39001DFB77 /* SwingDroneVC.m */,
 				F8A2E0D51D770B2F001E391E /* SkyController2VC.h */,
 				F8A2E0D61D770B2F001E391E /* SkyController2VC.m */,
 				F828FA7E1C8750070075E867 /* SkyControllerVC.h */,
@@ -203,6 +213,8 @@
 		F8B03DBA1C7DA7BE00149B4F /* Drones */ = {
 			isa = PBXGroup;
 			children = (
+				F8885C271D7DAB23001DFB77 /* SwingDrone.h */,
+				F8885C281D7DAB23001DFB77 /* SwingDrone.m */,
 				F8A2E0D21D770782001E391E /* SkyController2.h */,
 				F8A2E0D31D770782001E391E /* SkyController2.m */,
 				F828FA7B1C8729860075E867 /* SkyController.h */,
@@ -372,6 +384,7 @@
 				F8A2E0DB1D772EF3001E391E /* SDCardModule.m in Sources */,
 				F8A2E0DC1D772EF3001E391E /* AudioStreamAUBackend.m in Sources */,
 				F8A2E0DD1D772EF3001E391E /* AppDelegate.m in Sources */,
+				F8885C2D1D7DAB3E001DFB77 /* SwingDroneVC.m in Sources */,
 				F8A2E0DE1D772EF3001E391E /* JSVideoView.m in Sources */,
 				F8A2E0DF1D772EF3001E391E /* BebopVC.m in Sources */,
 				F8A2E0E01D772EF3001E391E /* SkyController2VC.m in Sources */,
@@ -383,6 +396,7 @@
 				F8A2E0E61D772EF3001E391E /* JSDrone.m in Sources */,
 				F8A2E0E71D772EF3001E391E /* DeviceListVC.m in Sources */,
 				F8A2E0E81D772EF3001E391E /* SkyControllerVC.m in Sources */,
+				F8885C2E1D7DAB45001DFB77 /* SwingDrone.m in Sources */,
 				F8A2E0E91D772EF3001E391E /* BebopVideoView.m in Sources */,
 				F8A2E0EA1D772EF3001E391E /* SkyController2.m in Sources */,
 				F8A2E0EB1D772EF3001E391E /* SkyController.m in Sources */,
@@ -403,6 +417,8 @@
 				F8B03D881C7DA4E900149B4F /* main.m in Sources */,
 				F8F74D441C7DEAB700DC5FA1 /* BebopDrone.m in Sources */,
 				F828FA701C8608B90075E867 /* JSVC.m in Sources */,
+				F8885C291D7DAB23001DFB77 /* SwingDrone.m in Sources */,
+				F8885C2C1D7DAB39001DFB77 /* SwingDroneVC.m in Sources */,
 				F828FA761C86EB630075E867 /* MiniDrone.m in Sources */,
 				F828FA791C86F14C0075E867 /* MiniDroneVC.m in Sources */,
 				F828FA6A1C8604150075E867 /* JSDrone.m in Sources */,

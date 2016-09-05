@@ -10,12 +10,14 @@
 #import "BebopVC.h"
 #import "JSVC.h"
 #import "MiniDroneVC.h"
+#import "SwingDroneVC.h"
 #import "SkyControllerVC.h"
 #import "SkyController2VC.h"
 
 #define BEBOP_SEGUE             @"bebopSegue"
 #define JS_SEGUE                @"jsSegue"
 #define MINIDRONE_SEGUE         @"miniDroneSegue"
+#define SWING_SEGUE             @"SwingSegue"
 #define SKYCONTROLLER_SEGUE     @"skyControllerSegue"
 #define SKYCONTROLLER2_SEGUE    @"skyController2Segue"
 
@@ -72,6 +74,10 @@
         MiniDroneVC *miniDroneVC = (MiniDroneVC*)[segue destinationViewController];
         
         [miniDroneVC setService:_selectedService];
+    } else if (([segue.identifier isEqualToString:SWING_SEGUE]) && (_selectedService != nil)) {
+        SwingDroneVC *swingDroneVC = (SwingDroneVC*)[segue destinationViewController];
+
+        [swingDroneVC setService:_selectedService];
     } else if (([segue.identifier isEqualToString:SKYCONTROLLER_SEGUE]) && (_selectedService != nil)) {
         SkyControllerVC *skyControllerVC = (SkyControllerVC*)[segue destinationViewController];
         
@@ -145,9 +151,11 @@
         case ARDISCOVERY_PRODUCT_MINIDRONE:
         case ARDISCOVERY_PRODUCT_MINIDRONE_EVO_BRICK:
         case ARDISCOVERY_PRODUCT_MINIDRONE_EVO_LIGHT:
-        case ARDISCOVERY_PRODUCT_MINIDRONE_WINGX:
         case ARDISCOVERY_PRODUCT_MINIDRONE_DELOS3:
             [self performSegueWithIdentifier:MINIDRONE_SEGUE sender:self];
+            break;
+        case ARDISCOVERY_PRODUCT_MINIDRONE_WINGX:
+            [self performSegueWithIdentifier:SWING_SEGUE sender:self];
             break;
         case ARDISCOVERY_PRODUCT_SKYCONTROLLER:
             [self performSegueWithIdentifier:SKYCONTROLLER_SEGUE sender:self];

@@ -96,7 +96,11 @@ public class DeviceListActivity extends AppCompatActivity {
                     case ARDISCOVERY_PRODUCT_MINIDRONE:
                     case ARDISCOVERY_PRODUCT_MINIDRONE_EVO_BRICK:
                     case ARDISCOVERY_PRODUCT_MINIDRONE_EVO_LIGHT:
+                    case ARDISCOVERY_PRODUCT_MINIDRONE_DELOS3:
                         intent = new Intent(DeviceListActivity.this, MiniDroneActivity.class);
+                        break;
+                    case ARDISCOVERY_PRODUCT_MINIDRONE_WINGX:
+                        intent = new Intent(DeviceListActivity.this, SwingDroneActivity.class);
                         break;
 
                     default:
