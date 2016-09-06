@@ -503,14 +503,8 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				"DEAD_CODE_STRIPPING[arch=*]" = YES;
 				ENABLE_BITCODE = NO;
-				"HEADER_SEARCH_PATHS[sdk=iphoneos*]" = (
-					"../../../../out/iOS-iphoneos/staging/usr/include",
-					"../../../../out/iOS-iphoneos/sdk/usr/include/libmux/include",
-				);
-				"HEADER_SEARCH_PATHS[sdk=iphonesimulator*]" = (
-					"../../../../out/iOS-iphonesimulator/staging/usr/include",
-					"../../../../out/iOS-iphonesimulator/sdk/usr/include/libmux/include",
-				);
+				"HEADER_SEARCH_PATHS[sdk=iphoneos*]" = "../../../../out/iOS-iphoneos/staging/usr/include";
+				"HEADER_SEARCH_PATHS[sdk=iphonesimulator*]" = "../../../../out/iOS-iphonesimulator/staging/usr/include";
 				INFOPLIST_FILE = SDKSample/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				"LIBRARY_SEARCH_PATHS[sdk=iphoneos*]" = "../../../../out/iOS-iphoneos/staging/usr/lib";
@@ -587,14 +581,8 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				"DEAD_CODE_STRIPPING[arch=*]" = YES;
 				ENABLE_BITCODE = NO;
-				"HEADER_SEARCH_PATHS[sdk=iphoneos*]" = (
-					"../../../../out/iOS-iphoneos/staging/usr/include",
-					"../../../../out/iOS-iphoneos/sdk/usr/include/libmux/include",
-				);
-				"HEADER_SEARCH_PATHS[sdk=iphonesimulator*]" = (
-					"../../../../out/iOS-iphonesimulator/staging/usr/include",
-					"../../../../out/iOS-iphonesimulator/sdk/usr/include/libmux/include",
-				);
+				"HEADER_SEARCH_PATHS[sdk=iphoneos*]" = "../../../../out/iOS-iphoneos/staging/usr/include";
+				"HEADER_SEARCH_PATHS[sdk=iphonesimulator*]" = "../../../../out/iOS-iphonesimulator/staging/usr/include";
 				INFOPLIST_FILE = SDKSample/InfoForSkyController2.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				"LIBRARY_SEARCH_PATHS[sdk=iphoneos*]" = "../../../../out/iOS-iphoneos/staging/usr/lib";
