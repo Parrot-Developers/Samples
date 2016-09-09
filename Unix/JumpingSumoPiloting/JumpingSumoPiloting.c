@@ -170,7 +170,6 @@ int main (int argc, char *argv[])
         ARSAL_Print_SetCallback (customPrintCallback); //use a custom callback to print, for not disturb ncurses IHM
         
         IHM_PrintHeader(ihm, "-- Jumping Sumo Piloting --");
-        registerARCommandsCallbacks (ihm);
     }
     else
     {
@@ -194,6 +193,8 @@ int main (int argc, char *argv[])
             deviceManager->looperThread = NULL;
             deviceManager->readerThreads = NULL;
             deviceManager->readerThreadsData = NULL;
+
+            deviceManager->decoder = NULL;
             
             deviceManager->run = 1;
             
@@ -214,6 +215,24 @@ int main (int argc, char *argv[])
     {
         IHM_PrintInfo(ihm, "Connecting ...");
         failed = ardiscoveryConnect (deviceManager);
+    }
+
+
+    if (!failed)
+    {
+        /* Create the decoder */
+        eARCOMMANDS_DECODER_ERROR decoderError;
+        deviceManager->decoder = ARCOMMANDS_Decoder_NewDecoder(&decoderError);
+        if (decoderError != ARCOMMANDS_DECODER_OK)
+        {
+            ARSAL_PRINT(ARSAL_PRINT_ERROR, TAG, "Creation of the decoder failed.");
+            failed = 1;
+        }
+    }
+
+    if (!failed)
+    {
+        registerARCommandsCallbacks (deviceManager, ihm);
     }
     
     if (!failed)
@@ -326,6 +345,13 @@ int main (int argc, char *argv[])
         
         // Stop Network
         stopNetwork (deviceManager);
+
+        unregisterARCommandsCallbacks (deviceManager);
+
+        if (deviceManager->decoder != NULL)
+        {
+            ARCOMMANDS_Decoder_DeleteDecoder(&deviceManager->decoder);
+        }
         
         // free deviceManager
         free (deviceManager);
@@ -334,7 +360,6 @@ int main (int argc, char *argv[])
     
     if (ihm != NULL)
     {
-        unregisterARCommandsCallbacks ();
         
         IHM_Delete (&ihm);
         ARSAL_Print_SetCallback (NULL); //reset the callback to print
@@ -488,14 +513,14 @@ void stopNetwork (DEVICE_MANAGER_t *deviceManager)
     ARNETWORKAL_Manager_Delete(&(deviceManager->alManager));
 }
 
-void registerARCommandsCallbacks (IHM_t *ihm)
+void registerARCommandsCallbacks (DEVICE_MANAGER_t *deviceManager, IHM_t *ihm)
 {
-    ARCOMMANDS_Decoder_SetCommonCommonStateBatteryStateChangedCallback(batteryStateChangedCallback, ihm);
+    ARCOMMANDS_Decoder_SetCommonCommonStateBatteryStateChangedCb(deviceManager->decoder, batteryStateChangedCallback, ihm);
 }
 
-void unregisterARCommandsCallbacks (void)
+void unregisterARCommandsCallbacks (DEVICE_MANAGER_t *deviceManager)
 {
-    ARCOMMANDS_Decoder_SetCommonCommonStateBatteryStateChangedCallback (NULL, NULL);
+    ARCOMMANDS_Decoder_SetCommonCommonStateBatteryStateChangedCb (deviceManager->decoder, NULL, NULL);
 }
 
 void onDisconnectNetwork (ARNETWORK_Manager_t *manager, ARNETWORKAL_Manager_t *alManager, void *customData)
@@ -577,7 +602,7 @@ void *readerRun (void* data)
             {
                 // Forward data to the CommandsManager
                 eARCOMMANDS_DECODER_ERROR cmdError = ARCOMMANDS_DECODER_OK;
-                cmdError = ARCOMMANDS_Decoder_DecodeBuffer ((uint8_t *)readData, length);
+                cmdError = ARCOMMANDS_Decoder_DecodeCommand (deviceManager->decoder, (uint8_t *)readData, length);
                 if ((cmdError != ARCOMMANDS_DECODER_OK) && (cmdError != ARCOMMANDS_DECODER_ERROR_NO_CALLBACK))
                 {
                     char msg[128];

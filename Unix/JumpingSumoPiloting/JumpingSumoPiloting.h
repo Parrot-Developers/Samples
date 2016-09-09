@@ -55,6 +55,8 @@ typedef struct
     ARSAL_Thread_t looperThread;
     ARSAL_Thread_t *readerThreads;
     READER_THREAD_DATA_t *readerThreadsData;
+
+    ARCOMMANDS_Decoder_t* decoder;
     
     int run;
     JS_PCMD_t dataPCMD;
@@ -75,8 +77,8 @@ int startNetwork (DEVICE_MANAGER_t *deviceManager);
 void onDisconnectNetwork (ARNETWORK_Manager_t *manager, ARNETWORKAL_Manager_t *alManager, void *customData);
 void stopNetwork (DEVICE_MANAGER_t *deviceManager);
 
-void registerARCommandsCallbacks (IHM_t *ihm);
-void unregisterARCommandsCallbacks(void);
+void registerARCommandsCallbacks (DEVICE_MANAGER_t *deviceManager, IHM_t *ihm);
+void unregisterARCommandsCallbacks(DEVICE_MANAGER_t *deviceManager);
 
 void *looperRun(void* data);
 void *readerRun(void* data);
