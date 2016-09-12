@@ -266,7 +266,6 @@ static void extensionStateChanged (eARCONTROLLER_DEVICE_STATE newState, eARDISCO
                 break;
         }
         dispatch_async(dispatch_get_main_queue(), ^{
-            sc.connectionState = newState;
             [sc.delegate skyController:sc droneConnectionDidChange:newState];
         });
     }
