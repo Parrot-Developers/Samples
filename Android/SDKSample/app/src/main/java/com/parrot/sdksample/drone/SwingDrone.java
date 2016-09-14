@@ -6,7 +6,9 @@ import android.support.annotation.NonNull;
 import android.util.Log;
 
 import com.parrot.arsdk.arcommands.ARCOMMANDS_MINIDRONE_MEDIARECORDEVENT_PICTUREEVENTCHANGED_ERROR_ENUM;
+import com.parrot.arsdk.arcommands.ARCOMMANDS_MINIDRONE_PILOTINGSTATE_FLYINGMODECHANGED_MODE_ENUM;
 import com.parrot.arsdk.arcommands.ARCOMMANDS_MINIDRONE_PILOTINGSTATE_FLYINGSTATECHANGED_STATE_ENUM;
+import com.parrot.arsdk.arcommands.ARCOMMANDS_MINIDRONE_PILOTING_FLYINGMODE_MODE_ENUM;
 import com.parrot.arsdk.arcontroller.ARCONTROLLER_DEVICE_STATE_ENUM;
 import com.parrot.arsdk.arcontroller.ARCONTROLLER_DICTIONARY_KEY_ENUM;
 import com.parrot.arsdk.arcontroller.ARCONTROLLER_ERROR_ENUM;
@@ -31,8 +33,8 @@ import com.parrot.arsdk.arutils.ARUtilsManager;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MiniDrone {
-    private static final String TAG = "MiniDrone";
+public class SwingDrone {
+    private static final String TAG = "SwingDrone";
 
     private static final int DEVICE_PORT = 21;
 
@@ -57,6 +59,13 @@ public class MiniDrone {
          * @param state the piloting state of the drone
          */
         void onPilotingStateChanged(ARCOMMANDS_MINIDRONE_PILOTINGSTATE_FLYINGSTATECHANGED_STATE_ENUM state);
+
+        /**
+         * Called when the flying mode has changed
+         * Called in the main thread
+         * @param flyingMode the new flying mode
+         */
+        void onFlyingModeChanged(ARCOMMANDS_MINIDRONE_PILOTINGSTATE_FLYINGMODECHANGED_MODE_ENUM flyingMode);
 
         /**
          * Called when a picture is taken
@@ -101,7 +110,7 @@ public class MiniDrone {
     private String mCurrentRunId;
     private ARDISCOVERY_PRODUCT_ENUM mProductType;
 
-    public MiniDrone(Context context, @NonNull ARDiscoveryDeviceService deviceService) {
+    public SwingDrone(Context context, @NonNull ARDiscoveryDeviceService deviceService) {
 
         mContext = context;
         mListeners = new ArrayList<>();
@@ -213,18 +222,19 @@ public class MiniDrone {
 
     public void takePicture() {
         if ((mDeviceController != null) && (mState.equals(ARCONTROLLER_DEVICE_STATE_ENUM.ARCONTROLLER_DEVICE_STATE_RUNNING))) {
-            // RollingSpider (not evo) are still using old deprecated command
-            if (ARDISCOVERY_PRODUCT_ENUM.ARDISCOVERY_PRODUCT_MINIDRONE.equals(mProductType)) {
-                mDeviceController.getFeatureMiniDrone().sendMediaRecordPicture((byte)0);
-            } else {
-                mDeviceController.getFeatureMiniDrone().sendMediaRecordPictureV2();
-            }
+            mDeviceController.getFeatureMiniDrone().sendMediaRecordPictureV2();
+        }
+    }
+
+    public void changeFlyingMode(ARCOMMANDS_MINIDRONE_PILOTING_FLYINGMODE_MODE_ENUM flyingMode) {
+        if ((mDeviceController != null) && (mState.equals(ARCONTROLLER_DEVICE_STATE_ENUM.ARCONTROLLER_DEVICE_STATE_RUNNING))) {
+            mDeviceController.getFeatureMiniDrone().sendPilotingFlyingMode(flyingMode);
         }
     }
 
     /**
      * Set the forward/backward angle of the drone
-     * Note that {@link MiniDrone#setFlag(byte)} should be set to 1 in order to take in account the pitch value
+     * Note that {@link SwingDrone#setFlag(byte)} should be set to 1 in order to take in account the pitch value
      * @param pitch value in percentage from -100 to 100
      */
     public void setPitch(byte pitch) {
@@ -235,7 +245,7 @@ public class MiniDrone {
 
     /**
      * Set the side angle of the drone
-     * Note that {@link MiniDrone#setFlag(byte)} should be set to 1 in order to take in account the roll value
+     * Note that {@link SwingDrone#setFlag(byte)} should be set to 1 in order to take in account the roll value
      * @param roll value in percentage from -100 to 100
      */
     public void setRoll(byte roll) {
@@ -351,6 +361,13 @@ public class MiniDrone {
         List<Listener> listenersCpy = new ArrayList<>(mListeners);
         for (Listener listener : listenersCpy) {
             listener.onPilotingStateChanged(state);
+        }
+    }
+
+    private void notifyFlyingModeChanged(ARCOMMANDS_MINIDRONE_PILOTINGSTATE_FLYINGMODECHANGED_MODE_ENUM flyingMode) {
+        List<Listener> listenersCpy = new ArrayList<>(mListeners);
+        for (Listener listener : listenersCpy) {
+            listener.onFlyingModeChanged(flyingMode);
         }
     }
 
@@ -488,6 +505,18 @@ public class MiniDrone {
                         @Override
                         public void run() {
                             mCurrentRunId = runID;
+                        }
+                    });
+                }
+            } // if event received is the flying mode
+            else if ((commandKey == ARCONTROLLER_DICTIONARY_KEY_ENUM.ARCONTROLLER_DICTIONARY_KEY_MINIDRONE_PILOTINGSTATE_FLYINGMODECHANGED) && (elementDictionary != null)){
+                ARControllerArgumentDictionary<Object> args = elementDictionary.get(ARControllerDictionary.ARCONTROLLER_DICTIONARY_SINGLE_KEY);
+                if (args != null) {
+                    final ARCOMMANDS_MINIDRONE_PILOTINGSTATE_FLYINGMODECHANGED_MODE_ENUM flyingMode = ARCOMMANDS_MINIDRONE_PILOTINGSTATE_FLYINGMODECHANGED_MODE_ENUM.getFromValue((Integer)args.get(ARFeatureMiniDrone.ARCONTROLLER_DICTIONARY_KEY_MINIDRONE_PILOTINGSTATE_FLYINGMODECHANGED_MODE));
+                    mHandler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            notifyFlyingModeChanged(flyingMode);
                         }
                     });
                 }

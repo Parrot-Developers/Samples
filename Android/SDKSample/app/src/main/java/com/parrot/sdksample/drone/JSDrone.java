@@ -29,7 +29,6 @@ import com.parrot.arsdk.ardiscovery.ARDiscoveryException;
 import com.parrot.arsdk.ardiscovery.ARDiscoveryService;
 import com.parrot.arsdk.arsal.ARNativeData;
 import com.parrot.arsdk.arutils.ARUtilsException;
-import com.parrot.arsdk.arutils.ARUtilsFtpConnection;
 import com.parrot.arsdk.arutils.ARUtilsManager;
 
 import java.util.ArrayList;
@@ -150,6 +149,7 @@ public class JSDrone {
             ARDiscoveryDevice discoveryDevice = createDiscoveryDevice(deviceService, mProductType);
             if (discoveryDevice != null) {
                 mDeviceController = createDeviceController(discoveryDevice);
+                discoveryDevice.dispose();
             }
 
             try
@@ -159,8 +159,8 @@ public class JSDrone {
                 ARUtilsManager ftpListManager = new ARUtilsManager();
                 ARUtilsManager ftpQueueManager = new ARUtilsManager();
 
-                ftpListManager.initWifiFtp(productIP, DEVICE_PORT, ARUtilsFtpConnection.FTP_ANONYMOUS, "");
-                ftpQueueManager.initWifiFtp(productIP, DEVICE_PORT, ARUtilsFtpConnection.FTP_ANONYMOUS, "");
+                ftpListManager.initWifiFtp(productIP, DEVICE_PORT, ARUtilsManager.FTP_ANONYMOUS, "");
+                ftpQueueManager.initWifiFtp(productIP, DEVICE_PORT, ARUtilsManager.FTP_ANONYMOUS, "");
 
                 mSDCardModule = new SDCardModule(ftpListManager, ftpQueueManager);
                 mSDCardModule.addListener(mSDCardModuleListener);
@@ -173,6 +173,12 @@ public class JSDrone {
         } else {
             Log.e(TAG, "DeviceService type is not supported by JSDrone");
         }
+    }
+
+    public void dispose()
+    {
+        if (mDeviceController != null)
+            mDeviceController.dispose();
     }
 
     //region Listener functions

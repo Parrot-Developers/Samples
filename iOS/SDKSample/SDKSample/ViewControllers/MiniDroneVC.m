@@ -60,7 +60,7 @@
         
         // dismiss the alert view in main thread
         dispatch_async(dispatch_get_main_queue(), ^{
-            [_connectionAlertView dismissWithClickedButtonIndex:0 animated:TRUE];
+            [_connectionAlertView dismissWithClickedButtonIndex:0 animated:YES];
         });
     });
 }
@@ -70,7 +70,7 @@
 -(void)miniDrone:(MiniDrone *)miniDrone connectionDidChange:(eARCONTROLLER_DEVICE_STATE)state {
     switch (state) {
         case ARCONTROLLER_DEVICE_STATE_RUNNING:
-            [_connectionAlertView dismissWithClickedButtonIndex:0 animated:TRUE];
+            [_connectionAlertView dismissWithClickedButtonIndex:0 animated:YES];
             break;
         case ARCONTROLLER_DEVICE_STATE_STOPPED:
             dispatch_semaphore_signal(_stateSem);

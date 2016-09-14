@@ -127,6 +127,7 @@ public class BebopVideoView extends SurfaceView implements SurfaceHolder.Callbac
     }
 
     private void configureMediaCodec() {
+        mMediaCodec.stop();
         MediaFormat format = MediaFormat.createVideoFormat(VIDEO_MIME_TYPE, VIDEO_WIDTH, VIDEO_HEIGHT);
         format.setByteBuffer("csd-0", mSpsBuffer);
         format.setByteBuffer("csd-1", mPpsBuffer);

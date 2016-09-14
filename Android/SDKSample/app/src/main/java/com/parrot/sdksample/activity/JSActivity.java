@@ -109,6 +109,7 @@ public class JSActivity extends AppCompatActivity {
         mAudioRecorder.stop();
         mAudioRecorder.release();
 
+        mJSDrone.dispose();
         super.onDestroy();
     }
 

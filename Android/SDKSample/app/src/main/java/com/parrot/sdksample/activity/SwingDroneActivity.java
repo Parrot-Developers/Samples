@@ -4,6 +4,7 @@ import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -12,15 +13,17 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.parrot.arsdk.arcommands.ARCOMMANDS_MINIDRONE_MEDIARECORDEVENT_PICTUREEVENTCHANGED_ERROR_ENUM;
+import com.parrot.arsdk.arcommands.ARCOMMANDS_MINIDRONE_PILOTINGSTATE_FLYINGMODECHANGED_MODE_ENUM;
 import com.parrot.arsdk.arcommands.ARCOMMANDS_MINIDRONE_PILOTINGSTATE_FLYINGSTATECHANGED_STATE_ENUM;
+import com.parrot.arsdk.arcommands.ARCOMMANDS_MINIDRONE_PILOTING_FLYINGMODE_MODE_ENUM;
 import com.parrot.arsdk.arcontroller.ARCONTROLLER_DEVICE_STATE_ENUM;
 import com.parrot.arsdk.ardiscovery.ARDiscoveryDeviceService;
 import com.parrot.sdksample.R;
-import com.parrot.sdksample.drone.MiniDrone;
+import com.parrot.sdksample.drone.SwingDrone;
 
-public class MiniDroneActivity extends AppCompatActivity {
-    private static final String TAG = "MiniDroneActivity";
-    private MiniDrone mMiniDrone;
+public class SwingDroneActivity extends AppCompatActivity {
+    private static final String TAG = "SwingDroneActivity";
+    private SwingDrone mSwingDrone;
 
     private ProgressDialog mConnectionProgressDialog;
     private ProgressDialog mDownloadProgressDialog;
@@ -29,20 +32,27 @@ public class MiniDroneActivity extends AppCompatActivity {
     private Button mTakeOffLandBt;
     private Button mDownloadBt;
 
+    private Button mPlaneBackwardBt;
+    private Button mQuadBt;
+    private Button mPlaneForwardBt;
+
+    private int mSelectedTabColor;
+    private int mUnselectedTabColor;
+
     private int mNbMaxDownload;
     private int mCurrentDownloadIndex;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_minidrone);
+        setContentView(R.layout.activity_swingdrone);
 
         initIHM();
 
         Intent intent = getIntent();
         ARDiscoveryDeviceService service = intent.getParcelableExtra(DeviceListActivity.EXTRA_DEVICE_SERVICE);
-        mMiniDrone = new MiniDrone(this, service);
-        mMiniDrone.addListener(mMiniDroneListener);
+        mSwingDrone = new SwingDrone(this, service);
+        mSwingDrone.addListener(mSwingDroneListener);
 
     }
 
@@ -50,8 +60,8 @@ public class MiniDroneActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
 
-        // show a loading view while the minidrone is connecting
-        if ((mMiniDrone != null) && !(ARCONTROLLER_DEVICE_STATE_ENUM.ARCONTROLLER_DEVICE_STATE_RUNNING.equals(mMiniDrone.getConnectionState())))
+        // show a loading view while the Swing is connecting
+        if ((mSwingDrone != null) && !(ARCONTROLLER_DEVICE_STATE_ENUM.ARCONTROLLER_DEVICE_STATE_RUNNING.equals(mSwingDrone.getConnectionState())))
         {
             mConnectionProgressDialog = new ProgressDialog(this, R.style.AppCompatAlertDialogStyle);
             mConnectionProgressDialog.setIndeterminate(true);
@@ -59,8 +69,8 @@ public class MiniDroneActivity extends AppCompatActivity {
             mConnectionProgressDialog.setCancelable(false);
             mConnectionProgressDialog.show();
 
-            // if the connection to the MiniDrone fails, finish the activity
-            if (!mMiniDrone.connect()) {
+            // if the connection to the Swing fails, finish the activity
+            if (!mSwingDrone.connect()) {
                 finish();
             }
         }
@@ -68,7 +78,7 @@ public class MiniDroneActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        if (mMiniDrone != null)
+        if (mSwingDrone != null)
         {
             mConnectionProgressDialog = new ProgressDialog(this, R.style.AppCompatAlertDialogStyle);
             mConnectionProgressDialog.setIndeterminate(true);
@@ -76,7 +86,7 @@ public class MiniDroneActivity extends AppCompatActivity {
             mConnectionProgressDialog.setCancelable(false);
             mConnectionProgressDialog.show();
 
-            if (!mMiniDrone.disconnect()) {
+            if (!mSwingDrone.disconnect()) {
                 finish();
             }
         } else {
@@ -87,28 +97,31 @@ public class MiniDroneActivity extends AppCompatActivity {
     @Override
     public void onDestroy()
     {
-        mMiniDrone.dispose();
+        mSwingDrone.dispose();
         super.onDestroy();
     }
 
     private void initIHM() {
 
+        mSelectedTabColor = ContextCompat.getColor(this, R.color.selected_tab_color);
+        mUnselectedTabColor = ContextCompat.getColor(this, R.color.unselected_tab_color);
+
         findViewById(R.id.emergencyBt).setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                mMiniDrone.emergency();
+                mSwingDrone.emergency();
             }
         });
 
         mTakeOffLandBt = (Button) findViewById(R.id.takeOffOrLandBt);
         mTakeOffLandBt.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                switch (mMiniDrone.getFlyingState()) {
+                switch (mSwingDrone.getFlyingState()) {
                     case ARCOMMANDS_MINIDRONE_PILOTINGSTATE_FLYINGSTATECHANGED_STATE_LANDED:
-                        mMiniDrone.takeOff();
+                        mSwingDrone.takeOff();
                         break;
                     case ARCOMMANDS_MINIDRONE_PILOTINGSTATE_FLYINGSTATECHANGED_STATE_FLYING:
                     case ARCOMMANDS_MINIDRONE_PILOTINGSTATE_FLYINGSTATECHANGED_STATE_HOVERING:
-                        mMiniDrone.land();
+                        mSwingDrone.land();
                         break;
                     default:
                 }
@@ -117,7 +130,7 @@ public class MiniDroneActivity extends AppCompatActivity {
 
         findViewById(R.id.takePictureBt).setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                mMiniDrone.takePicture();
+                mSwingDrone.takePicture();
             }
         });
 
@@ -125,19 +138,52 @@ public class MiniDroneActivity extends AppCompatActivity {
         mDownloadBt.setEnabled(false);
         mDownloadBt.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                mMiniDrone.getLastFlightMedias();
+                mSwingDrone.getLastFlightMedias();
 
-                mDownloadProgressDialog = new ProgressDialog(MiniDroneActivity.this, R.style.AppCompatAlertDialogStyle);
+                mDownloadProgressDialog = new ProgressDialog(SwingDroneActivity.this, R.style.AppCompatAlertDialogStyle);
                 mDownloadProgressDialog.setIndeterminate(true);
                 mDownloadProgressDialog.setMessage("Fetching medias");
                 mDownloadProgressDialog.setCancelable(false);
                 mDownloadProgressDialog.setButton(DialogInterface.BUTTON_NEGATIVE, "Cancel", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        mMiniDrone.cancelGetLastFlightMedias();
+                        mSwingDrone.cancelGetLastFlightMedias();
                     }
                 });
                 mDownloadProgressDialog.show();
+            }
+        });
+
+        mPlaneBackwardBt = (Button)findViewById(R.id.planeBackwardBt);
+        mPlaneBackwardBt.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mPlaneBackwardBt.setBackgroundColor(mUnselectedTabColor);
+                mQuadBt.setBackgroundColor(mUnselectedTabColor);
+                mPlaneForwardBt.setBackgroundColor(mUnselectedTabColor);
+                mSwingDrone.changeFlyingMode(ARCOMMANDS_MINIDRONE_PILOTING_FLYINGMODE_MODE_ENUM.ARCOMMANDS_MINIDRONE_PILOTING_FLYINGMODE_MODE_PLANE_BACKWARD);
+            }
+        });
+
+        mQuadBt = (Button)findViewById(R.id.quadBt);
+        mQuadBt.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mPlaneBackwardBt.setBackgroundColor(mUnselectedTabColor);
+                mQuadBt.setBackgroundColor(mUnselectedTabColor);
+                mPlaneForwardBt.setBackgroundColor(mUnselectedTabColor);
+                mSwingDrone.changeFlyingMode(ARCOMMANDS_MINIDRONE_PILOTING_FLYINGMODE_MODE_ENUM.ARCOMMANDS_MINIDRONE_PILOTING_FLYINGMODE_MODE_QUADRICOPTER);
+            }
+        });
+
+        mPlaneForwardBt = (Button)findViewById(R.id.planeForwardBt);
+        mPlaneForwardBt.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mPlaneBackwardBt.setBackgroundColor(mUnselectedTabColor);
+                mQuadBt.setBackgroundColor(mUnselectedTabColor);
+                mPlaneForwardBt.setBackgroundColor(mUnselectedTabColor);
+                mSwingDrone.changeFlyingMode(ARCOMMANDS_MINIDRONE_PILOTING_FLYINGMODE_MODE_ENUM.ARCOMMANDS_MINIDRONE_PILOTING_FLYINGMODE_MODE_PLANE_FORWARD);
             }
         });
 
@@ -147,12 +193,12 @@ public class MiniDroneActivity extends AppCompatActivity {
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
                         v.setPressed(true);
-                        mMiniDrone.setGaz((byte) 50);
+                        mSwingDrone.setGaz((byte) 50);
                         break;
 
                     case MotionEvent.ACTION_UP:
                         v.setPressed(false);
-                        mMiniDrone.setGaz((byte) 0);
+                        mSwingDrone.setGaz((byte) 0);
                         break;
 
                     default:
@@ -170,12 +216,12 @@ public class MiniDroneActivity extends AppCompatActivity {
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
                         v.setPressed(true);
-                        mMiniDrone.setGaz((byte) -50);
+                        mSwingDrone.setGaz((byte) -50);
                         break;
 
                     case MotionEvent.ACTION_UP:
                         v.setPressed(false);
-                        mMiniDrone.setGaz((byte) 0);
+                        mSwingDrone.setGaz((byte) 0);
                         break;
 
                     default:
@@ -193,12 +239,12 @@ public class MiniDroneActivity extends AppCompatActivity {
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
                         v.setPressed(true);
-                        mMiniDrone.setYaw((byte) -50);
+                        mSwingDrone.setYaw((byte) -50);
                         break;
 
                     case MotionEvent.ACTION_UP:
                         v.setPressed(false);
-                        mMiniDrone.setYaw((byte) 0);
+                        mSwingDrone.setYaw((byte) 0);
                         break;
 
                     default:
@@ -216,12 +262,12 @@ public class MiniDroneActivity extends AppCompatActivity {
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
                         v.setPressed(true);
-                        mMiniDrone.setYaw((byte) 50);
+                        mSwingDrone.setYaw((byte) 50);
                         break;
 
                     case MotionEvent.ACTION_UP:
                         v.setPressed(false);
-                        mMiniDrone.setYaw((byte) 0);
+                        mSwingDrone.setYaw((byte) 0);
                         break;
 
                     default:
@@ -239,14 +285,14 @@ public class MiniDroneActivity extends AppCompatActivity {
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
                         v.setPressed(true);
-                        mMiniDrone.setPitch((byte) 50);
-                        mMiniDrone.setFlag((byte) 1);
+                        mSwingDrone.setPitch((byte) 50);
+                        mSwingDrone.setFlag((byte) 1);
                         break;
 
                     case MotionEvent.ACTION_UP:
                         v.setPressed(false);
-                        mMiniDrone.setPitch((byte) 0);
-                        mMiniDrone.setFlag((byte) 0);
+                        mSwingDrone.setPitch((byte) 0);
+                        mSwingDrone.setFlag((byte) 0);
                         break;
 
                     default:
@@ -264,14 +310,14 @@ public class MiniDroneActivity extends AppCompatActivity {
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
                         v.setPressed(true);
-                        mMiniDrone.setPitch((byte) -50);
-                        mMiniDrone.setFlag((byte) 1);
+                        mSwingDrone.setPitch((byte) -50);
+                        mSwingDrone.setFlag((byte) 1);
                         break;
 
                     case MotionEvent.ACTION_UP:
                         v.setPressed(false);
-                        mMiniDrone.setPitch((byte) 0);
-                        mMiniDrone.setFlag((byte) 0);
+                        mSwingDrone.setPitch((byte) 0);
+                        mSwingDrone.setFlag((byte) 0);
                         break;
 
                     default:
@@ -289,14 +335,14 @@ public class MiniDroneActivity extends AppCompatActivity {
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
                         v.setPressed(true);
-                        mMiniDrone.setRoll((byte) -50);
-                        mMiniDrone.setFlag((byte) 1);
+                        mSwingDrone.setRoll((byte) -50);
+                        mSwingDrone.setFlag((byte) 1);
                         break;
 
                     case MotionEvent.ACTION_UP:
                         v.setPressed(false);
-                        mMiniDrone.setRoll((byte) 0);
-                        mMiniDrone.setFlag((byte) 0);
+                        mSwingDrone.setRoll((byte) 0);
+                        mSwingDrone.setFlag((byte) 0);
                         break;
 
                     default:
@@ -314,14 +360,14 @@ public class MiniDroneActivity extends AppCompatActivity {
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
                         v.setPressed(true);
-                        mMiniDrone.setRoll((byte) 50);
-                        mMiniDrone.setFlag((byte) 1);
+                        mSwingDrone.setRoll((byte) 50);
+                        mSwingDrone.setFlag((byte) 1);
                         break;
 
                     case MotionEvent.ACTION_UP:
                         v.setPressed(false);
-                        mMiniDrone.setRoll((byte) 0);
-                        mMiniDrone.setFlag((byte) 0);
+                        mSwingDrone.setRoll((byte) 0);
+                        mSwingDrone.setFlag((byte) 0);
                         break;
 
                     default:
@@ -336,7 +382,7 @@ public class MiniDroneActivity extends AppCompatActivity {
         mBatteryLabel = (TextView) findViewById(R.id.batteryLabel);
     }
 
-    private final MiniDrone.Listener mMiniDroneListener = new MiniDrone.Listener() {
+    private final SwingDrone.Listener mSwingDroneListener = new SwingDrone.Listener() {
         @Override
         public void onDroneConnectionChanged(ARCONTROLLER_DEVICE_STATE_ENUM state) {
             switch (state)
@@ -382,6 +428,32 @@ public class MiniDroneActivity extends AppCompatActivity {
         }
 
         @Override
+        public void onFlyingModeChanged(ARCOMMANDS_MINIDRONE_PILOTINGSTATE_FLYINGMODECHANGED_MODE_ENUM flyingMode) {
+            switch (flyingMode) {
+                case ARCOMMANDS_MINIDRONE_PILOTINGSTATE_FLYINGMODECHANGED_MODE_PLANE_BACKWARD:
+                    mPlaneBackwardBt.setBackgroundColor(mSelectedTabColor);
+                    mQuadBt.setBackgroundColor(mUnselectedTabColor);
+                    mPlaneForwardBt.setBackgroundColor(mUnselectedTabColor);
+                    break;
+                case ARCOMMANDS_MINIDRONE_PILOTINGSTATE_FLYINGMODECHANGED_MODE_QUADRICOPTER:
+                    mPlaneBackwardBt.setBackgroundColor(mUnselectedTabColor);
+                    mQuadBt.setBackgroundColor(mSelectedTabColor);
+                    mPlaneForwardBt.setBackgroundColor(mUnselectedTabColor);
+                    break;
+                case ARCOMMANDS_MINIDRONE_PILOTINGSTATE_FLYINGMODECHANGED_MODE_PLANE_FORWARD:
+                    mPlaneBackwardBt.setBackgroundColor(mUnselectedTabColor);
+                    mQuadBt.setBackgroundColor(mUnselectedTabColor);
+                    mPlaneForwardBt.setBackgroundColor(mSelectedTabColor);
+                    break;
+                default:
+                    mPlaneBackwardBt.setBackgroundColor(mUnselectedTabColor);
+                    mQuadBt.setBackgroundColor(mUnselectedTabColor);
+                    mPlaneForwardBt.setBackgroundColor(mUnselectedTabColor);
+
+            }
+        }
+
+        @Override
         public void onPictureTaken(ARCOMMANDS_MINIDRONE_MEDIARECORDEVENT_PICTUREEVENTCHANGED_ERROR_ENUM error) {
             Log.i(TAG, "Picture has been taken");
         }
@@ -394,7 +466,7 @@ public class MiniDroneActivity extends AppCompatActivity {
             mCurrentDownloadIndex = 1;
 
             if (nbMedias > 0) {
-                mDownloadProgressDialog = new ProgressDialog(MiniDroneActivity.this, R.style.AppCompatAlertDialogStyle);
+                mDownloadProgressDialog = new ProgressDialog(SwingDroneActivity.this, R.style.AppCompatAlertDialogStyle);
                 mDownloadProgressDialog.setIndeterminate(false);
                 mDownloadProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
                 mDownloadProgressDialog.setMessage("Downloading medias");
@@ -405,7 +477,7 @@ public class MiniDroneActivity extends AppCompatActivity {
                 mDownloadProgressDialog.setButton(DialogInterface.BUTTON_NEGATIVE, "Cancel", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        mMiniDrone.cancelGetLastFlightMedias();
+                        mSwingDrone.cancelGetLastFlightMedias();
                     }
                 });
                 mDownloadProgressDialog.show();

@@ -5,7 +5,7 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:1.5.0'
+        classpath 'com.android.tools.build:gradle:2.1.3'
 
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
@@ -25,14 +25,14 @@ allprojects {
 }
 
 ext {
-    compileSdkVersion = 21
-    buildToolsVersion = "21.1.1"
-    androidSupportV4Version = 'com.android.support:support-v4:22.0.+'
+    compileSdkVersion = 24
+    buildToolsVersion = '24.0.2'
+    androidSupportV4Version = 'com.android.support:support-v4:24.0.+'
     jmdnsVersion = 'javax.jmdns:jmdns:3.4.1'
     sanselanVersion = 'org.apache.sanselan:sanselan:0.97-incubator'
-    androidSupportAppcompatVersion = 'com.android.support:appcompat-v7:21.0.3'
+    androidSupportAppcompatVersion = 'com.android.support:appcompat-v7:24.2.0'
     minSdkVersion = 15
-    targetSdkVersion = 21
+    targetSdkVersion = 24
     buildWithLocalSDK = false
 }
 

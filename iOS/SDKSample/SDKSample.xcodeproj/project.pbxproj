@@ -17,6 +17,35 @@
 		F828FA801C8750070075E867 /* SkyControllerVC.m in Sources */ = {isa = PBXBuildFile; fileRef = F828FA7F1C8750070075E867 /* SkyControllerVC.m */; };
 		F8838E571C80874900B49443 /* BebopVideoView.m in Sources */ = {isa = PBXBuildFile; fileRef = F8838E561C80874900B49443 /* BebopVideoView.m */; };
 		F8838E691C80A51300B49443 /* SDCardModule.m in Sources */ = {isa = PBXBuildFile; fileRef = F8838E681C80A51200B49443 /* SDCardModule.m */; };
+		F8885C291D7DAB23001DFB77 /* SwingDrone.m in Sources */ = {isa = PBXBuildFile; fileRef = F8885C281D7DAB23001DFB77 /* SwingDrone.m */; };
+		F8885C2C1D7DAB39001DFB77 /* SwingDroneVC.m in Sources */ = {isa = PBXBuildFile; fileRef = F8885C2B1D7DAB39001DFB77 /* SwingDroneVC.m */; };
+		F8885C2D1D7DAB3E001DFB77 /* SwingDroneVC.m in Sources */ = {isa = PBXBuildFile; fileRef = F8885C2B1D7DAB39001DFB77 /* SwingDroneVC.m */; };
+		F8885C2E1D7DAB45001DFB77 /* SwingDrone.m in Sources */ = {isa = PBXBuildFile; fileRef = F8885C281D7DAB23001DFB77 /* SwingDrone.m */; };
+		F8A2E0D41D770782001E391E /* SkyController2.m in Sources */ = {isa = PBXBuildFile; fileRef = F8A2E0D31D770782001E391E /* SkyController2.m */; };
+		F8A2E0D71D770B2F001E391E /* SkyController2VC.m in Sources */ = {isa = PBXBuildFile; fileRef = F8A2E0D61D770B2F001E391E /* SkyController2VC.m */; };
+		F8A2E0DB1D772EF3001E391E /* SDCardModule.m in Sources */ = {isa = PBXBuildFile; fileRef = F8838E681C80A51200B49443 /* SDCardModule.m */; };
+		F8A2E0DC1D772EF3001E391E /* AudioStreamAUBackend.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D36FF8E1D185277005CAADC /* AudioStreamAUBackend.m */; };
+		F8A2E0DD1D772EF3001E391E /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = F8B03D8A1C7DA4E900149B4F /* AppDelegate.m */; };
+		F8A2E0DE1D772EF3001E391E /* JSVideoView.m in Sources */ = {isa = PBXBuildFile; fileRef = F828FA721C860BEB0075E867 /* JSVideoView.m */; };
+		F8A2E0DF1D772EF3001E391E /* BebopVC.m in Sources */ = {isa = PBXBuildFile; fileRef = F8B03DC11C7DA90900149B4F /* BebopVC.m */; };
+		F8A2E0E01D772EF3001E391E /* SkyController2VC.m in Sources */ = {isa = PBXBuildFile; fileRef = F8A2E0D61D770B2F001E391E /* SkyController2VC.m */; };
+		F8A2E0E11D772EF3001E391E /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = F8B03D871C7DA4E900149B4F /* main.m */; };
+		F8A2E0E21D772EF3001E391E /* BebopDrone.m in Sources */ = {isa = PBXBuildFile; fileRef = F8F74D431C7DEAB700DC5FA1 /* BebopDrone.m */; };
+		F8A2E0E31D772EF3001E391E /* JSVC.m in Sources */ = {isa = PBXBuildFile; fileRef = F828FA6F1C8608B90075E867 /* JSVC.m */; };
+		F8A2E0E41D772EF3001E391E /* MiniDrone.m in Sources */ = {isa = PBXBuildFile; fileRef = F828FA751C86EB620075E867 /* MiniDrone.m */; };
+		F8A2E0E51D772EF3001E391E /* MiniDroneVC.m in Sources */ = {isa = PBXBuildFile; fileRef = F828FA781C86F14C0075E867 /* MiniDroneVC.m */; };
+		F8A2E0E61D772EF3001E391E /* JSDrone.m in Sources */ = {isa = PBXBuildFile; fileRef = F828FA691C8604150075E867 /* JSDrone.m */; };
+		F8A2E0E71D772EF3001E391E /* DeviceListVC.m in Sources */ = {isa = PBXBuildFile; fileRef = F8B03DBE1C7DA82600149B4F /* DeviceListVC.m */; };
+		F8A2E0E81D772EF3001E391E /* SkyControllerVC.m in Sources */ = {isa = PBXBuildFile; fileRef = F828FA7F1C8750070075E867 /* SkyControllerVC.m */; };
+		F8A2E0E91D772EF3001E391E /* BebopVideoView.m in Sources */ = {isa = PBXBuildFile; fileRef = F8838E561C80874900B49443 /* BebopVideoView.m */; };
+		F8A2E0EA1D772EF3001E391E /* SkyController2.m in Sources */ = {isa = PBXBuildFile; fileRef = F8A2E0D31D770782001E391E /* SkyController2.m */; };
+		F8A2E0EB1D772EF3001E391E /* SkyController.m in Sources */ = {isa = PBXBuildFile; fileRef = F828FA7C1C8729860075E867 /* SkyController.m */; };
+		F8A2E0EC1D772EF3001E391E /* DroneDiscoverer.m in Sources */ = {isa = PBXBuildFile; fileRef = F8F74D2F1C7DC7BE00DC5FA1 /* DroneDiscoverer.m */; };
+		F8A2E0EE1D772EF3001E391E /* ExternalAccessory.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F8A2E0D01D76C1BD001E391E /* ExternalAccessory.framework */; };
+		F8A2E0F01D772EF3001E391E /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F8B03D941C7DA4E900149B4F /* LaunchScreen.storyboard */; };
+		F8A2E0F11D772EF3001E391E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F8B03D921C7DA4E900149B4F /* Assets.xcassets */; };
+		F8A2E0F21D772EF3001E391E /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F8B03D8F1C7DA4E900149B4F /* Main.storyboard */; };
+		F8A2E0FA1D796F29001E391E /* InfoForSkyController2.plist in Resources */ = {isa = PBXBuildFile; fileRef = F8A2E0F91D796F29001E391E /* InfoForSkyController2.plist */; };
 		F8B03D881C7DA4E900149B4F /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = F8B03D871C7DA4E900149B4F /* main.m */; };
 		F8B03D8B1C7DA4E900149B4F /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = F8B03D8A1C7DA4E900149B4F /* AppDelegate.m */; };
 		F8B03D911C7DA4E900149B4F /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F8B03D8F1C7DA4E900149B4F /* Main.storyboard */; };
@@ -49,6 +78,17 @@
 		F8838E561C80874900B49443 /* BebopVideoView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = BebopVideoView.m; path = Views/BebopVideoView.m; sourceTree = "<group>"; };
 		F8838E671C80A51200B49443 /* SDCardModule.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SDCardModule.h; path = Drones/SDCardModule.h; sourceTree = "<group>"; };
 		F8838E681C80A51200B49443 /* SDCardModule.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SDCardModule.m; path = Drones/SDCardModule.m; sourceTree = "<group>"; };
+		F8885C271D7DAB23001DFB77 /* SwingDrone.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SwingDrone.h; path = Drones/SwingDrone.h; sourceTree = "<group>"; };
+		F8885C281D7DAB23001DFB77 /* SwingDrone.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SwingDrone.m; path = Drones/SwingDrone.m; sourceTree = "<group>"; };
+		F8885C2A1D7DAB39001DFB77 /* SwingDroneVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SwingDroneVC.h; path = ViewControllers/SwingDroneVC.h; sourceTree = "<group>"; };
+		F8885C2B1D7DAB39001DFB77 /* SwingDroneVC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SwingDroneVC.m; path = ViewControllers/SwingDroneVC.m; sourceTree = "<group>"; };
+		F8A2E0D01D76C1BD001E391E /* ExternalAccessory.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ExternalAccessory.framework; path = System/Library/Frameworks/ExternalAccessory.framework; sourceTree = SDKROOT; };
+		F8A2E0D21D770782001E391E /* SkyController2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SkyController2.h; path = Drones/SkyController2.h; sourceTree = "<group>"; };
+		F8A2E0D31D770782001E391E /* SkyController2.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SkyController2.m; path = Drones/SkyController2.m; sourceTree = "<group>"; };
+		F8A2E0D51D770B2F001E391E /* SkyController2VC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SkyController2VC.h; path = ViewControllers/SkyController2VC.h; sourceTree = "<group>"; };
+		F8A2E0D61D770B2F001E391E /* SkyController2VC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SkyController2VC.m; path = ViewControllers/SkyController2VC.m; sourceTree = "<group>"; };
+		F8A2E0F71D772EF3001E391E /* SDKSampleForSkyController2.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SDKSampleForSkyController2.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		F8A2E0F91D796F29001E391E /* InfoForSkyController2.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = InfoForSkyController2.plist; sourceTree = "<group>"; };
 		F8B03D831C7DA4E900149B4F /* SDKSample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SDKSample.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F8B03D871C7DA4E900149B4F /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		F8B03D891C7DA4E900149B4F /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
@@ -68,6 +108,14 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		F8A2E0ED1D772EF3001E391E /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F8A2E0EE1D772EF3001E391E /* ExternalAccessory.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		F8B03D801C7DA4E900149B4F /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -87,6 +135,14 @@
 			name = Audio;
 			sourceTree = "<group>";
 		};
+		F853F82F1CB7A8F8003E1A83 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				F8A2E0D01D76C1BD001E391E /* ExternalAccessory.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		F8B03D7A1C7DA4E900149B4F = {
 			isa = PBXGroup;
 			children = (
@@ -99,6 +155,7 @@
 			isa = PBXGroup;
 			children = (
 				F8B03D831C7DA4E900149B4F /* SDKSample.app */,
+				F8A2E0F71D772EF3001E391E /* SDKSampleForSkyController2.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -117,6 +174,8 @@
 				F8B03D921C7DA4E900149B4F /* Assets.xcassets */,
 				F8B03D941C7DA4E900149B4F /* LaunchScreen.storyboard */,
 				F8B03D971C7DA4E900149B4F /* Info.plist */,
+				F8A2E0F91D796F29001E391E /* InfoForSkyController2.plist */,
+				F853F82F1CB7A8F8003E1A83 /* Frameworks */,
 				F8B03D861C7DA4E900149B4F /* Supporting Files */,
 			);
 			path = SDKSample;
@@ -133,6 +192,10 @@
 		F8B03DB91C7DA7B500149B4F /* ViewControllers */ = {
 			isa = PBXGroup;
 			children = (
+				F8885C2A1D7DAB39001DFB77 /* SwingDroneVC.h */,
+				F8885C2B1D7DAB39001DFB77 /* SwingDroneVC.m */,
+				F8A2E0D51D770B2F001E391E /* SkyController2VC.h */,
+				F8A2E0D61D770B2F001E391E /* SkyController2VC.m */,
 				F828FA7E1C8750070075E867 /* SkyControllerVC.h */,
 				F828FA7F1C8750070075E867 /* SkyControllerVC.m */,
 				F828FA771C86F14C0075E867 /* MiniDroneVC.h */,
@@ -150,6 +213,10 @@
 		F8B03DBA1C7DA7BE00149B4F /* Drones */ = {
 			isa = PBXGroup;
 			children = (
+				F8885C271D7DAB23001DFB77 /* SwingDrone.h */,
+				F8885C281D7DAB23001DFB77 /* SwingDrone.m */,
+				F8A2E0D21D770782001E391E /* SkyController2.h */,
+				F8A2E0D31D770782001E391E /* SkyController2.m */,
 				F828FA7B1C8729860075E867 /* SkyController.h */,
 				F828FA7C1C8729860075E867 /* SkyController.m */,
 				F828FA741C86EB620075E867 /* MiniDrone.h */,
@@ -187,6 +254,24 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		F8A2E0D81D772EF3001E391E /* SDKSampleForSkyController2 */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = F8A2E0F31D772EF3001E391E /* Build configuration list for PBXNativeTarget "SDKSampleForSkyController2" */;
+			buildPhases = (
+				F8A2E0D91D772EF3001E391E /* ShellScript */,
+				F8A2E0DA1D772EF3001E391E /* Sources */,
+				F8A2E0ED1D772EF3001E391E /* Frameworks */,
+				F8A2E0EF1D772EF3001E391E /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = SDKSampleForSkyController2;
+			productName = SDKSample;
+			productReference = F8A2E0F71D772EF3001E391E /* SDKSampleForSkyController2.app */;
+			productType = "com.apple.product-type.application";
+		};
 		F8B03D821C7DA4E900149B4F /* SDKSample */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = F8B03DB01C7DA4E900149B4F /* Build configuration list for PBXNativeTarget "SDKSample" */;
@@ -233,16 +318,28 @@
 			projectRoot = "";
 			targets = (
 				F8B03D821C7DA4E900149B4F /* SDKSample */,
+				F8A2E0D81D772EF3001E391E /* SDKSampleForSkyController2 */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		F8A2E0EF1D772EF3001E391E /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F8A2E0F01D772EF3001E391E /* LaunchScreen.storyboard in Resources */,
+				F8A2E0F11D772EF3001E391E /* Assets.xcassets in Resources */,
+				F8A2E0F21D772EF3001E391E /* Main.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		F8B03D811C7DA4E900149B4F /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 				F8B03D961C7DA4E900149B4F /* LaunchScreen.storyboard in Resources */,
+				F8A2E0FA1D796F29001E391E /* InfoForSkyController2.plist in Resources */,
 				F8B03D931C7DA4E900149B4F /* Assets.xcassets in Resources */,
 				F8B03D911C7DA4E900149B4F /* Main.storyboard in Resources */,
 			);
@@ -264,9 +361,49 @@
 			shellPath = /bin/sh;
 			shellScript = "LATEST_SDK_VERSION='3.9.2'\nSDK_PACKET_NAME='ARSDK3_iOS_3_9_2.zip'\nSDK_DOWNLOAD_ADDRESS=\"https://github.com/Parrot-Developers/arsdk_manifests/releases/download/ARSDK3_version_3_9_2/$SDK_PACKET_NAME\"\n\nPREBUILT_FOLDER_PATH='ARSDK3_iOS'\nSDK_VERSION_FILE='sdk_version.txt'\nVERSION_FILEPATH=\"$PREBUILT_FOLDER_PATH/$SDK_VERSION_FILE\"\nshould_download=YES\n\nif [ \"${CONFIGURATION}\" != \"DebugWithLocalSDK\" ]; then\n    installed_version=$(cat $VERSION_FILEPATH 2>/dev/null)\n\n    if [ x\"$installed_version\" = x\"$LATEST_SDK_VERSION\" ]; then\n        should_download=NO\n    fi\n\n    if [ x\"$should_download\" = xYES ] ; then\n        echo \"Installing the version $LATEST_SDK_VERSION of the ARSDK\"\n\n        #remove current sdk\n        rm -rf $PREBUILT_FOLDER_PATH\n\n        #download and unzip latest sdk\n        wget $SDK_DOWNLOAD_ADDRESS\n        unzip $SDK_PACKET_NAME -d $PREBUILT_FOLDER_PATH\n\n        #write the current version in the version file\n        echo $LATEST_SDK_VERSION > $VERSION_FILEPATH\n\n        #remove downloaded zip file\n        rm $SDK_PACKET_NAME\n    fi\nfi\n\n";
 		};
+		F8A2E0D91D772EF3001E391E /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "LATEST_SDK_VERSION='3.9.2'\nSDK_PACKET_NAME='ARSDK3_iOS_3_9_2.zip'\nSDK_DOWNLOAD_ADDRESS=\"https://github.com/Parrot-Developers/arsdk_manifests/releases/download/ARSDK3_version_3_9_2/$SDK_PACKET_NAME\"\n\nPREBUILT_FOLDER_PATH='ARSDK3_iOS'\nSDK_VERSION_FILE='sdk_version.txt'\nVERSION_FILEPATH=\"$PREBUILT_FOLDER_PATH/$SDK_VERSION_FILE\"\nshould_download=YES\n\nif [ \"${CONFIGURATION}\" != \"DebugWithLocalSDK\" ]; then\n    installed_version=$(cat $VERSION_FILEPATH 2>/dev/null)\n\n    if [ x\"$installed_version\" = x\"$LATEST_SDK_VERSION\" ]; then\n        should_download=NO\n    fi\n\n    if [ x\"$should_download\" = xYES ] ; then\n        echo \"Installing the version $LATEST_SDK_VERSION of the ARSDK\"\n\n        #remove current sdk\n        rm -rf $PREBUILT_FOLDER_PATH\n\n        #download and unzip latest sdk\n        wget $SDK_DOWNLOAD_ADDRESS\n        unzip $SDK_PACKET_NAME -d $PREBUILT_FOLDER_PATH\n\n        #write the current version in the version file\n        echo $LATEST_SDK_VERSION > $VERSION_FILEPATH\n\n        #remove downloaded zip file\n        rm $SDK_PACKET_NAME\n    fi\nfi\n\n";
+		};
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		F8A2E0DA1D772EF3001E391E /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F8A2E0DB1D772EF3001E391E /* SDCardModule.m in Sources */,
+				F8A2E0DC1D772EF3001E391E /* AudioStreamAUBackend.m in Sources */,
+				F8A2E0DD1D772EF3001E391E /* AppDelegate.m in Sources */,
+				F8885C2D1D7DAB3E001DFB77 /* SwingDroneVC.m in Sources */,
+				F8A2E0DE1D772EF3001E391E /* JSVideoView.m in Sources */,
+				F8A2E0DF1D772EF3001E391E /* BebopVC.m in Sources */,
+				F8A2E0E01D772EF3001E391E /* SkyController2VC.m in Sources */,
+				F8A2E0E11D772EF3001E391E /* main.m in Sources */,
+				F8A2E0E21D772EF3001E391E /* BebopDrone.m in Sources */,
+				F8A2E0E31D772EF3001E391E /* JSVC.m in Sources */,
+				F8A2E0E41D772EF3001E391E /* MiniDrone.m in Sources */,
+				F8A2E0E51D772EF3001E391E /* MiniDroneVC.m in Sources */,
+				F8A2E0E61D772EF3001E391E /* JSDrone.m in Sources */,
+				F8A2E0E71D772EF3001E391E /* DeviceListVC.m in Sources */,
+				F8A2E0E81D772EF3001E391E /* SkyControllerVC.m in Sources */,
+				F8885C2E1D7DAB45001DFB77 /* SwingDrone.m in Sources */,
+				F8A2E0E91D772EF3001E391E /* BebopVideoView.m in Sources */,
+				F8A2E0EA1D772EF3001E391E /* SkyController2.m in Sources */,
+				F8A2E0EB1D772EF3001E391E /* SkyController.m in Sources */,
+				F8A2E0EC1D772EF3001E391E /* DroneDiscoverer.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		F8B03D7F1C7DA4E900149B4F /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -276,15 +413,19 @@
 				F8B03D8B1C7DA4E900149B4F /* AppDelegate.m in Sources */,
 				F828FA731C860BEB0075E867 /* JSVideoView.m in Sources */,
 				F8B03DC21C7DA90900149B4F /* BebopVC.m in Sources */,
+				F8A2E0D71D770B2F001E391E /* SkyController2VC.m in Sources */,
 				F8B03D881C7DA4E900149B4F /* main.m in Sources */,
 				F8F74D441C7DEAB700DC5FA1 /* BebopDrone.m in Sources */,
 				F828FA701C8608B90075E867 /* JSVC.m in Sources */,
+				F8885C291D7DAB23001DFB77 /* SwingDrone.m in Sources */,
+				F8885C2C1D7DAB39001DFB77 /* SwingDroneVC.m in Sources */,
 				F828FA761C86EB630075E867 /* MiniDrone.m in Sources */,
 				F828FA791C86F14C0075E867 /* MiniDroneVC.m in Sources */,
 				F828FA6A1C8604150075E867 /* JSDrone.m in Sources */,
 				F8B03DBF1C7DA82600149B4F /* DeviceListVC.m in Sources */,
 				F828FA801C8750070075E867 /* SkyControllerVC.m in Sources */,
 				F8838E571C80874900B49443 /* BebopVideoView.m in Sources */,
+				F8A2E0D41D770782001E391E /* SkyController2.m in Sources */,
 				F828FA7D1C8729860075E867 /* SkyController.m in Sources */,
 				F8F74D301C7DC7BE00DC5FA1 /* DroneDiscoverer.m in Sources */,
 			);
@@ -372,6 +513,45 @@
 				OTHER_LDFLAGS = (
 					"-larcommands",
 					"-larcontroller",
+					"-lardiscoverywithouteacc",
+					"-larnetwork",
+					"-larnetworkal",
+					"-larsal",
+					"-larstream",
+					"-larstream2",
+					"-larmavlink",
+					"-ljson",
+					"-larmedia",
+					"-larutils",
+					"-lcurl",
+					"-lardatatransfer",
+					"-lcrypto",
+					"-lz",
+					"-lssl",
+					"-lpomp",
+					"-lmux",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.parrot.SDKSample;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = DebugWithLocalSDK;
+		};
+		F8A2E0F41D772EF3001E391E /* DebugWithPrecompiledSDK */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				"DEAD_CODE_STRIPPING[arch=*]" = YES;
+				ENABLE_BITCODE = NO;
+				"HEADER_SEARCH_PATHS[sdk=iphoneos*]" = "ARSDK3_iOS/iOS-iphoneos/staging/usr/include";
+				"HEADER_SEARCH_PATHS[sdk=iphonesimulator*]" = "ARSDK3_iOS/iOS-iphonesimulator/staging/usr/include";
+				INFOPLIST_FILE = SDKSample/InfoForSkyController2.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				"LIBRARY_SEARCH_PATHS[sdk=iphoneos*]" = "ARSDK3_iOS/iOS-iphoneos/staging/usr/lib";
+				"LIBRARY_SEARCH_PATHS[sdk=iphonesimulator*]" = "ARSDK3_iOS/iOS-iphonesimulator/staging/usr/lib";
+				OTHER_CFLAGS = "";
+				OTHER_LDFLAGS = (
+					"-larcommands",
+					"-larcontroller",
 					"-lardiscovery",
 					"-larnetwork",
 					"-larnetworkal",
@@ -387,11 +567,91 @@
 					"-lcrypto",
 					"-lz",
 					"-lssl",
+					"-lpomp",
+					"-lmux",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.parrot.SDKSample;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = DebugWithPrecompiledSDK;
+		};
+		F8A2E0F51D772EF3001E391E /* DebugWithLocalSDK */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				"DEAD_CODE_STRIPPING[arch=*]" = YES;
+				ENABLE_BITCODE = NO;
+				"HEADER_SEARCH_PATHS[sdk=iphoneos*]" = "../../../../out/iOS-iphoneos/staging/usr/include";
+				"HEADER_SEARCH_PATHS[sdk=iphonesimulator*]" = "../../../../out/iOS-iphonesimulator/staging/usr/include";
+				INFOPLIST_FILE = SDKSample/InfoForSkyController2.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				"LIBRARY_SEARCH_PATHS[sdk=iphoneos*]" = "../../../../out/iOS-iphoneos/staging/usr/lib";
+				"LIBRARY_SEARCH_PATHS[sdk=iphonesimulator*]" = "../../../../out/iOS-iphonesimulator/staging/usr/lib";
+				OTHER_CFLAGS = "";
+				OTHER_LDFLAGS = (
+					"-larcommands",
+					"-larcontroller",
+					"-lardiscovery",
+					"-larnetwork",
+					"-larnetworkal",
+					"-larsal",
+					"-larstream",
+					"-larstream2",
+					"-larmavlink",
+					"-ljson",
+					"-larmedia",
+					"-larutils",
+					"-lcurl",
+					"-lardatatransfer",
+					"-lcrypto",
+					"-lz",
+					"-lssl",
+					"-lpomp",
+					"-lmux",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.parrot.SDKSample;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = DebugWithLocalSDK;
+		};
+		F8A2E0F61D772EF3001E391E /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				"DEAD_CODE_STRIPPING[arch=*]" = YES;
+				ENABLE_BITCODE = NO;
+				"HEADER_SEARCH_PATHS[sdk=iphoneos*]" = "ARSDK3_iOS/iOS-iphoneos/staging/usr/include";
+				"HEADER_SEARCH_PATHS[sdk=iphonesimulator*]" = "ARSDK3_iOS/iOS-iphonesimulator/staging/usr/include";
+				INFOPLIST_FILE = SDKSample/InfoForSkyController2.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				"LIBRARY_SEARCH_PATHS[sdk=iphoneos*]" = "ARSDK3_iOS/iOS-iphoneos/staging/usr/lib";
+				"LIBRARY_SEARCH_PATHS[sdk=iphonesimulator*]" = "ARSDK3_iOS/iOS-iphonesimulator/staging/usr/lib";
+				OTHER_CFLAGS = "";
+				OTHER_LDFLAGS = (
+					"-larcommands",
+					"-larcontroller",
+					"-lardiscovery",
+					"-larnetwork",
+					"-larnetworkal",
+					"-larsal",
+					"-larstream",
+					"-larstream2",
+					"-larmavlink",
+					"-ljson",
+					"-larmedia",
+					"-larutils",
+					"-lcurl",
+					"-lardatatransfer",
+					"-lcrypto",
+					"-lz",
+					"-lssl",
+					"-lpomp",
+					"-lmux",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.parrot.SDKSample;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
 		};
 		F8B03DAE1C7DA4E900149B4F /* DebugWithPrecompiledSDK */ = {
 			isa = XCBuildConfiguration;
@@ -491,7 +751,7 @@
 				OTHER_LDFLAGS = (
 					"-larcommands",
 					"-larcontroller",
-					"-lardiscovery",
+					"-lardiscoverywithouteacc",
 					"-larnetwork",
 					"-larnetworkal",
 					"-larsal",
@@ -506,6 +766,8 @@
 					"-lcrypto",
 					"-lz",
 					"-lssl",
+					"-lpomp",
+					"-lmux",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.parrot.SDKSample;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -528,7 +790,7 @@
 				OTHER_LDFLAGS = (
 					"-larcommands",
 					"-larcontroller",
-					"-lardiscovery",
+					"-lardiscoverywithouteacc",
 					"-larnetwork",
 					"-larnetworkal",
 					"-larsal",
@@ -543,6 +805,8 @@
 					"-lcrypto",
 					"-lz",
 					"-lssl",
+					"-lpomp",
+					"-lmux",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.parrot.SDKSample;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -552,6 +816,16 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		F8A2E0F31D772EF3001E391E /* Build configuration list for PBXNativeTarget "SDKSampleForSkyController2" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F8A2E0F41D772EF3001E391E /* DebugWithPrecompiledSDK */,
+				F8A2E0F51D772EF3001E391E /* DebugWithLocalSDK */,
+				F8A2E0F61D772EF3001E391E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		F8B03D7E1C7DA4E900149B4F /* Build configuration list for PBXProject "SDKSample" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (

@@ -8,4 +8,7 @@
     <color name="secondary_text">#727272</color>
     <color name="icons">#FFFFFF</color>
     <color name="divider">#B6B6B6</color>
+
+    <color name="selected_tab_color">#AAAAAA</color>
+    <color name="unselected_tab_color">#CCCCCC</color>
 </resources>
