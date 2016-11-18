@@ -297,7 +297,7 @@ int main (int argc, char *argv[])
         if (error != ARCONTROLLER_OK)
         {
             failed = 1;
-            ARSAL_PRINT(ARSAL_PRINT_ERROR, TAG, "- error :%", ARCONTROLLER_Error_ToString(error));
+            ARSAL_PRINT(ARSAL_PRINT_ERROR, TAG, "- error: %s", ARCONTROLLER_Error_ToString(error));
         }
     }
 
@@ -437,94 +437,91 @@ void stateChanged (eARCONTROLLER_DEVICE_STATE newState, eARCONTROLLER_ERROR erro
     }
 }
 
+static void cmdBatteryStateChangedRcv(ARCONTROLLER_Device_t *deviceController, ARCONTROLLER_DICTIONARY_ELEMENT_t *elementDictionary)
+{
+    ARCONTROLLER_DICTIONARY_ARG_t *arg = NULL;
+    ARCONTROLLER_DICTIONARY_ELEMENT_t *singleElement = NULL;
+
+    if (elementDictionary == NULL) {
+        ARSAL_PRINT(ARSAL_PRINT_ERROR, TAG, "elements is NULL");
+        return;
+    }
+
+    // get the command received in the device controller
+    HASH_FIND_STR (elementDictionary, ARCONTROLLER_DICTIONARY_SINGLE_KEY, singleElement);
+
+    if (singleElement == NULL) {
+        ARSAL_PRINT(ARSAL_PRINT_ERROR, TAG, "singleElement is NULL");
+        return;
+    }
+
+    // get the value
+    HASH_FIND_STR (singleElement->arguments, ARCONTROLLER_DICTIONARY_KEY_COMMON_COMMONSTATE_BATTERYSTATECHANGED_PERCENT, arg);
+
+    if (arg == NULL) {
+        ARSAL_PRINT(ARSAL_PRINT_ERROR, TAG, "arg is NULL");
+        return;
+    }
+
+    // update UI
+    batteryStateChanged(arg->value.U8);
+}
+
+static void cmdSensorStateListChangedRcv(ARCONTROLLER_Device_t *deviceController, ARCONTROLLER_DICTIONARY_ELEMENT_t *elementDictionary)
+{
+    ARCONTROLLER_DICTIONARY_ARG_t *arg = NULL;
+    ARCONTROLLER_DICTIONARY_ELEMENT_t *dictElement = NULL;
+    ARCONTROLLER_DICTIONARY_ELEMENT_t *dictTmp = NULL;
+
+    eARCOMMANDS_COMMON_COMMONSTATE_SENSORSSTATESLISTCHANGED_SENSORNAME sensorName = ARCOMMANDS_COMMON_COMMONSTATE_SENSORSSTATESLISTCHANGED_SENSORNAME_MAX;
+    int sensorState = 0;
+
+    if (elementDictionary == NULL) {
+        ARSAL_PRINT(ARSAL_PRINT_ERROR, TAG, "elements is NULL");
+        return;
+    }
+
+    // get the command received in the device controller
+    HASH_ITER(hh, elementDictionary, dictElement, dictTmp) {
+        // get the Name
+        HASH_FIND_STR (dictElement->arguments, ARCONTROLLER_DICTIONARY_KEY_COMMON_COMMONSTATE_SENSORSSTATESLISTCHANGED_SENSORNAME, arg);
+        if (arg != NULL) {
+            ARSAL_PRINT(ARSAL_PRINT_ERROR, TAG, "arg sensorName is NULL");
+            continue;
+        }
+
+        sensorName = arg->value.I32;
+
+        // get the state
+        HASH_FIND_STR (dictElement->arguments, ARCONTROLLER_DICTIONARY_KEY_COMMON_COMMONSTATE_SENSORSSTATESLISTCHANGED_SENSORSTATE, arg);
+        if (arg == NULL) {
+            ARSAL_PRINT(ARSAL_PRINT_ERROR, TAG, "arg sensorState is NULL");
+            continue;
+        }
+
+        sensorState = arg->value.U8;
+        ARSAL_PRINT(ARSAL_PRINT_INFO, TAG, "sensorName %d ; sensorState: %d", sensorName, sensorState);
+    }
+}
+
 // called when a command has been received from the drone
 void commandReceived (eARCONTROLLER_DICTIONARY_KEY commandKey, ARCONTROLLER_DICTIONARY_ELEMENT_t *elementDictionary, void *customData)
 {
     ARCONTROLLER_Device_t *deviceController = customData;
 
-    if (deviceController != NULL)
-    {
-        // if the command received is a battery state changed
-        if (commandKey == ARCONTROLLER_DICTIONARY_KEY_COMMON_COMMONSTATE_BATTERYSTATECHANGED)
-        {
-            ARCONTROLLER_DICTIONARY_ARG_t *arg = NULL;
-            ARCONTROLLER_DICTIONARY_ELEMENT_t *singleElement = NULL;
+    if (deviceController == NULL)
+        return;
 
-            if (elementDictionary != NULL)
-            {
-                // get the command received in the device controller
-                HASH_FIND_STR (elementDictionary, ARCONTROLLER_DICTIONARY_SINGLE_KEY, singleElement);
-
-                if (singleElement != NULL)
-                {
-                    // get the value
-                    HASH_FIND_STR (singleElement->arguments, ARCONTROLLER_DICTIONARY_KEY_COMMON_COMMONSTATE_BATTERYSTATECHANGED_PERCENT, arg);
-
-                    if (arg != NULL)
-                    {
-                        // update UI
-                        batteryStateChanged (arg->value.U8);
-                    }
-                    else
-                    {
-                        ARSAL_PRINT(ARSAL_PRINT_ERROR, TAG, "arg is NULL");
-                    }
-                }
-                else
-                {
-                    ARSAL_PRINT(ARSAL_PRINT_ERROR, TAG, "singleElement is NULL");
-                }
-            }
-            else
-            {
-                ARSAL_PRINT(ARSAL_PRINT_ERROR, TAG, "elements is NULL");
-            }
-        }
-    }
-
-    if (commandKey == ARCONTROLLER_DICTIONARY_KEY_COMMON_COMMONSTATE_SENSORSSTATESLISTCHANGED)
-    {
-        ARCONTROLLER_DICTIONARY_ARG_t *arg = NULL;
-
-        if (elementDictionary != NULL)
-        {
-            ARCONTROLLER_DICTIONARY_ELEMENT_t *dictElement = NULL;
-            ARCONTROLLER_DICTIONARY_ELEMENT_t *dictTmp = NULL;
-
-            eARCOMMANDS_COMMON_COMMONSTATE_SENSORSSTATESLISTCHANGED_SENSORNAME sensorName = ARCOMMANDS_COMMON_COMMONSTATE_SENSORSSTATESLISTCHANGED_SENSORNAME_MAX;
-            int sensorState = 0;
-
-            HASH_ITER(hh, elementDictionary, dictElement, dictTmp)
-            {
-                // get the Name
-                HASH_FIND_STR (dictElement->arguments, ARCONTROLLER_DICTIONARY_KEY_COMMON_COMMONSTATE_SENSORSSTATESLISTCHANGED_SENSORNAME, arg);
-                if (arg != NULL)
-                {
-                    sensorName = arg->value.I32;
-                }
-                else
-                {
-                    ARSAL_PRINT(ARSAL_PRINT_ERROR, TAG, "arg sensorName is NULL");
-                }
-
-                // get the state
-                HASH_FIND_STR (dictElement->arguments, ARCONTROLLER_DICTIONARY_KEY_COMMON_COMMONSTATE_SENSORSSTATESLISTCHANGED_SENSORSTATE, arg);
-                if (arg != NULL)
-                {
-                    sensorState = arg->value.U8;
-
-                    ARSAL_PRINT(ARSAL_PRINT_INFO, TAG, "sensorName %d ; sensorState: %d", sensorName, sensorState);
-                }
-                else
-                {
-                    ARSAL_PRINT(ARSAL_PRINT_ERROR, TAG, "arg sensorState is NULL");
-                }
-            }
-        }
-        else
-        {
-            ARSAL_PRINT(ARSAL_PRINT_ERROR, TAG, "elements is NULL");
-        }
+    // if the command received is a battery state changed
+    switch(commandKey) {
+    case ARCONTROLLER_DICTIONARY_KEY_COMMON_COMMONSTATE_BATTERYSTATECHANGED:
+        cmdBatteryStateChangedRcv(deviceController, elementDictionary);
+        break;
+    case ARCONTROLLER_DICTIONARY_KEY_COMMON_COMMONSTATE_SENSORSSTATESLISTCHANGED:
+        cmdSensorStateListChangedRcv(deviceController, elementDictionary);
+        break;
+    default:
+        break;
     }
 }
 
@@ -536,7 +533,6 @@ void batteryStateChanged (uint8_t percent)
     {
         IHM_PrintBattery (ihm, percent);
     }
-
 }
 
 eARCONTROLLER_ERROR decoderConfigCallback (ARCONTROLLER_Stream_Codec_t codec, void *customData)
