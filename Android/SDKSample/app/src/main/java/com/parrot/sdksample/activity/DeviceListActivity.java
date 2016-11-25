@@ -234,7 +234,7 @@ public class DeviceListActivity extends AppCompatActivity {
             // fill data
             ViewHolder holder = (ViewHolder) rowView.getTag();
             ARDiscoveryDeviceService service = (ARDiscoveryDeviceService)getItem(position);
-            holder.text.setText(service.getName());
+            holder.text.setText(service.getName() + " on " + service.getNetworkType());
 
             return rowView;
         }

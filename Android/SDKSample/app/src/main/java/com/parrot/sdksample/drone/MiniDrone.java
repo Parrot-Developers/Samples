@@ -100,10 +100,12 @@ public class MiniDrone {
     private ARCOMMANDS_MINIDRONE_PILOTINGSTATE_FLYINGSTATECHANGED_STATE_ENUM mFlyingState;
     private String mCurrentRunId;
     private ARDISCOVERY_PRODUCT_ENUM mProductType;
+    private ARDiscoveryDeviceService mDeviceService;
 
     public MiniDrone(Context context, @NonNull ARDiscoveryDeviceService deviceService) {
 
         mContext = context;
+        mDeviceService = deviceService;
         mListeners = new ArrayList<>();
 
         // needed because some callbacks will be called on the main thread
@@ -116,7 +118,7 @@ public class MiniDrone {
         ARDISCOVERY_PRODUCT_FAMILY_ENUM family = ARDiscoveryService.getProductFamily(mProductType);
         if (ARDISCOVERY_PRODUCT_FAMILY_ENUM.ARDISCOVERY_PRODUCT_FAMILY_MINIDRONE.equals(family)) {
 
-            ARDiscoveryDevice discoveryDevice = createDiscoveryDevice(context, deviceService, mProductType);
+            ARDiscoveryDevice discoveryDevice = createDiscoveryDevice(deviceService);
             if (discoveryDevice != null) {
                 mDeviceController = createDeviceController(discoveryDevice);
                 discoveryDevice.dispose();
@@ -277,8 +279,8 @@ public class MiniDrone {
             ARUtilsManager ftpListManager = new ARUtilsManager();
             ARUtilsManager ftpQueueManager = new ARUtilsManager();
 
-            ftpListManager.initBLEFtp(mContext, ARSALBLEManager.getInstance(mContext).getGatt(), DEVICE_PORT);
-            ftpQueueManager.initBLEFtp(mContext, ARSALBLEManager.getInstance(mContext).getGatt(), DEVICE_PORT);
+            ftpListManager.initFtp(mContext, mDeviceService, DEVICE_PORT, ARUtilsManager.FTP_ANONYMOUS, "");
+            ftpQueueManager.initFtp(mContext, mDeviceService, DEVICE_PORT, ARUtilsManager.FTP_ANONYMOUS, "");
 
             mSDCardModule = new SDCardModule(ftpListManager, ftpQueueManager);
             mSDCardModule.addListener(mSDCardModuleListener);
@@ -303,14 +305,10 @@ public class MiniDrone {
         }
     }
 
-    private ARDiscoveryDevice createDiscoveryDevice(Context context, @NonNull ARDiscoveryDeviceService service, ARDISCOVERY_PRODUCT_ENUM productType) {
+    private ARDiscoveryDevice createDiscoveryDevice(@NonNull ARDiscoveryDeviceService service) {
         ARDiscoveryDevice device = null;
         try {
-            device = new ARDiscoveryDevice();
-
-            ARDiscoveryDeviceBLEService bleDeviceService = (ARDiscoveryDeviceBLEService) service.getDevice();
-            device.initBLE(productType, context.getApplicationContext(), bleDeviceService.getBluetoothDevice());
-
+            device = new ARDiscoveryDevice(mContext, service);
         } catch (ARDiscoveryException e) {
             Log.e(TAG, "Exception", e);
             Log.e(TAG, "Error: " + e.getError());

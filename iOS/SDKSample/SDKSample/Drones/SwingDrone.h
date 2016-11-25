@@ -6,6 +6,7 @@
 #import <Foundation/Foundation.h>
 #import <libARController/ARController.h>
 #import <libARDiscovery/ARDISCOVERY_BonjourDiscovery.h>
+#import <libARUtils/ARUTILS_OBJCManager.h>
 
 @class SwingDrone;
 

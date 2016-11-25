@@ -16,7 +16,6 @@
 @property (nonatomic, assign) eARCONTROLLER_DEVICE_STATE connectionState;
 @property (nonatomic, assign) eARCOMMANDS_ARDRONE3_PILOTINGSTATE_FLYINGSTATECHANGED_STATE flyingState;
 @property (nonatomic, strong) NSString *currentRunId;
-@property (nonatomic) dispatch_semaphore_t resolveSemaphore;
 @end
 
 @implementation SkyController2
@@ -129,18 +128,12 @@
 - (ARDISCOVERY_Device_t *)createDiscoveryDeviceWithService:(ARService*)service {
     ARDISCOVERY_Device_t *device = NULL;
     eARDISCOVERY_ERROR errorDiscovery = ARDISCOVERY_OK;
+    
+    device = [service createDevice:&errorDiscovery];
 
-    device = ARDISCOVERY_Device_New (&errorDiscovery);
-
-    if (errorDiscovery == ARDISCOVERY_OK) {
-        errorDiscovery = ARDISCOVERY_Device_InitUSB(device, service.product, ((ARUSBService*)service.service).usbMux);
-
-        if (errorDiscovery != ARDISCOVERY_OK) {
+    if (errorDiscovery != ARDISCOVERY_OK)
             NSLog(@"Discovery error :%s", ARDISCOVERY_Error_ToString(errorDiscovery));
-            ARDISCOVERY_Device_Delete(&device);
-        }
-    }
-
+    
     return device;
 }
 
@@ -155,11 +148,11 @@
     }
 
     if(ftpError == ARUTILS_OK) {
-        ftpError = ARUTILS_Manager_InitWifiFtpOverMux(ftpListManager, NULL, FTP_PORT, ((ARUSBService*)_service.service).usbMux, ARUTILS_FTP_ANONYMOUS, "");
+        ftpError = ARUTILS_Manager_InitFtp(ftpListManager, _service, FTP_PORT, ARUTILS_FTP_ANONYMOUS, "");
     }
 
     if(ftpError == ARUTILS_OK) {
-        ftpError = ARUTILS_Manager_InitWifiFtpOverMux(ftpQueueManager, NULL, FTP_PORT, ((ARUSBService*)_service.service).usbMux, ARUTILS_FTP_ANONYMOUS, "");
+        ftpError = ARUTILS_Manager_InitFtp(ftpQueueManager, _service, FTP_PORT, ARUTILS_FTP_ANONYMOUS, "");
     }
 
     _sdCardModule = [[SDCardModule alloc] initWithFtpListManager:ftpListManager andFtpQueueManager:ftpQueueManager];

@@ -112,20 +112,11 @@
 - (ARDISCOVERY_Device_t *)createDiscoveryDeviceWithService:(ARService*)service {
     ARDISCOVERY_Device_t *device = NULL;
     eARDISCOVERY_ERROR errorDiscovery = ARDISCOVERY_OK;
-
-    device = ARDISCOVERY_Device_New (&errorDiscovery);
-
-    if (errorDiscovery == ARDISCOVERY_OK) {
-        // get the ble service from the ARService
-        ARBLEService* bleService = service.service;
-
-        // create a BLE discovery device
-        errorDiscovery = ARDISCOVERY_Device_InitBLE (device, service.product, (__bridge ARNETWORKAL_BLEDeviceManager_t)(bleService.centralManager), (__bridge ARNETWORKAL_BLEDevice_t)(bleService.peripheral));
-    }
+    
+    device = [service createDevice:&errorDiscovery];
 
     if (errorDiscovery != ARDISCOVERY_OK) {
         NSLog(@"Discovery error :%s", ARDISCOVERY_Error_ToString(errorDiscovery));
-        ARDISCOVERY_Device_Delete(&device);
     }
 
     return device;
@@ -142,11 +133,11 @@
     }
 
     if(ftpError == ARUTILS_OK) {
-        ftpError = ARUTILS_Manager_InitBLEFtp(ftpListManager, (__bridge ARUTILS_BLEDevice_t)((ARBLEService *)_service.service).peripheral, FTP_PORT);
+        ftpError = ARUTILS_Manager_InitFtp(ftpListManager, _service, FTP_PORT, ARUTILS_FTP_ANONYMOUS, "");
     }
 
     if(ftpError == ARUTILS_OK) {
-        ftpError = ARUTILS_Manager_InitBLEFtp(ftpQueueManager, (__bridge ARUTILS_BLEDevice_t)((ARBLEService *)_service.service).peripheral, FTP_PORT);
+        ftpError = ARUTILS_Manager_InitFtp(ftpQueueManager, _service, FTP_PORT, ARUTILS_FTP_ANONYMOUS, "");
     }
 
     _sdCardModule = [[SDCardModule alloc] initWithFtpListManager:ftpListManager andFtpQueueManager:ftpQueueManager];
