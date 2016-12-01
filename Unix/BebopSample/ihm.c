@@ -30,7 +30,7 @@
 */
 /**
  * @file ihm.c
- * @brief This file contains sources about ncurses IHM used by arsdk example "BebopDroneDecodeStream"
+ * @brief This file contains sources about ncurses IHM used by arsdk example "BebopSample"
  * @date 15/01/2015
  */
 
@@ -57,14 +57,11 @@
 #define HEADER_X 0
 #define HEADER_Y 0
 
-#define INSTRUCTION_X 0
-#define INSTRUCTION_Y 2
+#define INFO_X 0
+#define INFO_Y 2
 
 #define BATTERY_X 0
-#define BATTERY_Y 10
-
-#define INFO_X 0
-#define INFO_Y 12
+#define BATTERY_Y 4
 
 /*****************************************
  *
@@ -111,8 +108,7 @@ IHM_t *IHM_New (IHM_onInputEvent_t onInputEventCallback)
     
     if (!failed)
     {
-        //raw();                  // Line buffering disabled
-        cbreak();
+        raw();                  // Line buffering disabled
         keypad(stdscr, TRUE);
         noecho();               // Don't echo() while we do getch
         timeout(100);
@@ -184,7 +180,7 @@ void *IHM_InputProcessing(void *data)
         {
             key = getch();
             
-            if (key == 27) // escape character
+            if ((key == 27) || (key =='q'))
             {
                 if(ihm->onInputEventCallback != NULL)
                 {
@@ -195,14 +191,14 @@ void *IHM_InputProcessing(void *data)
             {
                 if(ihm->onInputEventCallback != NULL)
                 {
-                    ihm->onInputEventCallback (IHM_INPUT_EVENT_FORWARD, ihm->customData);
+                    ihm->onInputEventCallback (IHM_INPUT_EVENT_UP, ihm->customData);
                 }
             }
             else if(key == KEY_DOWN)
             {
                 if(ihm->onInputEventCallback != NULL)
                 {
-                    ihm->onInputEventCallback (IHM_INPUT_EVENT_BACK, ihm->customData);
+                    ihm->onInputEventCallback (IHM_INPUT_EVENT_DOWN, ihm->customData);
                 }
             }
             else if(key == KEY_LEFT)
@@ -219,74 +215,53 @@ void *IHM_InputProcessing(void *data)
                     ihm->onInputEventCallback (IHM_INPUT_EVENT_RIGHT, ihm->customData);
                 }
             }
-            else if(key == 'm')
+            else if(key == 'e')
             {
                 if(ihm->onInputEventCallback != NULL)
                 {
                     ihm->onInputEventCallback (IHM_INPUT_EVENT_EMERGENCY, ihm->customData);
                 }
             }
-            else if(key == 'z')
+            else if(key == 't')
             {
                 if(ihm->onInputEventCallback != NULL)
                 {
-                    ihm->onInputEventCallback (IHM_INPUT_EVENT_UP, ihm->customData);
-                }
-            }
-            else if(key == 's')
-            {
-                if(ihm->onInputEventCallback != NULL)
-                {
-                    ihm->onInputEventCallback (IHM_INPUT_EVENT_DOWN, ihm->customData);
-                }
-            }
-            else if(key == 'q')
-            {
-                if(ihm->onInputEventCallback != NULL)
-                {
-                    ihm->onInputEventCallback (IHM_INPUT_EVENT_YAW_LEFT, ihm->customData);
-                }
-            }
-            else if(key == 'd')
-            {
-                if(ihm->onInputEventCallback != NULL)
-                {
-                    ihm->onInputEventCallback (IHM_INPUT_EVENT_YAW_RIGHT, ihm->customData);
-                }
-            }
-            else if(key == 'i')
-            {
-                if(ihm->onInputEventCallback != NULL)
-                {
-                    ihm->onInputEventCallback (IHM_INPUT_EVENT_CAM_UP, ihm->customData);
-                }
-            }
-            else if(key == 'k')
-            {
-                if(ihm->onInputEventCallback != NULL)
-                {
-                    ihm->onInputEventCallback (IHM_INPUT_EVENT_CAM_DOWN, ihm->customData);
-                }
-            }
-            else if(key == 'j')
-            {
-                if(ihm->onInputEventCallback != NULL)
-                {
-                    ihm->onInputEventCallback (IHM_INPUT_EVENT_CAM_LEFT, ihm->customData);
-                }
-            }
-            else if(key == 'l')
-            {
-                if(ihm->onInputEventCallback != NULL)
-                {
-                    ihm->onInputEventCallback (IHM_INPUT_EVENT_CAM_RIGHT, ihm->customData);
+                    ihm->onInputEventCallback (IHM_INPUT_EVENT_TAKEOFF, ihm->customData);
                 }
             }
             else if(key == ' ')
             {
                 if(ihm->onInputEventCallback != NULL)
                 {
-                    ihm->onInputEventCallback (IHM_INPUT_EVENT_TAKEOFF_LANDING, ihm->customData);
+                    ihm->onInputEventCallback (IHM_INPUT_EVENT_LAND, ihm->customData);
+                }
+            }
+            else if(key == 'r')
+            {
+                if(ihm->onInputEventCallback != NULL)
+                {
+                    ihm->onInputEventCallback (IHM_INPUT_EVENT_FORWARD, ihm->customData);
+                }
+            }
+            else if(key == 'f')
+            {
+                if(ihm->onInputEventCallback != NULL)
+                {
+                    ihm->onInputEventCallback (IHM_INPUT_EVENT_BACK, ihm->customData);
+                }
+            }
+            else if(key == 'd')
+            {
+                if(ihm->onInputEventCallback != NULL)
+                {
+                    ihm->onInputEventCallback (IHM_INPUT_EVENT_ROLL_LEFT, ihm->customData);
+                }
+            }
+            else if(key == 'g')
+            {
+                if(ihm->onInputEventCallback != NULL)
+                {
+                    ihm->onInputEventCallback (IHM_INPUT_EVENT_ROLL_RIGHT, ihm->customData);
                 }
             }
             else
@@ -311,16 +286,6 @@ void IHM_PrintHeader(IHM_t *ihm, char *headerStr)
         move(HEADER_Y, 0);   // move to begining of line
         clrtoeol();          // clear line
         mvprintw(HEADER_Y, HEADER_X, headerStr);
-    }
-}
-
-void IHM_PrintInstruction(IHM_t *ihm, char *instructionStr)
-{
-    if (ihm != NULL)
-    {
-        move(INSTRUCTION_Y, 0);   // move to begining of line
-        clrtoeol();          // clear line
-        mvprintw(INSTRUCTION_Y, INSTRUCTION_X, instructionStr);
     }
 }
 

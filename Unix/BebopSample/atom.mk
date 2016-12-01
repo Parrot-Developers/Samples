@@ -5,15 +5,21 @@ LOCAL_PATH := $(call my-dir)
 include $(CLEAR_VARS)
 
 LOCAL_CATEGORY_PATH := samples
-LOCAL_MODULE := JumpingSumoChangePosture
-LOCAL_DESCRIPTION := Jumping Sumo Change Posture
+LOCAL_MODULE := BebopSample
+LOCAL_DESCRIPTION := Bebop sample
 
 LOCAL_LIBRARIES := \
 	libARSAL \
+	libARController \
+	libARDataTransfer \
+	libARUtils \
 	libARCommands \
 	libARNetwork \
 	libARNetworkAL \
-	libARDiscovery
+	libARDiscovery \
+	libARStream \
+	libARStream2 \
+	ncurses
 
 LOCAL_SRC_FILES := \
 	$(call all-c-files-under,.)

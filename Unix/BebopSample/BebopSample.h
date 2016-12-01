@@ -29,8 +29,8 @@
     SUCH DAMAGE.
 */
 
-#ifndef _JUMPINGSUMO_PILOTING_H_
-#define _JUMPINGSUMO_PILOTING_H_
+#ifndef _BEBOP_SAMPLE_H_
+#define _BEBOP_SAMPLE_H_
 
 #include <ihm.h>
 
@@ -53,4 +53,4 @@ void onInputEvent (eIHM_INPUT_EVENT event, void *customData);
 
 int customPrintCallback (eARSAL_PRINT_LEVEL level, const char *tag, const char *format, va_list va);
 
-#endif /* _JUMPINGSUMO_PILOTING_H_ */
+#endif /* BEBOP_SAMPLE_H */

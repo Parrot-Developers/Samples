@@ -28,33 +28,42 @@
     OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
     SUCH DAMAGE.
 */
-#ifndef _SDK_EXAMPLE_JS_H_
-#define _SDK_EXAMPLE_JS_H_
 
+#ifndef _JUMPINGSUMO_SAMPLE_IHM_H_
+#define _JUMPINGSUMO_SAMPLE_IHM_H_
+
+#include <curses.h>
+#include <libARSAL/ARSAL.h>
+
+typedef enum
+{
+    IHM_INPUT_EVENT_NONE,
+    IHM_INPUT_EVENT_EXIT,
+    IHM_INPUT_EVENT_JUMP,
+    IHM_INPUT_EVENT_FORWARD,
+    IHM_INPUT_EVENT_BACK,
+    IHM_INPUT_EVENT_RIGHT,
+    IHM_INPUT_EVENT_LEFT,
+}eIHM_INPUT_EVENT;
+
+typedef void (*IHM_onInputEvent_t) (eIHM_INPUT_EVENT event, void *customData);
 
 typedef struct
 {
-    ARNETWORKAL_Manager_t *alManager;
-    ARNETWORK_Manager_t *netManager;
-    ARSAL_Thread_t rxThread;
-    ARSAL_Thread_t txThread;
-    int d2cPort;
-    int c2dPort;
+    WINDOW *mainWindow;
+    ARSAL_Thread_t inputThread;
+    int run;
+    IHM_onInputEvent_t onInputEventCallback;
+    void *customData;
+}IHM_t;
 
-}JS_MANAGER_t;
+IHM_t *IHM_New (IHM_onInputEvent_t onInputEventCallback);
+void IHM_Delete (IHM_t **ihm);
 
-int ardiscoveryConnect (JS_MANAGER_t *jsManager);
-eARDISCOVERY_ERROR ARDISCOVERY_Connection_SendJsonCallback (uint8_t *dataTx, uint32_t *dataTxSize, void *customData);
-eARDISCOVERY_ERROR ARDISCOVERY_Connection_ReceiveJsonCallback (uint8_t *dataRx, uint32_t dataRxSize, char *ip, void *customData);
+void IHM_setCustomData(IHM_t *ihm, void *customData);
 
-int startNetwork (JS_MANAGER_t *jsManager);
-void onDisconnectNetwork (ARNETWORK_Manager_t *manager, ARNETWORKAL_Manager_t *alManager, void *customData);
-void stopNetwork (JS_MANAGER_t *jsManager);
+void IHM_PrintHeader(IHM_t *ihm, char *headerStr);
+void IHM_PrintInfo(IHM_t *ihm, char *infoStr);
+void IHM_PrintBattery(IHM_t *ihm, uint8_t percent);
 
-int sendDate(JS_MANAGER_t *jsManager);
-int sendTime(JS_MANAGER_t *jsManager);
-int sendPilotingPosture(JS_MANAGER_t *jsManager, eARCOMMANDS_JUMPINGSUMO_PILOTING_POSTURE_TYPE type);
-
-eARNETWORK_MANAGER_CALLBACK_RETURN arnetworkCmdCallback(int buffer_id, uint8_t *data, void *custom, eARNETWORK_MANAGER_CALLBACK_STATUS cause);
-
-#endif /* _SDK_EXAMPLE_JS_H_ */
+#endif /* _JUMPINGSUMO_SAMPLE_IHM_H_ */
