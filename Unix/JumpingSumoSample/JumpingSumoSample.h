@@ -28,47 +28,31 @@
     OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
     SUCH DAMAGE.
 */
-#ifndef _SDK_EXAMPLE_JS_H_
-#define _SDK_EXAMPLE_JS_H_
 
+#ifndef _JUMPINGSUMO_SAMPLE_H_
+#define _JUMPINGSUMO_SAMPLE_H_
 
-typedef struct
-{
-    ARNETWORKAL_Manager_t *alManager;
-    ARNETWORK_Manager_t *netManager;
-    ARSTREAM_Reader_t *streamReader;
-    ARSAL_Thread_t rxThread;
-    ARSAL_Thread_t txThread;
-    ARSAL_Thread_t videoTxThread;
-    ARSAL_Thread_t videoRxThread;
-    int d2cPort;
-    int c2dPort;
-    int arstreamFragSize;
-    int arstreamFragNb;
-    int arstreamAckDelay;
-    uint8_t *videoFrame;
-    uint32_t videoFrameSize;
-    
-    FILE *video_out;
-    int writeImgs;
-    int frameNb;
-    
-} JS_MANAGER_t;
+#include <ihm.h>
 
-int ardiscoveryConnect (JS_MANAGER_t *jsManager);
-eARDISCOVERY_ERROR ARDISCOVERY_Connection_SendJsonCallback (uint8_t *dataTx, uint32_t *dataTxSize, void *customData);
-eARDISCOVERY_ERROR ARDISCOVERY_Connection_ReceiveJsonCallback (uint8_t *dataRx, uint32_t dataRxSize, char *ip, void *customData);
+#include <libARController/ARController.h>
 
-int startNetwork (JS_MANAGER_t *jsManager);
-void onDisconnectNetwork (ARNETWORK_Manager_t *manager, ARNETWORKAL_Manager_t *alManager, void *customData);
-void stopNetwork (JS_MANAGER_t *jsManager);
+// called when the state of the device controller has changed
+void stateChanged (eARCONTROLLER_DEVICE_STATE newState, eARCONTROLLER_ERROR error, void *customData);
 
-int startVideo (JS_MANAGER_t *jsManager);
-uint8_t *frameCompleteCallback (eARSTREAM_READER_CAUSE cause, uint8_t *frame, uint32_t frameSize, int numberOfSkippedFrames, int isFlushFrame, uint32_t *newBufferCapacity, void *custom);
-void stopVideo (JS_MANAGER_t *jsManager);
+// called when a command has been received from the drone
+void commandReceived (eARCONTROLLER_DICTIONARY_KEY commandKey, ARCONTROLLER_DICTIONARY_ELEMENT_t *elementDictionary, void *customData);
 
-int sendBeginStream(JS_MANAGER_t *jsManager);
+// IHM updates from commands
+void batteryStateChanged (uint8_t percent);
 
-eARNETWORK_MANAGER_CALLBACK_RETURN arnetworkCmdCallback(int buffer_id, uint8_t *data, void *custom, eARNETWORK_MANAGER_CALLBACK_STATUS cause);
+// called to configure the video stream decoder
+eARCONTROLLER_ERROR decoderConfigCallback (ARCONTROLLER_Stream_Codec_t codec, void *customData);
 
-#endif /* _SDK_EXAMPLE_JS_H_ */
+// called when a streaming frame has been received
+eARCONTROLLER_ERROR didReceiveFrameCallback (ARCONTROLLER_Frame_t *frame, void *customData);
+
+/* IHM callbacks: */
+void onInputEvent (eIHM_INPUT_EVENT event, void *customData);
+int customPrintCallback (eARSAL_PRINT_LEVEL level, const char *tag, const char *format, va_list va);
+
+#endif /* _JUMPINGSUMO_SAMPLE_H_ */

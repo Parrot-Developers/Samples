@@ -30,7 +30,7 @@
 */
 /**
  * @file ihm.c
- * @brief This file contains sources about ncurses IHM used by arsdk example "JumpingSumoPiloting"
+ * @brief This file contains sources about ncurses IHM used by arsdk example "JumpingSumoSample"
  * @date 15/01/2015
  */
 

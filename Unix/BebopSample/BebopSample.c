@@ -29,8 +29,9 @@
   SUCH DAMAGE.
 */
 /**
- * @file JumpingSumoPiloting.c
- * @brief This file contains sources about basic arsdk example sending commands to a JumpingSumo for piloting it and make it jump it and receiving its battery level
+ * @file BebopSample.c
+ * @brief This file contains sources about basic arsdk example sending commands to a bebop drone to pilot it,
+ * receive its battery level and display the video stream.
  * @date 15/01/2015
  */
 
@@ -51,7 +52,7 @@
 #include <libARController/ARController.h>
 #include <libARDiscovery/ARDiscovery.h>
 
-#include "JumpingSumoPiloting.h"
+#include "BebopSample.h"
 #include "ihm.h"
 
 /*****************************************
@@ -59,12 +60,12 @@
  *             define :
  *
  *****************************************/
-#define TAG "SDKExample"
+#define TAG "BebopSample"
 
 #define ERROR_STR_LENGTH 2048
 
-#define JS_IP_ADDRESS "192.168.2.1"
-#define JS_DISCOVERY_PORT 44444
+#define BEBOP_IP_ADDRESS "192.168.42.1"
+#define BEBOP_DISCOVERY_PORT 44444
 
 #define DISPLAY_WITH_MPLAYER 1
 
@@ -93,9 +94,9 @@ char gErrorStr[ERROR_STR_LENGTH];
 IHM_t *ihm = NULL;
 
 FILE *videoOut = NULL;
-int writeImgs = 0;
 int frameNb = 0;
 ARSAL_Sem_t stateSem;
+int isBebop2 = 0;
 
 static void signal_handler(int signal)
 {
@@ -148,37 +149,33 @@ int main (int argc, char *argv[])
 
     ARSAL_Sem_Init (&(stateSem), 0, 0);
 
-    ARSAL_PRINT(ARSAL_PRINT_INFO, TAG, "-- Jumping Sumo Piloting --");
+    ARSAL_PRINT(ARSAL_PRINT_INFO, TAG, "Select your Bebop : Bebop (1) ; Bebop2 (2)");
+    char answer = '1';
+    scanf(" %c", &answer);
+    if (answer == '2')
+    {
+        isBebop2 = 1;
+    }
 
-
+    if(isBebop2)
+    {
+        ARSAL_PRINT(ARSAL_PRINT_INFO, TAG, "-- Bebop 2 Sample --");
+    }
+    else
+    {
+        ARSAL_PRINT(ARSAL_PRINT_INFO, TAG, "-- Bebop Sample --");
+    }
 
     if (!failed)
     {
         if (DISPLAY_WITH_MPLAYER)
         {
-            // fork the process to launch ffplay
+            // fork the process to launch mplayer
             if ((child = fork()) == 0)
             {
-                execlp("xterm", "xterm", "-e", "mplayer", "-demuxer",  "lavf", fifo_name, "-benchmark", "-really-quiet", NULL);
+                execlp("xterm", "xterm", "-e", "mplayer", "-demuxer",  "h264es", fifo_name, "-benchmark", "-really-quiet", NULL);
                 ARSAL_PRINT(ARSAL_PRINT_ERROR, TAG, "Missing mplayer, you will not see the video. Please install mplayer and xterm.");
                 return -1;
-            }
-        }
-        else
-        {
-            // create the video folder to store video images
-            char answer = 'N';
-            ARSAL_PRINT(ARSAL_PRINT_INFO, TAG, "Do you want to write image files on your file system ? You should have at least 50Mb. Y or N");
-            scanf(" %c", &answer);
-            if (answer == 'Y' || answer == 'y')
-            {
-                ARSAL_PRINT(ARSAL_PRINT_INFO, TAG, "You choose to write image files.");
-                writeImgs = 1;
-                mkdir("video", S_IRWXU);
-            }
-            else
-            {
-                ARSAL_PRINT(ARSAL_PRINT_INFO, TAG, "You did not choose to write image files.");
             }
         }
 
@@ -195,7 +192,14 @@ int main (int argc, char *argv[])
         gErrorStr[0] = '\0';
         ARSAL_Print_SetCallback (customPrintCallback); //use a custom callback to print, for not disturb ncurses IHM
 
-        IHM_PrintHeader (ihm, "-- Jumping Sumo Piloting --");
+        if(isBebop2)
+        {
+            IHM_PrintHeader (ihm, "-- Bebop 2 Sample --");
+        }
+        else
+        {
+            IHM_PrintHeader (ihm, "-- Bebop Sample --");
+        }
     }
     else
     {
@@ -215,8 +219,16 @@ int main (int argc, char *argv[])
         if (errorDiscovery == ARDISCOVERY_OK)
         {
             ARSAL_PRINT(ARSAL_PRINT_INFO, TAG, "    - ARDISCOVERY_Device_InitWifi ...");
-            // create a JumpingSumo discovery device (ARDISCOVERY_PRODUCT_JS)
-            errorDiscovery = ARDISCOVERY_Device_InitWifi (device, ARDISCOVERY_PRODUCT_JS, "JS", JS_IP_ADDRESS, JS_DISCOVERY_PORT);
+            // create a Bebop drone discovery device (ARDISCOVERY_PRODUCT_ARDRONE)
+
+            if(isBebop2)
+            {
+                errorDiscovery = ARDISCOVERY_Device_InitWifi (device, ARDISCOVERY_PRODUCT_BEBOP_2, "bebop2", BEBOP_IP_ADDRESS, BEBOP_DISCOVERY_PORT);
+            }
+            else
+            {
+                errorDiscovery = ARDISCOVERY_Device_InitWifi (device, ARDISCOVERY_PRODUCT_ARDRONE, "bebop", BEBOP_IP_ADDRESS, BEBOP_DISCOVERY_PORT);
+            }
 
             if (errorDiscovery != ARDISCOVERY_OK)
             {
@@ -286,7 +298,7 @@ int main (int argc, char *argv[])
         if (error != ARCONTROLLER_OK)
         {
             failed = 1;
-            ARSAL_PRINT(ARSAL_PRINT_ERROR, TAG, "- error :%", ARCONTROLLER_Error_ToString(error));
+            ARSAL_PRINT(ARSAL_PRINT_ERROR, TAG, "- error: %s", ARCONTROLLER_Error_ToString(error));
         }
     }
 
@@ -318,11 +330,11 @@ int main (int argc, char *argv[])
         }
     }
 
-    // send the command that tells to the Jumping to begin its streaming
+    // send the command that tells to the Bebop to begin its streaming
     if (!failed)
     {
         ARSAL_PRINT(ARSAL_PRINT_INFO, TAG, "- send StreamingVideoEnable ... ");
-        error = deviceController->jumpingSumo->sendMediaStreamingVideoEnable (deviceController->jumpingSumo, 1);
+        error = deviceController->aRDrone3->sendMediaStreamingVideoEnable (deviceController->aRDrone3, 1);
         if (error != ARCONTROLLER_OK)
         {
             ARSAL_PRINT(ARSAL_PRINT_ERROR, TAG, "- error :%s", ARCONTROLLER_Error_ToString(error));
@@ -332,7 +344,7 @@ int main (int argc, char *argv[])
 
     if (!failed)
     {
-        IHM_PrintInfo(ihm, "Running ... (Arrow keys to move ; Spacebar to jump ; 'q' to quit)");
+        IHM_PrintInfo(ihm, "Running ... ('t' to takeoff ; Spacebar to land ; 'e' for emergency ; Arrow keys and ('r','f','d','g') to move ; 'q' to quit)");
 
 #ifdef IHM
         while (gIHMRun)
@@ -344,7 +356,6 @@ int main (int argc, char *argv[])
         ARSAL_PRINT(ARSAL_PRINT_INFO, TAG, "- sleep 20 ... ");
         while (gIHMRun && i--)
             sleep(1);
-        ARSAL_PRINT(ARSAL_PRINT_INFO, TAG, "- sleep end ... ");
 #endif
     }
 
@@ -427,49 +438,91 @@ void stateChanged (eARCONTROLLER_DEVICE_STATE newState, eARCONTROLLER_ERROR erro
     }
 }
 
+static void cmdBatteryStateChangedRcv(ARCONTROLLER_Device_t *deviceController, ARCONTROLLER_DICTIONARY_ELEMENT_t *elementDictionary)
+{
+    ARCONTROLLER_DICTIONARY_ARG_t *arg = NULL;
+    ARCONTROLLER_DICTIONARY_ELEMENT_t *singleElement = NULL;
+
+    if (elementDictionary == NULL) {
+        ARSAL_PRINT(ARSAL_PRINT_ERROR, TAG, "elements is NULL");
+        return;
+    }
+
+    // get the command received in the device controller
+    HASH_FIND_STR (elementDictionary, ARCONTROLLER_DICTIONARY_SINGLE_KEY, singleElement);
+
+    if (singleElement == NULL) {
+        ARSAL_PRINT(ARSAL_PRINT_ERROR, TAG, "singleElement is NULL");
+        return;
+    }
+
+    // get the value
+    HASH_FIND_STR (singleElement->arguments, ARCONTROLLER_DICTIONARY_KEY_COMMON_COMMONSTATE_BATTERYSTATECHANGED_PERCENT, arg);
+
+    if (arg == NULL) {
+        ARSAL_PRINT(ARSAL_PRINT_ERROR, TAG, "arg is NULL");
+        return;
+    }
+
+    // update UI
+    batteryStateChanged(arg->value.U8);
+}
+
+static void cmdSensorStateListChangedRcv(ARCONTROLLER_Device_t *deviceController, ARCONTROLLER_DICTIONARY_ELEMENT_t *elementDictionary)
+{
+    ARCONTROLLER_DICTIONARY_ARG_t *arg = NULL;
+    ARCONTROLLER_DICTIONARY_ELEMENT_t *dictElement = NULL;
+    ARCONTROLLER_DICTIONARY_ELEMENT_t *dictTmp = NULL;
+
+    eARCOMMANDS_COMMON_COMMONSTATE_SENSORSSTATESLISTCHANGED_SENSORNAME sensorName = ARCOMMANDS_COMMON_COMMONSTATE_SENSORSSTATESLISTCHANGED_SENSORNAME_MAX;
+    int sensorState = 0;
+
+    if (elementDictionary == NULL) {
+        ARSAL_PRINT(ARSAL_PRINT_ERROR, TAG, "elements is NULL");
+        return;
+    }
+
+    // get the command received in the device controller
+    HASH_ITER(hh, elementDictionary, dictElement, dictTmp) {
+        // get the Name
+        HASH_FIND_STR (dictElement->arguments, ARCONTROLLER_DICTIONARY_KEY_COMMON_COMMONSTATE_SENSORSSTATESLISTCHANGED_SENSORNAME, arg);
+        if (arg != NULL) {
+            ARSAL_PRINT(ARSAL_PRINT_ERROR, TAG, "arg sensorName is NULL");
+            continue;
+        }
+
+        sensorName = arg->value.I32;
+
+        // get the state
+        HASH_FIND_STR (dictElement->arguments, ARCONTROLLER_DICTIONARY_KEY_COMMON_COMMONSTATE_SENSORSSTATESLISTCHANGED_SENSORSTATE, arg);
+        if (arg == NULL) {
+            ARSAL_PRINT(ARSAL_PRINT_ERROR, TAG, "arg sensorState is NULL");
+            continue;
+        }
+
+        sensorState = arg->value.U8;
+        ARSAL_PRINT(ARSAL_PRINT_INFO, TAG, "sensorName %d ; sensorState: %d", sensorName, sensorState);
+    }
+}
+
 // called when a command has been received from the drone
 void commandReceived (eARCONTROLLER_DICTIONARY_KEY commandKey, ARCONTROLLER_DICTIONARY_ELEMENT_t *elementDictionary, void *customData)
 {
     ARCONTROLLER_Device_t *deviceController = customData;
 
-    if (deviceController != NULL)
-    {
-        // if the command received is a battery state changed
-        if (commandKey == ARCONTROLLER_DICTIONARY_KEY_COMMON_COMMONSTATE_BATTERYSTATECHANGED)
-        {
-            ARCONTROLLER_DICTIONARY_ARG_t *arg = NULL;
-            ARCONTROLLER_DICTIONARY_ELEMENT_t *singleElement = NULL;
+    if (deviceController == NULL)
+        return;
 
-            if (elementDictionary != NULL)
-            {
-                // get the command received in the device controller
-                HASH_FIND_STR (elementDictionary, ARCONTROLLER_DICTIONARY_SINGLE_KEY, singleElement);
-
-                if (singleElement != NULL)
-                {
-                    // get the value
-                    HASH_FIND_STR (singleElement->arguments, ARCONTROLLER_DICTIONARY_KEY_COMMON_COMMONSTATE_BATTERYSTATECHANGED_PERCENT, arg);
-
-                    if (arg != NULL)
-                    {
-                        // update UI
-                        batteryStateChanged (arg->value.U8);
-                    }
-                    else
-                    {
-                        ARSAL_PRINT(ARSAL_PRINT_ERROR, TAG, "arg is NULL");
-                    }
-                }
-                else
-                {
-                    ARSAL_PRINT(ARSAL_PRINT_ERROR, TAG, "singleElement is NULL");
-                }
-            }
-            else
-            {
-                ARSAL_PRINT(ARSAL_PRINT_ERROR, TAG, "elements is NULL");
-            }
-        }
+    // if the command received is a battery state changed
+    switch(commandKey) {
+    case ARCONTROLLER_DICTIONARY_KEY_COMMON_COMMONSTATE_BATTERYSTATECHANGED:
+        cmdBatteryStateChangedRcv(deviceController, elementDictionary);
+        break;
+    case ARCONTROLLER_DICTIONARY_KEY_COMMON_COMMONSTATE_SENSORSSTATESLISTCHANGED:
+        cmdSensorStateListChangedRcv(deviceController, elementDictionary);
+        break;
+    default:
+        break;
     }
 }
 
@@ -481,15 +534,32 @@ void batteryStateChanged (uint8_t percent)
     {
         IHM_PrintBattery (ihm, percent);
     }
-
 }
 
 eARCONTROLLER_ERROR decoderConfigCallback (ARCONTROLLER_Stream_Codec_t codec, void *customData)
 {
-    ARSAL_PRINT(ARSAL_PRINT_ERROR, TAG, "decoderConfigCallback codec.type :%d", codec.type);
+    if (videoOut != NULL)
+    {
+        if (codec.type == ARCONTROLLER_STREAM_CODEC_TYPE_H264)
+        {
+            if (DISPLAY_WITH_MPLAYER)
+            {
+                fwrite(codec.parameters.h264parameters.spsBuffer, codec.parameters.h264parameters.spsSize, 1, videoOut);
+                fwrite(codec.parameters.h264parameters.ppsBuffer, codec.parameters.h264parameters.ppsSize, 1, videoOut);
+
+                fflush (videoOut);
+            }
+        }
+
+    }
+    else
+    {
+        ARSAL_PRINT(ARSAL_PRINT_WARNING, TAG, "videoOut is NULL.");
+    }
 
     return ARCONTROLLER_OK;
 }
+
 
 eARCONTROLLER_ERROR didReceiveFrameCallback (ARCONTROLLER_Frame_t *frame, void *customData)
 {
@@ -502,16 +572,6 @@ eARCONTROLLER_ERROR didReceiveFrameCallback (ARCONTROLLER_Frame_t *frame, void *
                 fwrite(frame->data, frame->used, 1, videoOut);
 
                 fflush (videoOut);
-            }
-            else if (writeImgs)
-            {
-                char filename[20];
-                snprintf(filename, sizeof(filename), "video/img_%d.jpg", frameNb);
-
-                frameNb++;
-                FILE *img = fopen(filename, "w");
-                fwrite(frame, frame->used, 1, img);
-                fclose(img);
             }
         }
         else
@@ -542,54 +602,88 @@ void onInputEvent (eIHM_INPUT_EVENT event, void *customData)
         IHM_PrintInfo(ihm, "IHM_INPUT_EVENT_EXIT ...");
         gIHMRun = 0;
         break;
-    case IHM_INPUT_EVENT_JUMP:
+    case IHM_INPUT_EVENT_EMERGENCY:
         if(deviceController != NULL)
         {
-            // send a jump command to the JS
-            error = deviceController->jumpingSumo->sendAnimationsJump (deviceController->jumpingSumo, ARCOMMANDS_JUMPINGSUMO_ANIMATIONS_JUMP_TYPE_HIGH);
-            IHM_PrintInfo(ihm, "IHM_INPUT_EVENT_JUMP ...");
+            // send a Emergency command to the drone
+            error = deviceController->aRDrone3->sendPilotingEmergency(deviceController->aRDrone3);
         }
         break;
-    case IHM_INPUT_EVENT_FORWARD:
+    case IHM_INPUT_EVENT_LAND:
+        if(deviceController != NULL)
+        {
+            // send a takeoff command to the drone
+            error = deviceController->aRDrone3->sendPilotingLanding(deviceController->aRDrone3);
+        }
+        break;
+    case IHM_INPUT_EVENT_TAKEOFF:
+        if(deviceController != NULL)
+        {
+            // send a landing command to the drone
+            error = deviceController->aRDrone3->sendPilotingTakeOff(deviceController->aRDrone3);
+        }
+        break;
+    case IHM_INPUT_EVENT_UP:
         if(deviceController != NULL)
         {
             // set the flag and speed value of the piloting command
-            error = deviceController->jumpingSumo->setPilotingPCMDFlag (deviceController->jumpingSumo, 1);
-            error = deviceController->jumpingSumo->setPilotingPCMDSpeed (deviceController->jumpingSumo, 50);
+            error = deviceController->aRDrone3->setPilotingPCMDGaz(deviceController->aRDrone3, 50);
         }
         break;
-    case IHM_INPUT_EVENT_BACK:
+    case IHM_INPUT_EVENT_DOWN:
         if(deviceController != NULL)
         {
-            error = deviceController->jumpingSumo->setPilotingPCMDFlag (deviceController->jumpingSumo, 1);
-            error = deviceController->jumpingSumo->setPilotingPCMDSpeed (deviceController->jumpingSumo, -50);
+            error = deviceController->aRDrone3->setPilotingPCMDGaz(deviceController->aRDrone3, -50);
         }
         break;
     case IHM_INPUT_EVENT_RIGHT:
         if(deviceController != NULL)
         {
-            error = deviceController->jumpingSumo->setPilotingPCMDFlag (deviceController->jumpingSumo, 1);
-            error = deviceController->jumpingSumo->setPilotingPCMDTurn (deviceController->jumpingSumo, 50);
+            error = deviceController->aRDrone3->setPilotingPCMDYaw(deviceController->aRDrone3, 50);
         }
         break;
     case IHM_INPUT_EVENT_LEFT:
         if(deviceController != NULL)
         {
-            error = deviceController->jumpingSumo->setPilotingPCMDFlag (deviceController->jumpingSumo, 1);
-            error = deviceController->jumpingSumo->setPilotingPCMDTurn (deviceController->jumpingSumo, -50);
+            error = deviceController->aRDrone3->setPilotingPCMDYaw(deviceController->aRDrone3, -50);
+        }
+        break;
+    case IHM_INPUT_EVENT_FORWARD:
+        if(deviceController != NULL)
+        {
+            error = deviceController->aRDrone3->setPilotingPCMDPitch(deviceController->aRDrone3, 50);
+            error = deviceController->aRDrone3->setPilotingPCMDFlag(deviceController->aRDrone3, 1);
+        }
+        break;
+    case IHM_INPUT_EVENT_BACK:
+        if(deviceController != NULL)
+        {
+            error = deviceController->aRDrone3->setPilotingPCMDPitch(deviceController->aRDrone3, -50);
+            error = deviceController->aRDrone3->setPilotingPCMDFlag(deviceController->aRDrone3, 1);
+        }
+        break;
+    case IHM_INPUT_EVENT_ROLL_LEFT:
+        if(deviceController != NULL)
+        {
+            error = deviceController->aRDrone3->setPilotingPCMDRoll(deviceController->aRDrone3, -50);
+            error = deviceController->aRDrone3->setPilotingPCMDFlag(deviceController->aRDrone3, 1);
+        }
+        break;
+    case IHM_INPUT_EVENT_ROLL_RIGHT:
+        if(deviceController != NULL)
+        {
+            error = deviceController->aRDrone3->setPilotingPCMDRoll(deviceController->aRDrone3, 50);
+            error = deviceController->aRDrone3->setPilotingPCMDFlag(deviceController->aRDrone3, 1);
         }
         break;
     case IHM_INPUT_EVENT_NONE:
         if(deviceController != NULL)
         {
-            error = deviceController->jumpingSumo->setPilotingPCMDFlag (deviceController->jumpingSumo, 0);
-            error = deviceController->jumpingSumo->setPilotingPCMDSpeed (deviceController->jumpingSumo, 0);
-            error = deviceController->jumpingSumo->setPilotingPCMDTurn (deviceController->jumpingSumo, 0);
+            error = deviceController->aRDrone3->setPilotingPCMD(deviceController->aRDrone3, 0, 0, 0, 0, 0, 0);
         }
         break;
     default:
         break;
-
     }
 
     // This should be improved, here it just displays that one error occured

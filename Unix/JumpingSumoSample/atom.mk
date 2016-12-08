@@ -5,18 +5,14 @@ LOCAL_PATH := $(call my-dir)
 include $(CLEAR_VARS)
 
 LOCAL_CATEGORY_PATH := samples
-LOCAL_MODULE := BebopDroneDecodeStream
-LOCAL_DESCRIPTION := Bebop Drone Decode Stream
+LOCAL_MODULE := JumpingSumoSample
+LOCAL_DESCRIPTION := JumpingSumo sample
 
 LOCAL_LIBRARIES := \
 	libARSAL \
-	libARCommands \
-	libARNetwork \
-	libARNetworkAL \
+	libARController \
 	libARDiscovery \
-	libARStream \
-	ncurses \
-	ffmpeg
+	ncurses
 
 LOCAL_SRC_FILES := \
 	$(call all-c-files-under,.)

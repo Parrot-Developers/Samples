@@ -42,6 +42,8 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Need microphone for JumpingSumo Evo</string>
 	<key>UISupportedExternalAccessoryProtocols</key>
 	<array>
 		<string>com.parrot.dronesdk</string>
