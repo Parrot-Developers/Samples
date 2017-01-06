@@ -27,6 +27,8 @@ import com.parrot.arsdk.ardiscovery.ARDiscoveryDeviceService;
 import com.parrot.arsdk.ardiscovery.ARDiscoveryException;
 import com.parrot.arsdk.ardiscovery.ARDiscoveryService;
 import com.parrot.arsdk.arsal.ARSALBLEManager;
+import com.parrot.arsdk.arutils.ARUTILS_DESTINATION_ENUM;
+import com.parrot.arsdk.arutils.ARUTILS_FTP_TYPE_ENUM;
 import com.parrot.arsdk.arutils.ARUtilsException;
 import com.parrot.arsdk.arutils.ARUtilsManager;
 
@@ -35,8 +37,6 @@ import java.util.List;
 
 public class SwingDrone {
     private static final String TAG = "SwingDrone";
-
-    private static final int DEVICE_PORT = 21;
 
     public interface Listener {
         /**
@@ -289,8 +289,8 @@ public class SwingDrone {
             ARUtilsManager ftpListManager = new ARUtilsManager();
             ARUtilsManager ftpQueueManager = new ARUtilsManager();
 
-            ftpListManager.initFtp(mContext, mDeviceService, DEVICE_PORT, ARUtilsManager.FTP_ANONYMOUS, "");
-            ftpQueueManager.initFtp(mContext, mDeviceService, DEVICE_PORT, ARUtilsManager.FTP_ANONYMOUS, "");
+            ftpListManager.initFtp(mContext, mDeviceService, ARUTILS_DESTINATION_ENUM.ARUTILS_DESTINATION_DRONE, ARUTILS_FTP_TYPE_ENUM.ARUTILS_FTP_TYPE_GENERIC);
+            ftpQueueManager.initFtp(mContext, mDeviceService, ARUTILS_DESTINATION_ENUM.ARUTILS_DESTINATION_DRONE, ARUTILS_FTP_TYPE_ENUM.ARUTILS_FTP_TYPE_GENERIC);
 
             mSDCardModule = new SDCardModule(ftpListManager, ftpQueueManager);
             mSDCardModule.addListener(mSDCardModuleListener);

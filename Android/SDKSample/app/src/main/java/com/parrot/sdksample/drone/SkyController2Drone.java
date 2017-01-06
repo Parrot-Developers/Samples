@@ -28,6 +28,8 @@ import com.parrot.arsdk.ardiscovery.ARDiscoveryDeviceService;
 import com.parrot.arsdk.ardiscovery.ARDiscoveryException;
 import com.parrot.arsdk.ardiscovery.ARDiscoveryService;
 import com.parrot.arsdk.ardiscovery.UsbAccessoryMux;
+import com.parrot.arsdk.arutils.ARUTILS_DESTINATION_ENUM;
+import com.parrot.arsdk.arutils.ARUTILS_FTP_TYPE_ENUM;
 import com.parrot.arsdk.arutils.ARUtilsException;
 import com.parrot.arsdk.arutils.ARUtilsManager;
 import com.parrot.mux.Mux;
@@ -37,8 +39,6 @@ import java.util.List;
 
 public class SkyController2Drone {
     private static final String TAG = "SkyController2Drone";
-
-    private static final int DEVICE_PORT = 21;
 
     public interface Listener {
         /**
@@ -145,7 +145,8 @@ public class SkyController2Drone {
 
         // if the product type of the deviceService match with the types supported
         ARDISCOVERY_PRODUCT_ENUM productType = ARDiscoveryService.getProductFromProductID(deviceService.getProductID());
-        if (ARDISCOVERY_PRODUCT_ENUM.ARDISCOVERY_PRODUCT_SKYCONTROLLER_2.equals(productType)) {
+        if (ARDISCOVERY_PRODUCT_ENUM.ARDISCOVERY_PRODUCT_SKYCONTROLLER_2.equals(productType) ||
+                ARDISCOVERY_PRODUCT_ENUM.ARDISCOVERY_PRODUCT_SKYCONTROLLER_NG.equals(productType)) {
 
             ARDiscoveryDevice discoveryDevice = createDiscoveryDevice(deviceService);
             if (discoveryDevice != null) {
@@ -158,8 +159,8 @@ public class SkyController2Drone {
                 ARUtilsManager ftpListManager = new ARUtilsManager();
                 ARUtilsManager ftpQueueManager = new ARUtilsManager();
 
-                ftpListManager.initFtp(mContext, deviceService, DEVICE_PORT, ARUtilsManager.FTP_ANONYMOUS, "");
-                ftpQueueManager.initFtp(mContext, deviceService, DEVICE_PORT, ARUtilsManager.FTP_ANONYMOUS, "");
+                ftpListManager.initFtp(mContext, deviceService, ARUTILS_DESTINATION_ENUM.ARUTILS_DESTINATION_DRONE, ARUTILS_FTP_TYPE_ENUM.ARUTILS_FTP_TYPE_GENERIC);
+                ftpQueueManager.initFtp(mContext, deviceService, ARUTILS_DESTINATION_ENUM.ARUTILS_DESTINATION_DRONE, ARUTILS_FTP_TYPE_ENUM.ARUTILS_FTP_TYPE_GENERIC);
 
                 mSDCardModule = new SDCardModule(ftpListManager, ftpQueueManager);
                 mSDCardModule.addListener(mSDCardModuleListener);

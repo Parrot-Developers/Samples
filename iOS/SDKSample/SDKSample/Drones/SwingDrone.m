@@ -6,8 +6,6 @@
 #import "SwingDrone.h"
 #import "SDCardModule.h"
 
-#define FTP_PORT 21
-
 @interface SwingDrone ()<SDCardModuleDelegate>
 
 @property (nonatomic, assign) ARCONTROLLER_Device_t *deviceController;
@@ -124,22 +122,29 @@
 
 - (void)createSDCardModule {
     eARUTILS_ERROR ftpError = ARUTILS_OK;
+    eARDISCOVERY_ERROR derr = ARDISCOVERY_OK;
     ARUTILS_Manager_t *ftpListManager = NULL;
     ARUTILS_Manager_t *ftpQueueManager = NULL;
-
+    ARDISCOVERY_Device_t *device = [_service createDevice:&derr];
+    
+    if (derr != ARDISCOVERY_OK)
+        return;
+    
     ftpListManager = ARUTILS_Manager_New(&ftpError);
     if(ftpError == ARUTILS_OK) {
         ftpQueueManager = ARUTILS_Manager_New(&ftpError);
     }
-
+    
     if(ftpError == ARUTILS_OK) {
-        ftpError = ARUTILS_Manager_InitFtp(ftpListManager, _service, FTP_PORT, ARUTILS_FTP_ANONYMOUS, "");
+        ftpError = ARUTILS_Manager_InitFtp(ftpListManager, device, ARUTILS_DESTINATION_DRONE, ARUTILS_FTP_TYPE_GENERIC);
     }
-
+    
     if(ftpError == ARUTILS_OK) {
-        ftpError = ARUTILS_Manager_InitFtp(ftpQueueManager, _service, FTP_PORT, ARUTILS_FTP_ANONYMOUS, "");
+        ftpError = ARUTILS_Manager_InitFtp(ftpQueueManager, device, ARUTILS_DESTINATION_DRONE, ARUTILS_FTP_TYPE_GENERIC);
     }
-
+    
+    ARDISCOVERY_Device_Delete(&device);
+    
     _sdCardModule = [[SDCardModule alloc] initWithFtpListManager:ftpListManager andFtpQueueManager:ftpQueueManager];
     _sdCardModule.delegate = self;
 }

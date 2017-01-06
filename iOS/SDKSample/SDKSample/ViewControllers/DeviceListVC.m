@@ -161,6 +161,7 @@
             [self performSegueWithIdentifier:SKYCONTROLLER_SEGUE sender:self];
             break;
         case ARDISCOVERY_PRODUCT_SKYCONTROLLER_2:
+        case ARDISCOVERY_PRODUCT_SKYCONTROLLER_NG:
             [self performSegueWithIdentifier:SKYCONTROLLER2_SEGUE sender:self];
             break;
         default:
