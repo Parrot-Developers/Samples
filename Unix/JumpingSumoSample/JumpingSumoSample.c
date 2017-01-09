@@ -287,7 +287,7 @@ int main (int argc, char *argv[])
         if (error != ARCONTROLLER_OK)
         {
             failed = 1;
-            ARSAL_PRINT(ARSAL_PRINT_ERROR, TAG, "- error :%", ARCONTROLLER_Error_ToString(error));
+            ARSAL_PRINT(ARSAL_PRINT_ERROR, TAG, "- error :%s", ARCONTROLLER_Error_ToString(error));
         }
     }
 
