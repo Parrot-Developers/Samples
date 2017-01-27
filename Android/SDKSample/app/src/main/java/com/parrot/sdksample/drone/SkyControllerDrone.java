@@ -129,11 +129,15 @@ public class SkyControllerDrone {
     private ARCONTROLLER_DEVICE_STATE_ENUM mDroneState;
     private ARCOMMANDS_ARDRONE3_PILOTINGSTATE_FLYINGSTATECHANGED_STATE_ENUM mFlyingState;
     private String mCurrentRunId;
+    private ARDiscoveryDeviceService mDeviceService;
+    private ARUtilsManager mFtpListManager;
+    private ARUtilsManager mFtpQueueManager;
 
     public SkyControllerDrone(Context context, @NonNull ARDiscoveryDeviceService deviceService) {
 
         mContext = context;
         mListeners = new ArrayList<>();
+        mDeviceService = deviceService;
 
         // needed because some callbacks will be called on the main thread
         mHandler = new Handler(context.getMainLooper());
@@ -153,13 +157,13 @@ public class SkyControllerDrone {
 
             try
             {
-                ARUtilsManager ftpListManager = new ARUtilsManager();
-                ARUtilsManager ftpQueueManager = new ARUtilsManager();
+                mFtpListManager = new ARUtilsManager();
+                mFtpQueueManager = new ARUtilsManager();
 
-                ftpListManager.initFtp(mContext, deviceService, ARUTILS_DESTINATION_ENUM.ARUTILS_DESTINATION_DRONE, ARUTILS_FTP_TYPE_ENUM.ARUTILS_FTP_TYPE_GENERIC);
-                ftpQueueManager.initFtp(mContext, deviceService, ARUTILS_DESTINATION_ENUM.ARUTILS_DESTINATION_DRONE, ARUTILS_FTP_TYPE_ENUM.ARUTILS_FTP_TYPE_GENERIC);
+                mFtpListManager.initFtp(mContext, deviceService, ARUTILS_DESTINATION_ENUM.ARUTILS_DESTINATION_DRONE, ARUTILS_FTP_TYPE_ENUM.ARUTILS_FTP_TYPE_GENERIC);
+                mFtpQueueManager.initFtp(mContext, deviceService, ARUTILS_DESTINATION_ENUM.ARUTILS_DESTINATION_DRONE, ARUTILS_FTP_TYPE_ENUM.ARUTILS_FTP_TYPE_GENERIC);
 
-                mSDCardModule = new SDCardModule(ftpListManager, ftpQueueManager);
+                mSDCardModule = new SDCardModule(mFtpListManager, mFtpQueueManager);
                 mSDCardModule.addListener(mSDCardModuleListener);
             }
             catch (ARUtilsException e)
@@ -176,6 +180,10 @@ public class SkyControllerDrone {
     {
         if (mDeviceController != null)
             mDeviceController.dispose();
+        if (mFtpListManager != null)
+            mFtpListManager.closeFtp(mContext, mDeviceService);
+        if (mFtpQueueManager != null)
+            mFtpQueueManager.closeFtp(mContext, mDeviceService);
     }
 
     //region Listener functions

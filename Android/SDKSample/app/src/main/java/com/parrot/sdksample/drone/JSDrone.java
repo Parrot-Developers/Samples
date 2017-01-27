@@ -130,11 +130,15 @@ public class JSDrone {
     private ARCONTROLLER_DEVICE_STATE_ENUM mState;
     private String mCurrentRunId;
     private ARDISCOVERY_PRODUCT_ENUM mProductType;
+    private ARDiscoveryDeviceService mDeviceService;
+    private ARUtilsManager mFtpListManager;
+    private ARUtilsManager mFtpQueueManager;
 
     public JSDrone(Context context, @NonNull ARDiscoveryDeviceService deviceService) {
 
         mContext = context;
         mListeners = new ArrayList<>();
+        mDeviceService = deviceService;
 
         // needed because some callbacks will be called on the main thread
         mHandler = new Handler(context.getMainLooper());
@@ -142,11 +146,11 @@ public class JSDrone {
         mState = ARCONTROLLER_DEVICE_STATE_ENUM.ARCONTROLLER_DEVICE_STATE_STOPPED;
 
         // if the product type of the deviceService match with the types supported
-        mProductType = ARDiscoveryService.getProductFromProductID(deviceService.getProductID());
+        mProductType = ARDiscoveryService.getProductFromProductID(mDeviceService.getProductID());
         ARDISCOVERY_PRODUCT_FAMILY_ENUM family = ARDiscoveryService.getProductFamily(mProductType);
         if (ARDISCOVERY_PRODUCT_FAMILY_ENUM.ARDISCOVERY_PRODUCT_FAMILY_JS.equals(family)) {
 
-            ARDiscoveryDevice discoveryDevice = createDiscoveryDevice(deviceService);
+            ARDiscoveryDevice discoveryDevice = createDiscoveryDevice(mDeviceService);
             if (discoveryDevice != null) {
                 mDeviceController = createDeviceController(discoveryDevice);
                 discoveryDevice.dispose();
@@ -154,13 +158,13 @@ public class JSDrone {
 
             try
             {
-                ARUtilsManager ftpListManager = new ARUtilsManager();
-                ARUtilsManager ftpQueueManager = new ARUtilsManager();
+                mFtpListManager = new ARUtilsManager();
+                mFtpQueueManager = new ARUtilsManager();
 
-                ftpListManager.initFtp(mContext, deviceService, ARUTILS_DESTINATION_ENUM.ARUTILS_DESTINATION_DRONE, ARUTILS_FTP_TYPE_ENUM.ARUTILS_FTP_TYPE_GENERIC);
-                ftpQueueManager.initFtp(mContext, deviceService, ARUTILS_DESTINATION_ENUM.ARUTILS_DESTINATION_DRONE, ARUTILS_FTP_TYPE_ENUM.ARUTILS_FTP_TYPE_GENERIC);
+                mFtpListManager.initFtp(mContext, deviceService, ARUTILS_DESTINATION_ENUM.ARUTILS_DESTINATION_DRONE, ARUTILS_FTP_TYPE_ENUM.ARUTILS_FTP_TYPE_GENERIC);
+                mFtpQueueManager.initFtp(mContext, deviceService, ARUTILS_DESTINATION_ENUM.ARUTILS_DESTINATION_DRONE, ARUTILS_FTP_TYPE_ENUM.ARUTILS_FTP_TYPE_GENERIC);
 
-                mSDCardModule = new SDCardModule(ftpListManager, ftpQueueManager);
+                mSDCardModule = new SDCardModule(mFtpListManager, mFtpQueueManager);
                 mSDCardModule.addListener(mSDCardModuleListener);
             }
             catch (ARUtilsException e)
@@ -177,6 +181,10 @@ public class JSDrone {
     {
         if (mDeviceController != null)
             mDeviceController.dispose();
+        if (mFtpListManager != null)
+            mFtpListManager.closeFtp(mContext, mDeviceService);
+        if (mFtpQueueManager != null)
+            mFtpQueueManager.closeFtp(mContext, mDeviceService);
     }
 
     //region Listener functions

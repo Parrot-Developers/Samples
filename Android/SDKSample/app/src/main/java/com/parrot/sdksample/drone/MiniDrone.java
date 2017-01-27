@@ -102,6 +102,9 @@ public class MiniDrone {
     private ARDISCOVERY_PRODUCT_ENUM mProductType;
     private ARDiscoveryDeviceService mDeviceService;
 
+    private ARUtilsManager mFtpListManager;
+    private ARUtilsManager mFtpQueueManager;
+
     public MiniDrone(Context context, @NonNull ARDiscoveryDeviceService deviceService) {
 
         mContext = context;
@@ -276,14 +279,18 @@ public class MiniDrone {
     public void getLastFlightMedias() {
         try
         {
-            ARUtilsManager ftpListManager = new ARUtilsManager();
-            ARUtilsManager ftpQueueManager = new ARUtilsManager();
-
-            ftpListManager.initFtp(mContext, mDeviceService, ARUTILS_DESTINATION_ENUM.ARUTILS_DESTINATION_DRONE, ARUTILS_FTP_TYPE_ENUM.ARUTILS_FTP_TYPE_GENERIC);
-            ftpQueueManager.initFtp(mContext, mDeviceService, ARUTILS_DESTINATION_ENUM.ARUTILS_DESTINATION_DRONE, ARUTILS_FTP_TYPE_ENUM.ARUTILS_FTP_TYPE_GENERIC);
-
-            mSDCardModule = new SDCardModule(ftpListManager, ftpQueueManager);
-            mSDCardModule.addListener(mSDCardModuleListener);
+            if (mFtpListManager == null) {
+                mFtpListManager = new ARUtilsManager();
+                mFtpListManager.initFtp(mContext, mDeviceService, ARUTILS_DESTINATION_ENUM.ARUTILS_DESTINATION_DRONE, ARUTILS_FTP_TYPE_ENUM.ARUTILS_FTP_TYPE_GENERIC);
+            }
+            if (mFtpQueueManager == null) {
+                mFtpQueueManager = new ARUtilsManager();
+                mFtpQueueManager.initFtp(mContext, mDeviceService, ARUTILS_DESTINATION_ENUM.ARUTILS_DESTINATION_DRONE, ARUTILS_FTP_TYPE_ENUM.ARUTILS_FTP_TYPE_GENERIC);
+            }
+            if (mSDCardModule == null) {
+                mSDCardModule = new SDCardModule(mFtpListManager, mFtpQueueManager);
+                mSDCardModule.addListener(mSDCardModuleListener);
+            }
         }
         catch (ARUtilsException e)
         {
@@ -420,6 +427,14 @@ public class MiniDrone {
             if (ARCONTROLLER_DEVICE_STATE_ENUM.ARCONTROLLER_DEVICE_STATE_STOPPED.equals(mState)) {
                 if (mSDCardModule != null) {
                     mSDCardModule.cancelGetFlightMedias();
+                }
+                if (mFtpListManager != null) {
+                    mFtpListManager.closeFtp(mContext, mDeviceService);
+                    mFtpListManager = null;
+                }
+                if (mFtpQueueManager != null) {
+                    mFtpQueueManager.closeFtp(mContext, mDeviceService);
+                    mFtpQueueManager = null;
                 }
             }
             mHandler.post(new Runnable() {

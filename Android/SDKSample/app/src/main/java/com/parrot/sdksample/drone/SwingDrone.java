@@ -110,6 +110,8 @@ public class SwingDrone {
     private String mCurrentRunId;
     private ARDISCOVERY_PRODUCT_ENUM mProductType;
     private ARDiscoveryDeviceService mDeviceService;
+    private ARUtilsManager mFtpListManager;
+    private ARUtilsManager mFtpQueueManager;
 
     public SwingDrone(Context context, @NonNull ARDiscoveryDeviceService deviceService) {
 
@@ -286,14 +288,18 @@ public class SwingDrone {
     public void getLastFlightMedias() {
         try
         {
-            ARUtilsManager ftpListManager = new ARUtilsManager();
-            ARUtilsManager ftpQueueManager = new ARUtilsManager();
-
-            ftpListManager.initFtp(mContext, mDeviceService, ARUTILS_DESTINATION_ENUM.ARUTILS_DESTINATION_DRONE, ARUTILS_FTP_TYPE_ENUM.ARUTILS_FTP_TYPE_GENERIC);
-            ftpQueueManager.initFtp(mContext, mDeviceService, ARUTILS_DESTINATION_ENUM.ARUTILS_DESTINATION_DRONE, ARUTILS_FTP_TYPE_ENUM.ARUTILS_FTP_TYPE_GENERIC);
-
-            mSDCardModule = new SDCardModule(ftpListManager, ftpQueueManager);
-            mSDCardModule.addListener(mSDCardModuleListener);
+            if (mFtpListManager == null) {
+                mFtpListManager = new ARUtilsManager();
+                mFtpListManager.initFtp(mContext, mDeviceService, ARUTILS_DESTINATION_ENUM.ARUTILS_DESTINATION_DRONE, ARUTILS_FTP_TYPE_ENUM.ARUTILS_FTP_TYPE_GENERIC);
+            }
+            if (mFtpQueueManager == null) {
+                mFtpQueueManager = new ARUtilsManager();
+                mFtpQueueManager.initFtp(mContext, mDeviceService, ARUTILS_DESTINATION_ENUM.ARUTILS_DESTINATION_DRONE, ARUTILS_FTP_TYPE_ENUM.ARUTILS_FTP_TYPE_GENERIC);
+            }
+            if (mSDCardModule == null) {
+                mSDCardModule = new SDCardModule(mFtpListManager, mFtpQueueManager);
+                mSDCardModule.addListener(mSDCardModuleListener);
+            }
         }
         catch (ARUtilsException e)
         {

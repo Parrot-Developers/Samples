@@ -14,6 +14,7 @@
 @property (nonatomic, assign) eARCONTROLLER_DEVICE_STATE connectionState;
 @property (nonatomic, assign) eARCOMMANDS_MINIDRONE_PILOTINGSTATE_FLYINGSTATECHANGED_STATE flyingState;
 @property (nonatomic, strong) NSString *currentRunId;
+@property (nonatomic, assign) ARDISCOVERY_Device_t *discoveryDevice;
 @end
 
 @implementation SwingDrone
@@ -31,6 +32,12 @@
 {
     if (_deviceController) {
         ARCONTROLLER_Device_Delete(&_deviceController);
+    }
+
+    // release the sdCardModule before releasing the discovery device
+    _sdCardModule = nil;
+    if (_discoveryDevice) {
+        ARDISCOVERY_Device_Delete (&_discoveryDevice);
     }
 }
 
@@ -67,13 +74,13 @@
 
 - (void)createDeviceControllerWithService:(ARService*)service {
     // first get a discovery device
-    ARDISCOVERY_Device_t *discoveryDevice = [self createDiscoveryDeviceWithService:service];
+    _discoveryDevice = [self createDiscoveryDeviceWithService:service];
 
-    if (discoveryDevice != NULL) {
+    if (_discoveryDevice != NULL) {
         eARCONTROLLER_ERROR error = ARCONTROLLER_OK;
 
         // create the device controller
-        _deviceController = ARCONTROLLER_Device_New (discoveryDevice, &error);
+        _deviceController = ARCONTROLLER_Device_New (_discoveryDevice, &error);
 
         // add the state change callback to be informed when the device controller starts, stops...
         if (error == ARCONTROLLER_OK) {
@@ -89,9 +96,6 @@
         if (error == ARCONTROLLER_OK) {
             error = ARCONTROLLER_Device_Start (_deviceController);
         }
-
-        // we don't need the discovery device anymore
-        ARDISCOVERY_Device_Delete (&discoveryDevice);
 
         // if an error occured, inform the delegate that the state is stopped
         if (error != ARCONTROLLER_OK) {
@@ -121,32 +125,10 @@
 }
 
 - (void)createSDCardModule {
-    eARUTILS_ERROR ftpError = ARUTILS_OK;
-    eARDISCOVERY_ERROR derr = ARDISCOVERY_OK;
-    ARUTILS_Manager_t *ftpListManager = NULL;
-    ARUTILS_Manager_t *ftpQueueManager = NULL;
-    ARDISCOVERY_Device_t *device = [_service createDevice:&derr];
-    
-    if (derr != ARDISCOVERY_OK)
-        return;
-    
-    ftpListManager = ARUTILS_Manager_New(&ftpError);
-    if(ftpError == ARUTILS_OK) {
-        ftpQueueManager = ARUTILS_Manager_New(&ftpError);
+    if (_discoveryDevice) {
+        _sdCardModule = [[SDCardModule alloc] initWithDiscoveryDevice:_discoveryDevice];
+        _sdCardModule.delegate = self;
     }
-    
-    if(ftpError == ARUTILS_OK) {
-        ftpError = ARUTILS_Manager_InitFtp(ftpListManager, device, ARUTILS_DESTINATION_DRONE, ARUTILS_FTP_TYPE_GENERIC);
-    }
-    
-    if(ftpError == ARUTILS_OK) {
-        ftpError = ARUTILS_Manager_InitFtp(ftpQueueManager, device, ARUTILS_DESTINATION_DRONE, ARUTILS_FTP_TYPE_GENERIC);
-    }
-    
-    ARDISCOVERY_Device_Delete(&device);
-    
-    _sdCardModule = [[SDCardModule alloc] initWithFtpListManager:ftpListManager andFtpQueueManager:ftpQueueManager];
-    _sdCardModule.delegate = self;
 }
 
 #pragma mark commands

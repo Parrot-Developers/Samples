@@ -5,6 +5,7 @@
 
 #import <Foundation/Foundation.h>
 #include <libARUtils/ARUtils.h>
+#import <libARDiscovery/ARDISCOVERY_Device.h>
 
 @class SDCardModule;
 
@@ -40,7 +41,7 @@
 
 @property (nonatomic, weak) id<SDCardModuleDelegate>delegate;
 
-- (id)initWithFtpListManager:(ARUTILS_Manager_t*)ftpListManager andFtpQueueManager:(ARUTILS_Manager_t*)ftpQueueManager;
+- (id)initWithDiscoveryDevice:(ARDISCOVERY_Device_t *)discoveryDevice;
 - (void)getFlightMedias:(NSString*)runId;
 - (void)getTodaysFlightMedias;
 - (void)cancelGetMedias;
