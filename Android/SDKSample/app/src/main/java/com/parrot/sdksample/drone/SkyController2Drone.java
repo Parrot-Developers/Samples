@@ -23,10 +23,13 @@ import com.parrot.arsdk.arcontroller.ARFeatureSkyController;
 import com.parrot.arsdk.arcontroller.ARFrame;
 import com.parrot.arsdk.ardiscovery.ARDISCOVERY_PRODUCT_ENUM;
 import com.parrot.arsdk.ardiscovery.ARDiscoveryDevice;
+import com.parrot.arsdk.ardiscovery.ARDiscoveryDeviceNetService;
 import com.parrot.arsdk.ardiscovery.ARDiscoveryDeviceService;
 import com.parrot.arsdk.ardiscovery.ARDiscoveryException;
 import com.parrot.arsdk.ardiscovery.ARDiscoveryService;
 import com.parrot.arsdk.ardiscovery.UsbAccessoryMux;
+import com.parrot.arsdk.arutils.ARUTILS_DESTINATION_ENUM;
+import com.parrot.arsdk.arutils.ARUTILS_FTP_TYPE_ENUM;
 import com.parrot.arsdk.arutils.ARUtilsException;
 import com.parrot.arsdk.arutils.ARUtilsManager;
 import com.parrot.mux.Mux;
@@ -36,8 +39,6 @@ import java.util.List;
 
 public class SkyController2Drone {
     private static final String TAG = "SkyController2Drone";
-
-    private static final int DEVICE_PORT = 21;
 
     public interface Listener {
         /**
@@ -122,6 +123,7 @@ public class SkyController2Drone {
     private final List<Listener> mListeners;
 
     private final Handler mHandler;
+    private final Context mContext;
 
     private ARDeviceController mDeviceController;
     private SDCardModule mSDCardModule;
@@ -129,24 +131,28 @@ public class SkyController2Drone {
     private ARCONTROLLER_DEVICE_STATE_ENUM mDroneState;
     private ARCOMMANDS_ARDRONE3_PILOTINGSTATE_FLYINGSTATECHANGED_STATE_ENUM mFlyingState;
     private String mCurrentRunId;
-    private Context mContext;
+    private ARDiscoveryDeviceService mDeviceService;
+    private ARUtilsManager mFtpListManager;
+    private ARUtilsManager mFtpQueueManager;
 
     public SkyController2Drone(Context context, @NonNull ARDiscoveryDeviceService deviceService) {
 
+        mContext = context;
         mListeners = new ArrayList<>();
+        mDeviceService = deviceService;
 
         // needed because some callbacks will be called on the main thread
         mHandler = new Handler(context.getMainLooper());
-        mContext = context;
 
         mSkyController2State = ARCONTROLLER_DEVICE_STATE_ENUM.ARCONTROLLER_DEVICE_STATE_STOPPED;
         mDroneState = ARCONTROLLER_DEVICE_STATE_ENUM.ARCONTROLLER_DEVICE_STATE_STOPPED;
 
         // if the product type of the deviceService match with the types supported
         ARDISCOVERY_PRODUCT_ENUM productType = ARDiscoveryService.getProductFromProductID(deviceService.getProductID());
-        if (ARDISCOVERY_PRODUCT_ENUM.ARDISCOVERY_PRODUCT_SKYCONTROLLER_2.equals(productType)) {
+        if (ARDISCOVERY_PRODUCT_ENUM.ARDISCOVERY_PRODUCT_SKYCONTROLLER_2.equals(productType) ||
+                ARDISCOVERY_PRODUCT_ENUM.ARDISCOVERY_PRODUCT_SKYCONTROLLER_NG.equals(productType)) {
 
-            ARDiscoveryDevice discoveryDevice = createDiscoveryDevice(deviceService, productType);
+            ARDiscoveryDevice discoveryDevice = createDiscoveryDevice(deviceService);
             if (discoveryDevice != null) {
                 mDeviceController = createDeviceController(discoveryDevice);
                 discoveryDevice.dispose();
@@ -154,15 +160,13 @@ public class SkyController2Drone {
 
             try
             {
-                ARUtilsManager ftpListManager = new ARUtilsManager();
-                ARUtilsManager ftpQueueManager = new ARUtilsManager();
+                mFtpListManager = new ARUtilsManager();
+                mFtpQueueManager = new ARUtilsManager();
 
-                Mux mux = UsbAccessoryMux.get(context.getApplicationContext()).getMux();
+                mFtpListManager.initFtp(mContext, deviceService, ARUTILS_DESTINATION_ENUM.ARUTILS_DESTINATION_DRONE, ARUTILS_FTP_TYPE_ENUM.ARUTILS_FTP_TYPE_GENERIC);
+                mFtpQueueManager.initFtp(mContext, deviceService, ARUTILS_DESTINATION_ENUM.ARUTILS_DESTINATION_DRONE, ARUTILS_FTP_TYPE_ENUM.ARUTILS_FTP_TYPE_GENERIC);
 
-                ftpListManager.initWifiFtp(mux.newMuxRef(), DEVICE_PORT, ARUtilsManager.FTP_ANONYMOUS, "");
-                ftpQueueManager.initWifiFtp(mux.newMuxRef(), DEVICE_PORT, ARUtilsManager.FTP_ANONYMOUS, "");
-
-                mSDCardModule = new SDCardModule(ftpListManager, ftpQueueManager);
+                mSDCardModule = new SDCardModule(mFtpListManager, mFtpQueueManager);
                 mSDCardModule.addListener(mSDCardModuleListener);
             }
             catch (ARUtilsException e)
@@ -179,6 +183,10 @@ public class SkyController2Drone {
     {
         if (mDeviceController != null)
             mDeviceController.dispose();
+        if (mFtpListManager != null)
+            mFtpListManager.closeFtp(mContext, mDeviceService);
+        if (mFtpQueueManager != null)
+            mFtpQueueManager.closeFtp(mContext, mDeviceService);
     }
 
     //region Listener functions
@@ -300,13 +308,10 @@ public class SkyController2Drone {
         mSDCardModule.cancelGetFlightMedias();
     }
 
-    private ARDiscoveryDevice createDiscoveryDevice(@NonNull ARDiscoveryDeviceService service, ARDISCOVERY_PRODUCT_ENUM productType) {
+    private ARDiscoveryDevice createDiscoveryDevice(@NonNull ARDiscoveryDeviceService service) {
         ARDiscoveryDevice device = null;
         try {
-            device = new ARDiscoveryDevice();
-
-            device.initUSB(productType, UsbAccessoryMux.get(mContext.getApplicationContext()).getMux());
-
+            device = new ARDiscoveryDevice(mContext, service);
         } catch (ARDiscoveryException e) {
             Log.e(TAG, "Exception", e);
             Log.e(TAG, "Error: " + e.getError());

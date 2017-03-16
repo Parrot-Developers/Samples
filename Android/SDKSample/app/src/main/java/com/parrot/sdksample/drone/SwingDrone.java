@@ -27,6 +27,8 @@ import com.parrot.arsdk.ardiscovery.ARDiscoveryDeviceService;
 import com.parrot.arsdk.ardiscovery.ARDiscoveryException;
 import com.parrot.arsdk.ardiscovery.ARDiscoveryService;
 import com.parrot.arsdk.arsal.ARSALBLEManager;
+import com.parrot.arsdk.arutils.ARUTILS_DESTINATION_ENUM;
+import com.parrot.arsdk.arutils.ARUTILS_FTP_TYPE_ENUM;
 import com.parrot.arsdk.arutils.ARUtilsException;
 import com.parrot.arsdk.arutils.ARUtilsManager;
 
@@ -35,8 +37,6 @@ import java.util.List;
 
 public class SwingDrone {
     private static final String TAG = "SwingDrone";
-
-    private static final int DEVICE_PORT = 21;
 
     public interface Listener {
         /**
@@ -109,10 +109,14 @@ public class SwingDrone {
     private ARCOMMANDS_MINIDRONE_PILOTINGSTATE_FLYINGSTATECHANGED_STATE_ENUM mFlyingState;
     private String mCurrentRunId;
     private ARDISCOVERY_PRODUCT_ENUM mProductType;
+    private ARDiscoveryDeviceService mDeviceService;
+    private ARUtilsManager mFtpListManager;
+    private ARUtilsManager mFtpQueueManager;
 
     public SwingDrone(Context context, @NonNull ARDiscoveryDeviceService deviceService) {
 
         mContext = context;
+        mDeviceService = deviceService;
         mListeners = new ArrayList<>();
 
         // needed because some callbacks will be called on the main thread
@@ -125,7 +129,7 @@ public class SwingDrone {
         ARDISCOVERY_PRODUCT_FAMILY_ENUM family = ARDiscoveryService.getProductFamily(mProductType);
         if (ARDISCOVERY_PRODUCT_FAMILY_ENUM.ARDISCOVERY_PRODUCT_FAMILY_MINIDRONE.equals(family)) {
 
-            ARDiscoveryDevice discoveryDevice = createDiscoveryDevice(context, deviceService, mProductType);
+            ARDiscoveryDevice discoveryDevice = createDiscoveryDevice(deviceService);
             if (discoveryDevice != null) {
                 mDeviceController = createDeviceController(discoveryDevice);
                 discoveryDevice.dispose();
@@ -284,14 +288,18 @@ public class SwingDrone {
     public void getLastFlightMedias() {
         try
         {
-            ARUtilsManager ftpListManager = new ARUtilsManager();
-            ARUtilsManager ftpQueueManager = new ARUtilsManager();
-
-            ftpListManager.initBLEFtp(mContext, ARSALBLEManager.getInstance(mContext).getGatt(), DEVICE_PORT);
-            ftpQueueManager.initBLEFtp(mContext, ARSALBLEManager.getInstance(mContext).getGatt(), DEVICE_PORT);
-
-            mSDCardModule = new SDCardModule(ftpListManager, ftpQueueManager);
-            mSDCardModule.addListener(mSDCardModuleListener);
+            if (mFtpListManager == null) {
+                mFtpListManager = new ARUtilsManager();
+                mFtpListManager.initFtp(mContext, mDeviceService, ARUTILS_DESTINATION_ENUM.ARUTILS_DESTINATION_DRONE, ARUTILS_FTP_TYPE_ENUM.ARUTILS_FTP_TYPE_GENERIC);
+            }
+            if (mFtpQueueManager == null) {
+                mFtpQueueManager = new ARUtilsManager();
+                mFtpQueueManager.initFtp(mContext, mDeviceService, ARUTILS_DESTINATION_ENUM.ARUTILS_DESTINATION_DRONE, ARUTILS_FTP_TYPE_ENUM.ARUTILS_FTP_TYPE_GENERIC);
+            }
+            if (mSDCardModule == null) {
+                mSDCardModule = new SDCardModule(mFtpListManager, mFtpQueueManager);
+                mSDCardModule.addListener(mSDCardModuleListener);
+            }
         }
         catch (ARUtilsException e)
         {
@@ -313,14 +321,10 @@ public class SwingDrone {
         }
     }
 
-    private ARDiscoveryDevice createDiscoveryDevice(Context context, @NonNull ARDiscoveryDeviceService service, ARDISCOVERY_PRODUCT_ENUM productType) {
+    private ARDiscoveryDevice createDiscoveryDevice(@NonNull ARDiscoveryDeviceService service) {
         ARDiscoveryDevice device = null;
         try {
-            device = new ARDiscoveryDevice();
-
-            ARDiscoveryDeviceBLEService bleDeviceService = (ARDiscoveryDeviceBLEService) service.getDevice();
-            device.initBLE(productType, context.getApplicationContext(), bleDeviceService.getBluetoothDevice());
-
+            device = new ARDiscoveryDevice(mContext, service);
         } catch (ARDiscoveryException e) {
             Log.e(TAG, "Exception", e);
             Log.e(TAG, "Error: " + e.getError());

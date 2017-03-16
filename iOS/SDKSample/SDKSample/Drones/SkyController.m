@@ -6,8 +6,6 @@
 #import "SkyController.h"
 #import "SDCardModule.h"
 
-#define FTP_PORT 21
-
 @interface SkyController ()<SDCardModuleDelegate>
 
 @property (nonatomic, assign) ARCONTROLLER_Device_t *deviceController;
@@ -16,7 +14,7 @@
 @property (nonatomic, assign) eARCONTROLLER_DEVICE_STATE connectionState;
 @property (nonatomic, assign) eARCOMMANDS_ARDRONE3_PILOTINGSTATE_FLYINGSTATECHANGED_STATE flyingState;
 @property (nonatomic, strong) NSString *currentRunId;
-@property (nonatomic) dispatch_semaphore_t resolveSemaphore;
+@property (nonatomic, assign) ARDISCOVERY_Device_t *discoveryDevice;
 @end
 
 @implementation SkyController
@@ -34,6 +32,12 @@
 {
     if (_deviceController) {
         ARCONTROLLER_Device_Delete(&_deviceController);
+    }
+
+    // release the sdCardModule before releasing the discovery device
+    _sdCardModule = nil;
+    if (_discoveryDevice) {
+        ARDISCOVERY_Device_Delete (&_discoveryDevice);
     }
 }
 
@@ -70,13 +74,13 @@
 
 - (void)createDeviceControllerWithService:(ARService*)service {
     // first get a discovery device
-    ARDISCOVERY_Device_t *discoveryDevice = [self createDiscoveryDeviceWithService:service];
+    _discoveryDevice = [self createDiscoveryDeviceWithService:service];
     
-    if (discoveryDevice != NULL) {
+    if (_discoveryDevice != NULL) {
         eARCONTROLLER_ERROR error = ARCONTROLLER_OK;
         
         // create the device controller
-        _deviceController = ARCONTROLLER_Device_New (discoveryDevice, &error);
+        _deviceController = ARCONTROLLER_Device_New (_discoveryDevice, &error);
 
         // add the state change callback to be informed when the device controller starts, stops...
         if (error == ARCONTROLLER_OK) {
@@ -109,9 +113,6 @@
             error = ARCONTROLLER_Device_Start (_deviceController);
         }
         
-        // we don't need the discovery device anymore
-        ARDISCOVERY_Device_Delete (&discoveryDevice);
-        
         // if an error occured, inform the delegate that the state is stopped
         if (error != ARCONTROLLER_OK) {
             dispatch_async(dispatch_get_main_queue(), ^{
@@ -130,60 +131,19 @@
     ARDISCOVERY_Device_t *device = NULL;
     eARDISCOVERY_ERROR errorDiscovery = ARDISCOVERY_OK;
     
-    device = ARDISCOVERY_Device_New (&errorDiscovery);
+    device = [service createDevice:&errorDiscovery];
     
-    if (errorDiscovery == ARDISCOVERY_OK) {
-        // need to resolve service to get the IP
-        BOOL resolveSucceeded = [self resolveService:service];
-
-        if (resolveSucceeded) {
-            NSString *ip = [[ARDiscovery sharedInstance] convertNSNetServiceToIp:service];
-            int port = (int)[(NSNetService *)service.service port];
-
-            if (ip) {
-                // create a Wifi discovery device
-                errorDiscovery = ARDISCOVERY_Device_InitWifi (device, service.product, [service.name UTF8String], [ip UTF8String], port);
-            } else {
-                NSLog(@"ip is null");
-                errorDiscovery = ARDISCOVERY_ERROR;
-            }
-        } else {
-            NSLog(@"Resolve error");
-            errorDiscovery = ARDISCOVERY_ERROR;
-        }
-
-        if (errorDiscovery != ARDISCOVERY_OK) {
-            NSLog(@"Discovery error :%s", ARDISCOVERY_Error_ToString(errorDiscovery));
-            ARDISCOVERY_Device_Delete(&device);
-        }
-    }
+    if (errorDiscovery != ARDISCOVERY_OK)
+        NSLog(@"Discovery error :%s", ARDISCOVERY_Error_ToString(errorDiscovery));
     
     return device;
 }
 
 - (void)createSDCardModule {
-    eARUTILS_ERROR ftpError = ARUTILS_OK;
-    ARUTILS_Manager_t *ftpListManager = NULL;
-    ARUTILS_Manager_t *ftpQueueManager = NULL;
-    NSString *ip = [[ARDiscovery sharedInstance] convertNSNetServiceToIp:_service];
-
-    ftpListManager = ARUTILS_Manager_New(&ftpError);
-    if(ftpError == ARUTILS_OK) {
-        ftpQueueManager = ARUTILS_Manager_New(&ftpError);
+    if (_discoveryDevice) {
+        _sdCardModule = [[SDCardModule alloc] initWithDiscoveryDevice:_discoveryDevice];
+        _sdCardModule.delegate = self;
     }
-
-    if (ip) {
-        if(ftpError == ARUTILS_OK) {
-            ftpError = ARUTILS_Manager_InitWifiFtp(ftpListManager, [ip UTF8String], FTP_PORT, ARUTILS_FTP_ANONYMOUS, "");
-        }
-
-        if(ftpError == ARUTILS_OK) {
-            ftpError = ARUTILS_Manager_InitWifiFtp(ftpQueueManager, [ip UTF8String], FTP_PORT, ARUTILS_FTP_ANONYMOUS, "");
-        }
-    }
-
-    _sdCardModule = [[SDCardModule alloc] initWithFtpListManager:ftpListManager andFtpQueueManager:ftpQueueManager];
-    _sdCardModule.delegate = self;
 }
 
 #pragma mark commands
@@ -361,39 +321,6 @@ static eARCONTROLLER_ERROR didReceiveFrameCallback (ARCONTROLLER_Frame_t *frame,
     return (success) ? ARCONTROLLER_OK : ARCONTROLLER_ERROR;
 }
 
-
-#pragma mark resolveService
-- (BOOL)resolveService:(ARService*)service {
-    BOOL retval = NO;
-    _resolveSemaphore = dispatch_semaphore_create(0);
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(discoveryDidResolve:) name:kARDiscoveryNotificationServiceResolved object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(discoveryDidNotResolve:) name:kARDiscoveryNotificationServiceNotResolved object:nil];
-    
-    [[ARDiscovery sharedInstance] resolveService:service];
-    
-    // this semaphore will be signaled in discoveryDidResolve or discoveryDidNotResolve
-    dispatch_semaphore_wait(_resolveSemaphore, DISPATCH_TIME_FOREVER);
-    
-    NSString *ip = [[ARDiscovery sharedInstance] convertNSNetServiceToIp:service];
-    if (ip != nil)
-    {
-        retval = YES;
-    }
-    
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:kARDiscoveryNotificationServiceResolved object:nil];
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:kARDiscoveryNotificationServiceNotResolved object:nil];
-    _resolveSemaphore = nil;
-    return retval;
-}
-
-- (void)discoveryDidResolve:(NSNotification *)notification {
-    dispatch_semaphore_signal(_resolveSemaphore);
-}
-
-- (void)discoveryDidNotResolve:(NSNotification *)notification {
-    NSLog(@"Resolve failed");
-    dispatch_semaphore_signal(_resolveSemaphore);
-}
 
 #pragma mark SDCardModuleDelegate
 - (void)sdcardModule:(SDCardModule*)module didFoundMatchingMedias:(NSUInteger)nbMedias {

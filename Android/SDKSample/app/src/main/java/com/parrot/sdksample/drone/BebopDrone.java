@@ -27,6 +27,8 @@ import com.parrot.arsdk.ardiscovery.ARDiscoveryDeviceNetService;
 import com.parrot.arsdk.ardiscovery.ARDiscoveryDeviceService;
 import com.parrot.arsdk.ardiscovery.ARDiscoveryException;
 import com.parrot.arsdk.ardiscovery.ARDiscoveryService;
+import com.parrot.arsdk.arutils.ARUTILS_DESTINATION_ENUM;
+import com.parrot.arsdk.arutils.ARUTILS_FTP_TYPE_ENUM;
 import com.parrot.arsdk.arutils.ARUtilsException;
 import com.parrot.arsdk.arutils.ARUtilsManager;
 
@@ -35,8 +37,6 @@ import java.util.List;
 
 public class BebopDrone {
     private static final String TAG = "BebopDrone";
-
-    private static final int DEVICE_PORT = 21;
 
     public interface Listener {
         /**
@@ -107,16 +107,22 @@ public class BebopDrone {
     private final List<Listener> mListeners;
 
     private final Handler mHandler;
+    private final Context mContext;
 
     private ARDeviceController mDeviceController;
     private SDCardModule mSDCardModule;
     private ARCONTROLLER_DEVICE_STATE_ENUM mState;
     private ARCOMMANDS_ARDRONE3_PILOTINGSTATE_FLYINGSTATECHANGED_STATE_ENUM mFlyingState;
     private String mCurrentRunId;
+    private ARDiscoveryDeviceService mDeviceService;
+    private ARUtilsManager mFtpListManager;
+    private ARUtilsManager mFtpQueueManager;
 
     public BebopDrone(Context context, @NonNull ARDiscoveryDeviceService deviceService) {
 
+        mContext = context;
         mListeners = new ArrayList<>();
+        mDeviceService = deviceService;
 
         // needed because some callbacks will be called on the main thread
         mHandler = new Handler(context.getMainLooper());
@@ -124,11 +130,11 @@ public class BebopDrone {
         mState = ARCONTROLLER_DEVICE_STATE_ENUM.ARCONTROLLER_DEVICE_STATE_STOPPED;
 
         // if the product type of the deviceService match with the types supported
-        ARDISCOVERY_PRODUCT_ENUM productType = ARDiscoveryService.getProductFromProductID(deviceService.getProductID());
+        ARDISCOVERY_PRODUCT_ENUM productType = ARDiscoveryService.getProductFromProductID(mDeviceService.getProductID());
         ARDISCOVERY_PRODUCT_FAMILY_ENUM family = ARDiscoveryService.getProductFamily(productType);
         if (ARDISCOVERY_PRODUCT_FAMILY_ENUM.ARDISCOVERY_PRODUCT_FAMILY_ARDRONE.equals(family)) {
 
-            ARDiscoveryDevice discoveryDevice = createDiscoveryDevice(deviceService, productType);
+            ARDiscoveryDevice discoveryDevice = createDiscoveryDevice(mDeviceService);
             if (discoveryDevice != null) {
                 mDeviceController = createDeviceController(discoveryDevice);
                 discoveryDevice.dispose();
@@ -136,15 +142,13 @@ public class BebopDrone {
 
             try
             {
-                String productIP = ((ARDiscoveryDeviceNetService)(deviceService.getDevice())).getIp();
+                mFtpListManager = new ARUtilsManager();
+                mFtpQueueManager = new ARUtilsManager();
 
-                ARUtilsManager ftpListManager = new ARUtilsManager();
-                ARUtilsManager ftpQueueManager = new ARUtilsManager();
+                mFtpListManager.initFtp(mContext, deviceService, ARUTILS_DESTINATION_ENUM.ARUTILS_DESTINATION_DRONE, ARUTILS_FTP_TYPE_ENUM.ARUTILS_FTP_TYPE_GENERIC);
+                mFtpQueueManager.initFtp(mContext, deviceService, ARUTILS_DESTINATION_ENUM.ARUTILS_DESTINATION_DRONE, ARUTILS_FTP_TYPE_ENUM.ARUTILS_FTP_TYPE_GENERIC);
 
-                ftpListManager.initWifiFtp(productIP, DEVICE_PORT, ARUtilsManager.FTP_ANONYMOUS, "");
-                ftpQueueManager.initWifiFtp(productIP, DEVICE_PORT, ARUtilsManager.FTP_ANONYMOUS, "");
-
-                mSDCardModule = new SDCardModule(ftpListManager, ftpQueueManager);
+                mSDCardModule = new SDCardModule(mFtpListManager, mFtpQueueManager);
                 mSDCardModule.addListener(mSDCardModuleListener);
             }
             catch (ARUtilsException e)
@@ -161,6 +165,10 @@ public class BebopDrone {
     {
         if (mDeviceController != null)
             mDeviceController.dispose();
+        if (mFtpListManager != null)
+            mFtpListManager.closeFtp(mContext, mDeviceService);
+        if (mFtpQueueManager != null)
+            mFtpQueueManager.closeFtp(mContext, mDeviceService);
     }
 
     //region Listener functions
@@ -310,14 +318,10 @@ public class BebopDrone {
         mSDCardModule.cancelGetFlightMedias();
     }
 
-    private ARDiscoveryDevice createDiscoveryDevice(@NonNull ARDiscoveryDeviceService service, ARDISCOVERY_PRODUCT_ENUM productType) {
+    private ARDiscoveryDevice createDiscoveryDevice(@NonNull ARDiscoveryDeviceService service) {
         ARDiscoveryDevice device = null;
         try {
-            device = new ARDiscoveryDevice();
-
-            ARDiscoveryDeviceNetService netDeviceService = (ARDiscoveryDeviceNetService) service.getDevice();
-            device.initWifi(productType, netDeviceService.getName(), netDeviceService.getIp(), netDeviceService.getPort());
-
+            device = new ARDiscoveryDevice(mContext, service);
         } catch (ARDiscoveryException e) {
             Log.e(TAG, "Exception", e);
             Log.e(TAG, "Error: " + e.getError());

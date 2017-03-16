@@ -6,8 +6,6 @@
 #import "SkyController2.h"
 #import "SDCardModule.h"
 
-#define FTP_PORT 21
-
 @interface SkyController2 ()<SDCardModuleDelegate>
 
 @property (nonatomic, assign) ARCONTROLLER_Device_t *deviceController;
@@ -16,7 +14,7 @@
 @property (nonatomic, assign) eARCONTROLLER_DEVICE_STATE connectionState;
 @property (nonatomic, assign) eARCOMMANDS_ARDRONE3_PILOTINGSTATE_FLYINGSTATECHANGED_STATE flyingState;
 @property (nonatomic, strong) NSString *currentRunId;
-@property (nonatomic) dispatch_semaphore_t resolveSemaphore;
+@property (nonatomic, assign) ARDISCOVERY_Device_t *discoveryDevice;
 @end
 
 @implementation SkyController2
@@ -34,6 +32,12 @@
 {
     if (_deviceController) {
         ARCONTROLLER_Device_Delete(&_deviceController);
+    }
+
+    // release the sdCardModule before releasing the discovery device
+    _sdCardModule = nil;
+    if (_discoveryDevice) {
+        ARDISCOVERY_Device_Delete (&_discoveryDevice);
     }
 }
 
@@ -70,13 +74,13 @@
 
 - (void)createDeviceControllerWithService:(ARService*)service {
     // first get a discovery device
-    ARDISCOVERY_Device_t *discoveryDevice = [self createDiscoveryDeviceWithService:service];
+    _discoveryDevice = [self createDiscoveryDeviceWithService:service];
 
-    if (discoveryDevice != NULL) {
+    if (_discoveryDevice != NULL) {
         eARCONTROLLER_ERROR error = ARCONTROLLER_OK;
 
         // create the device controller
-        _deviceController = ARCONTROLLER_Device_New (discoveryDevice, &error);
+        _deviceController = ARCONTROLLER_Device_New (_discoveryDevice, &error);
 
         // add the state change callback to be informed when the device controller starts, stops...
         if (error == ARCONTROLLER_OK) {
@@ -109,9 +113,6 @@
             error = ARCONTROLLER_Device_Start (_deviceController);
         }
 
-        // we don't need the discovery device anymore
-        ARDISCOVERY_Device_Delete (&discoveryDevice);
-
         // if an error occured, inform the delegate that the state is stopped
         if (error != ARCONTROLLER_OK) {
             dispatch_async(dispatch_get_main_queue(), ^{
@@ -129,41 +130,20 @@
 - (ARDISCOVERY_Device_t *)createDiscoveryDeviceWithService:(ARService*)service {
     ARDISCOVERY_Device_t *device = NULL;
     eARDISCOVERY_ERROR errorDiscovery = ARDISCOVERY_OK;
+    
+    device = [service createDevice:&errorDiscovery];
 
-    device = ARDISCOVERY_Device_New (&errorDiscovery);
-
-    if (errorDiscovery == ARDISCOVERY_OK) {
-        errorDiscovery = ARDISCOVERY_Device_InitUSB(device, service.product, ((ARUSBService*)service.service).usbMux);
-
-        if (errorDiscovery != ARDISCOVERY_OK) {
+    if (errorDiscovery != ARDISCOVERY_OK)
             NSLog(@"Discovery error :%s", ARDISCOVERY_Error_ToString(errorDiscovery));
-            ARDISCOVERY_Device_Delete(&device);
-        }
-    }
-
+    
     return device;
 }
 
 - (void)createSDCardModule {
-    eARUTILS_ERROR ftpError = ARUTILS_OK;
-    ARUTILS_Manager_t *ftpListManager = NULL;
-    ARUTILS_Manager_t *ftpQueueManager = NULL;
-
-    ftpListManager = ARUTILS_Manager_New(&ftpError);
-    if(ftpError == ARUTILS_OK) {
-        ftpQueueManager = ARUTILS_Manager_New(&ftpError);
+    if (_discoveryDevice) {
+        _sdCardModule = [[SDCardModule alloc] initWithDiscoveryDevice:_discoveryDevice];
+        _sdCardModule.delegate = self;
     }
-
-    if(ftpError == ARUTILS_OK) {
-        ftpError = ARUTILS_Manager_InitWifiFtpOverMux(ftpListManager, NULL, FTP_PORT, ((ARUSBService*)_service.service).usbMux, ARUTILS_FTP_ANONYMOUS, "");
-    }
-
-    if(ftpError == ARUTILS_OK) {
-        ftpError = ARUTILS_Manager_InitWifiFtpOverMux(ftpQueueManager, NULL, FTP_PORT, ((ARUSBService*)_service.service).usbMux, ARUTILS_FTP_ANONYMOUS, "");
-    }
-
-    _sdCardModule = [[SDCardModule alloc] initWithFtpListManager:ftpListManager andFtpQueueManager:ftpQueueManager];
-    _sdCardModule.delegate = self;
 }
 
 #pragma mark commands

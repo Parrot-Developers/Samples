@@ -22,22 +22,57 @@
 
 @property (nonatomic, assign) NSUInteger nbMaxDownload;
 @property (nonatomic, assign) int currentDownloadIndex; // from 1 to nbMaxDownload
+
+@property (nonatomic, assign) ARUTILS_Manager_t *ftpListManager;
+@property (nonatomic, assign) ARUTILS_Manager_t *ftpQueueManager;
+@property (nonatomic, assign) ARDISCOVERY_Device_t *discoveryDevice;
+
 @end
 
 @implementation SDCardModule
 
-- (id)initWithFtpListManager:(ARUTILS_Manager_t*)ftpListManager andFtpQueueManager:(ARUTILS_Manager_t*)ftpQueueManager {
+- (id)initWithDiscoveryDevice:(ARDISCOVERY_Device_t *)discoveryDevice {
     self = [super init];
     if (self) {
+        eARUTILS_ERROR ftpError = ARUTILS_OK;
         eARDATATRANSFER_ERROR result = ARDATATRANSFER_OK;
-        _manager = ARDATATRANSFER_Manager_New(&result);
+
+        if (!discoveryDevice) {
+            return nil;
+        }
+
+        _discoveryDevice = discoveryDevice;
+
+        _ftpListManager = ARUTILS_Manager_New(&ftpError);
+
+        if(ftpError == ARUTILS_OK) {
+            ftpError = ARUTILS_Manager_InitFtp(_ftpListManager, _discoveryDevice, ARUTILS_DESTINATION_DRONE,
+                                               ARUTILS_FTP_TYPE_GENERIC);
+        }
+
+        if(ftpError == ARUTILS_OK) {
+            _ftpQueueManager = ARUTILS_Manager_New(&ftpError);
+            if(ftpError == ARUTILS_OK) {
+                ftpError = ARUTILS_Manager_InitFtp(_ftpQueueManager, _discoveryDevice, ARUTILS_DESTINATION_DRONE,
+                                                   ARUTILS_FTP_TYPE_GENERIC);
+            }
+        }
+
+        if (ftpError == ARUTILS_OK) {
+            _manager = ARDATATRANSFER_Manager_New(&result);
+        }
+
+        if (ftpError != ARUTILS_OK) {
+            result = ARDATATRANSFER_ERROR_FTP;
+        }
         
         if (result == ARDATATRANSFER_OK) {
             NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
             NSString *documentDir = [paths lastObject];
             NSString *mediaDirectory = [documentDir stringByAppendingPathComponent:MOBILE_MEDIA_FOLDER];
             
-            result = ARDATATRANSFER_MediasDownloader_New(_manager, ftpListManager, ftpQueueManager, [DRONE_MEDIA_FOLDER UTF8String], [mediaDirectory UTF8String]);
+            result = ARDATATRANSFER_MediasDownloader_New(_manager, _ftpListManager, _ftpQueueManager,
+                                                         [DRONE_MEDIA_FOLDER UTF8String], [mediaDirectory UTF8String]);
         }
         
         if (result != ARDATATRANSFER_OK) {
@@ -45,6 +80,18 @@
         }
     }
     return self;
+}
+
+-(void)dealloc {
+    if (_ftpListManager) {
+        ARUTILS_Manager_CloseFtp(_ftpListManager, _discoveryDevice);
+        ARUTILS_Manager_Delete(&_ftpListManager);
+    }
+
+    if (_ftpQueueManager) {
+        ARUTILS_Manager_CloseFtp(_ftpQueueManager, _discoveryDevice);
+        ARUTILS_Manager_Delete(&_ftpQueueManager);
+    }
 }
 
 - (void)getFlightMedias:(NSString*)runId {
@@ -127,6 +174,8 @@
                 [mediasList addObject:mediaObject];
             }
         }
+    } else {
+        NSLog(@"Error while getting all medias: %i", result);
     }
     return mediasList;
 }

@@ -84,6 +84,7 @@ public class DeviceListActivity extends AppCompatActivity {
                         break;
 
                     case ARDISCOVERY_PRODUCT_SKYCONTROLLER_2:
+                    case ARDISCOVERY_PRODUCT_SKYCONTROLLER_NG:
                         intent = new Intent(DeviceListActivity.this, SkyController2Activity.class);
                         break;
 
@@ -234,7 +235,7 @@ public class DeviceListActivity extends AppCompatActivity {
             // fill data
             ViewHolder holder = (ViewHolder) rowView.getTag();
             ARDiscoveryDeviceService service = (ARDiscoveryDeviceService)getItem(position);
-            holder.text.setText(service.getName());
+            holder.text.setText(service.getName() + " on " + service.getNetworkType());
 
             return rowView;
         }
