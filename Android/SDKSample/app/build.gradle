@@ -27,7 +27,7 @@ dependencies {
     if (rootProject.hasProperty('buildWithLocalSDK')){
         compile project(':arsdk')
     } else {
-        compile 'com.parrot:arsdk:3.12.0'
+        compile 'com.parrot:arsdk:3.12.1'
     }
 
 }
