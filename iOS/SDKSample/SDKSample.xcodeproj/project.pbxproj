@@ -510,12 +510,12 @@
 				"DEAD_CODE_STRIPPING[arch=*]" = YES;
 				DEVELOPMENT_TEAM = EA523KQ2D9;
 				ENABLE_BITCODE = NO;
-				"HEADER_SEARCH_PATHS[sdk=iphoneos*]" = "../../../../out/iOS-iphoneos/staging/usr/include";
-				"HEADER_SEARCH_PATHS[sdk=iphonesimulator*]" = "../../../../out/iOS-iphonesimulator/staging/usr/include";
+				"HEADER_SEARCH_PATHS[sdk=iphoneos*]" = "../../../../out/arsdk-ios/staging/usr/include";
+				"HEADER_SEARCH_PATHS[sdk=iphonesimulator*]" = "../../../../out/arsdk-ios_sim/staging/usr/include";
 				INFOPLIST_FILE = SDKSample/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				"LIBRARY_SEARCH_PATHS[sdk=iphoneos*]" = "../../../../out/iOS-iphoneos/staging/usr/lib";
-				"LIBRARY_SEARCH_PATHS[sdk=iphonesimulator*]" = "../../../../out/iOS-iphonesimulator/staging/usr/lib";
+				"LIBRARY_SEARCH_PATHS[sdk=iphoneos*]" = "../../../../out/arsdk-ios/staging/usr/lib";
+				"LIBRARY_SEARCH_PATHS[sdk=iphonesimulator*]" = "../../../../out/arsdk-ios_sim/staging/usr/lib";
 				OTHER_CFLAGS = "";
 				OTHER_LDFLAGS = (
 					"-larcommands",
@@ -756,12 +756,12 @@
 				"DEAD_CODE_STRIPPING[arch=*]" = YES;
 				DEVELOPMENT_TEAM = EA523KQ2D9;
 				ENABLE_BITCODE = NO;
-				"HEADER_SEARCH_PATHS[sdk=iphoneos*]" = "ARSDK3_iOS/iOS-iphoneos/staging/usr/include";
-				"HEADER_SEARCH_PATHS[sdk=iphonesimulator*]" = "ARSDK3_iOS/iOS-iphonesimulator/staging/usr/include";
+				"HEADER_SEARCH_PATHS[sdk=iphoneos*]" = "ARSDK3_iOS/arsdk-ios/staging/usr/include";
+				"HEADER_SEARCH_PATHS[sdk=iphonesimulator*]" = "ARSDK3_iOS/arsdk-ios_sim/staging/usr/include";
 				INFOPLIST_FILE = SDKSample/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				"LIBRARY_SEARCH_PATHS[sdk=iphoneos*]" = "ARSDK3_iOS/iOS-iphoneos/staging/usr/lib";
-				"LIBRARY_SEARCH_PATHS[sdk=iphonesimulator*]" = "ARSDK3_iOS/iOS-iphonesimulator/staging/usr/lib";
+				"LIBRARY_SEARCH_PATHS[sdk=iphoneos*]" = "ARSDK3_iOS/arsdk-ios/staging/usr/lib";
+				"LIBRARY_SEARCH_PATHS[sdk=iphonesimulator*]" = "ARSDK3_iOS/arsdk-ios_sim/staging/usr/lib";
 				OTHER_CFLAGS = "";
 				OTHER_LDFLAGS = (
 					"-larcommands",
@@ -796,12 +796,12 @@
 				"DEAD_CODE_STRIPPING[arch=*]" = YES;
 				DEVELOPMENT_TEAM = EA523KQ2D9;
 				ENABLE_BITCODE = NO;
-				"HEADER_SEARCH_PATHS[sdk=iphoneos*]" = "ARSDK3_iOS/iOS-iphoneos/staging/usr/include";
-				"HEADER_SEARCH_PATHS[sdk=iphonesimulator*]" = "ARSDK3_iOS/iOS-iphonesimulator/staging/usr/include";
+				"HEADER_SEARCH_PATHS[sdk=iphoneos*]" = "ARSDK3_iOS/arsdk-ios/staging/usr/include";
+				"HEADER_SEARCH_PATHS[sdk=iphonesimulator*]" = "ARSDK3_iOS/arsdk-ios_sim/staging/usr/include";
 				INFOPLIST_FILE = SDKSample/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				"LIBRARY_SEARCH_PATHS[sdk=iphoneos*]" = "ARSDK3_iOS/iOS-iphoneos/staging/usr/lib";
-				"LIBRARY_SEARCH_PATHS[sdk=iphonesimulator*]" = "ARSDK3_iOS/iOS-iphonesimulator/staging/usr/lib";
+				"LIBRARY_SEARCH_PATHS[sdk=iphoneos*]" = "ARSDK3_iOS/arsdk-ios/staging/usr/lib";
+				"LIBRARY_SEARCH_PATHS[sdk=iphonesimulator*]" = "ARSDK3_iOS/arsdk-ios_sim/staging/usr/lib";
 				OTHER_CFLAGS = "";
 				OTHER_LDFLAGS = (
 					"-larcommands",
