@@ -84,6 +84,7 @@ public class DeviceListActivity extends AppCompatActivity {
                         break;
 
                     case ARDISCOVERY_PRODUCT_SKYCONTROLLER_2:
+                    case ARDISCOVERY_PRODUCT_SKYCONTROLLER_2P:
                     case ARDISCOVERY_PRODUCT_SKYCONTROLLER_NG:
                         intent = new Intent(DeviceListActivity.this, SkyController2Activity.class);
                         break;
