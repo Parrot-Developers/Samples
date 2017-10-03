@@ -5,6 +5,7 @@
 
 #import "MiniDroneVC.h"
 #import "MiniDrone.h"
+#import "H264VideoView.h"
 
 @interface MiniDroneVC ()<MiniDroneDelegate>
 
@@ -17,6 +18,7 @@
 @property (nonatomic, assign) NSUInteger nbMaxDownload;
 @property (nonatomic, assign) int currentDownloadIndex; // from 1 to nbMaxDownload
 
+@property (nonatomic, strong) IBOutlet H264VideoView *videoView;
 @property (nonatomic, strong) IBOutlet UILabel *batteryLabel;
 @property (nonatomic, strong) IBOutlet UIButton *takeOffLandBt;
 @property (nonatomic, strong) IBOutlet UIButton *downloadMediasBt;
@@ -26,6 +28,7 @@
 @implementation MiniDroneVC
 
 -(void)viewDidLoad {
+    [super viewDidLoad];
     _stateSem = dispatch_semaphore_create(0);
     
     _miniDrone = [[MiniDrone alloc] initWithService:_service];
@@ -37,6 +40,7 @@
 }
 
 - (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
     if ([_miniDrone connectionState] != ARCONTROLLER_DEVICE_STATE_RUNNING) {
         [_connectionAlertView show];
     }
@@ -44,6 +48,7 @@
 
 - (void) viewDidDisappear:(BOOL)animated
 {
+    [super viewDidDisappear:animated];
     if (_connectionAlertView && !_connectionAlertView.isHidden) {
         [_connectionAlertView dismissWithClickedButtonIndex:0 animated:NO];
     }
@@ -106,6 +111,14 @@
             [_takeOffLandBt setEnabled:NO];
             [_downloadMediasBt setEnabled:NO];
     }
+}
+
+- (BOOL)miniDrone:(MiniDrone*)bebopDrone configureDecoder:(ARCONTROLLER_Stream_Codec_t)codec {
+    return [_videoView configureDecoder:codec];
+}
+
+- (BOOL)miniDrone:(MiniDrone*)bebopDrone didReceiveFrame:(ARCONTROLLER_Frame_t*)frame {
+    return [_videoView displayFrame:frame];
 }
 
 - (void)miniDrone:(MiniDrone*)miniDrone didFoundMatchingMedias:(NSUInteger)nbMedias {

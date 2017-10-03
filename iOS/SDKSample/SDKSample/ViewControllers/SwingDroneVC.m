@@ -27,6 +27,7 @@
 @implementation SwingDroneVC
 
 -(void)viewDidLoad {
+    [super viewDidLoad];
     _stateSem = dispatch_semaphore_create(0);
 
     _swingDrone = [[SwingDrone alloc] initWithService:_service];
@@ -38,6 +39,7 @@
 }
 
 - (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
     if ([_swingDrone connectionState] != ARCONTROLLER_DEVICE_STATE_RUNNING) {
         [_connectionAlertView show];
     }
@@ -45,6 +47,7 @@
 
 - (void) viewDidDisappear:(BOOL)animated
 {
+    [super viewDidDisappear:animated];
     if (_connectionAlertView && !_connectionAlertView.isHidden) {
         [_connectionAlertView dismissWithClickedButtonIndex:0 animated:NO];
     }
@@ -331,6 +334,7 @@
             break;
 
         default:
+            flyingMode = ARCOMMANDS_MINIDRONE_PILOTING_FLYINGMODE_MODE_QUADRICOPTER;
             break;
     }
     _flyingModeCtrl.selectedSegmentIndex = -1;

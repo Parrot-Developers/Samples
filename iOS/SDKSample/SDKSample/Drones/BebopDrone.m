@@ -216,7 +216,7 @@ static void stateChanged (eARCONTROLLER_DEVICE_STATE newState, eARCONTROLLER_ERR
     if (bebopDrone != nil) {
         switch (newState) {
             case ARCONTROLLER_DEVICE_STATE_RUNNING:
-                bebopDrone.deviceController->aRDrone3->sendMediaStreamingVideoEnable(bebopDrone.deviceController->aRDrone3, 1);
+                ARCONTROLLER_Device_StartVideoStream(bebopDrone.deviceController);
                 break;
             case ARCONTROLLER_DEVICE_STATE_STOPPED:
                 break;

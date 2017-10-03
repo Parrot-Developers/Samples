@@ -15,7 +15,7 @@
 		F828FA791C86F14C0075E867 /* MiniDroneVC.m in Sources */ = {isa = PBXBuildFile; fileRef = F828FA781C86F14C0075E867 /* MiniDroneVC.m */; };
 		F828FA7D1C8729860075E867 /* SkyController.m in Sources */ = {isa = PBXBuildFile; fileRef = F828FA7C1C8729860075E867 /* SkyController.m */; };
 		F828FA801C8750070075E867 /* SkyControllerVC.m in Sources */ = {isa = PBXBuildFile; fileRef = F828FA7F1C8750070075E867 /* SkyControllerVC.m */; };
-		F8838E571C80874900B49443 /* BebopVideoView.m in Sources */ = {isa = PBXBuildFile; fileRef = F8838E561C80874900B49443 /* BebopVideoView.m */; };
+		F8838E571C80874900B49443 /* H264VideoView.m in Sources */ = {isa = PBXBuildFile; fileRef = F8838E561C80874900B49443 /* H264VideoView.m */; };
 		F8838E691C80A51300B49443 /* SDCardModule.m in Sources */ = {isa = PBXBuildFile; fileRef = F8838E681C80A51200B49443 /* SDCardModule.m */; };
 		F8885C291D7DAB23001DFB77 /* SwingDrone.m in Sources */ = {isa = PBXBuildFile; fileRef = F8885C281D7DAB23001DFB77 /* SwingDrone.m */; };
 		F8885C2C1D7DAB39001DFB77 /* SwingDroneVC.m in Sources */ = {isa = PBXBuildFile; fileRef = F8885C2B1D7DAB39001DFB77 /* SwingDroneVC.m */; };
@@ -37,7 +37,7 @@
 		F8A2E0E61D772EF3001E391E /* JSDrone.m in Sources */ = {isa = PBXBuildFile; fileRef = F828FA691C8604150075E867 /* JSDrone.m */; };
 		F8A2E0E71D772EF3001E391E /* DeviceListVC.m in Sources */ = {isa = PBXBuildFile; fileRef = F8B03DBE1C7DA82600149B4F /* DeviceListVC.m */; };
 		F8A2E0E81D772EF3001E391E /* SkyControllerVC.m in Sources */ = {isa = PBXBuildFile; fileRef = F828FA7F1C8750070075E867 /* SkyControllerVC.m */; };
-		F8A2E0E91D772EF3001E391E /* BebopVideoView.m in Sources */ = {isa = PBXBuildFile; fileRef = F8838E561C80874900B49443 /* BebopVideoView.m */; };
+		F8A2E0E91D772EF3001E391E /* H264VideoView.m in Sources */ = {isa = PBXBuildFile; fileRef = F8838E561C80874900B49443 /* H264VideoView.m */; };
 		F8A2E0EA1D772EF3001E391E /* SkyController2.m in Sources */ = {isa = PBXBuildFile; fileRef = F8A2E0D31D770782001E391E /* SkyController2.m */; };
 		F8A2E0EB1D772EF3001E391E /* SkyController.m in Sources */ = {isa = PBXBuildFile; fileRef = F828FA7C1C8729860075E867 /* SkyController.m */; };
 		F8A2E0EC1D772EF3001E391E /* DroneDiscoverer.m in Sources */ = {isa = PBXBuildFile; fileRef = F8F74D2F1C7DC7BE00DC5FA1 /* DroneDiscoverer.m */; };
@@ -74,8 +74,8 @@
 		F828FA7C1C8729860075E867 /* SkyController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SkyController.m; path = Drones/SkyController.m; sourceTree = "<group>"; };
 		F828FA7E1C8750070075E867 /* SkyControllerVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SkyControllerVC.h; path = ViewControllers/SkyControllerVC.h; sourceTree = "<group>"; };
 		F828FA7F1C8750070075E867 /* SkyControllerVC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SkyControllerVC.m; path = ViewControllers/SkyControllerVC.m; sourceTree = "<group>"; };
-		F8838E551C80874900B49443 /* BebopVideoView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BebopVideoView.h; path = Views/BebopVideoView.h; sourceTree = "<group>"; };
-		F8838E561C80874900B49443 /* BebopVideoView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = BebopVideoView.m; path = Views/BebopVideoView.m; sourceTree = "<group>"; };
+		F8838E551C80874900B49443 /* H264VideoView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = H264VideoView.h; path = Views/H264VideoView.h; sourceTree = "<group>"; };
+		F8838E561C80874900B49443 /* H264VideoView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = H264VideoView.m; path = Views/H264VideoView.m; sourceTree = "<group>"; };
 		F8838E671C80A51200B49443 /* SDCardModule.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SDCardModule.h; path = Drones/SDCardModule.h; sourceTree = "<group>"; };
 		F8838E681C80A51200B49443 /* SDCardModule.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SDCardModule.m; path = Drones/SDCardModule.m; sourceTree = "<group>"; };
 		F8885C271D7DAB23001DFB77 /* SwingDrone.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SwingDrone.h; path = Drones/SwingDrone.h; sourceTree = "<group>"; };
@@ -245,8 +245,8 @@
 			children = (
 				F828FA711C860BEB0075E867 /* JSVideoView.h */,
 				F828FA721C860BEB0075E867 /* JSVideoView.m */,
-				F8838E551C80874900B49443 /* BebopVideoView.h */,
-				F8838E561C80874900B49443 /* BebopVideoView.m */,
+				F8838E551C80874900B49443 /* H264VideoView.h */,
+				F8838E561C80874900B49443 /* H264VideoView.m */,
 			);
 			name = Views;
 			sourceTree = "<group>";
@@ -401,7 +401,7 @@
 				F8A2E0E71D772EF3001E391E /* DeviceListVC.m in Sources */,
 				F8A2E0E81D772EF3001E391E /* SkyControllerVC.m in Sources */,
 				F8885C2E1D7DAB45001DFB77 /* SwingDrone.m in Sources */,
-				F8A2E0E91D772EF3001E391E /* BebopVideoView.m in Sources */,
+				F8A2E0E91D772EF3001E391E /* H264VideoView.m in Sources */,
 				F8A2E0EA1D772EF3001E391E /* SkyController2.m in Sources */,
 				F8A2E0EB1D772EF3001E391E /* SkyController.m in Sources */,
 				F8A2E0EC1D772EF3001E391E /* DroneDiscoverer.m in Sources */,
@@ -428,7 +428,7 @@
 				F828FA6A1C8604150075E867 /* JSDrone.m in Sources */,
 				F8B03DBF1C7DA82600149B4F /* DeviceListVC.m in Sources */,
 				F828FA801C8750070075E867 /* SkyControllerVC.m in Sources */,
-				F8838E571C80874900B49443 /* BebopVideoView.m in Sources */,
+				F8838E571C80874900B49443 /* H264VideoView.m in Sources */,
 				F8A2E0D41D770782001E391E /* SkyController2.m in Sources */,
 				F828FA7D1C8729860075E867 /* SkyController.m in Sources */,
 				F8F74D301C7DC7BE00DC5FA1 /* DroneDiscoverer.m in Sources */,
@@ -537,6 +537,10 @@
 					"-lssl",
 					"-lpomp",
 					"-lmux",
+					"-lulog",
+					"-lsdp",
+					"-lrtsp",
+					"-lfutils",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.parrot.SDKSample;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -577,6 +581,10 @@
 					"-lssl",
 					"-lpomp",
 					"-lmux",
+					"-lulog",
+					"-lsdp",
+					"-lrtsp",
+					"-lfutils",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.parrot.SDKSample;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -617,6 +625,10 @@
 					"-lssl",
 					"-lpomp",
 					"-lmux",
+					"-lulog",
+					"-lsdp",
+					"-lrtsp",
+					"-lfutils",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.parrot.SDKSample;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -657,6 +669,10 @@
 					"-lssl",
 					"-lpomp",
 					"-lmux",
+					"-lulog",
+					"-lsdp",
+					"-lrtsp",
+					"-lfutils",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.parrot.SDKSample;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -783,6 +799,10 @@
 					"-lssl",
 					"-lpomp",
 					"-lmux",
+					"-lulog",
+					"-lsdp",
+					"-lrtsp",
+					"-lfutils",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.parrot.SDKSample;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -823,6 +843,10 @@
 					"-lssl",
 					"-lpomp",
 					"-lmux",
+					"-lulog",
+					"-lsdp",
+					"-lrtsp",
+					"-lfutils",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.parrot.SDKSample;
 				PRODUCT_NAME = "$(TARGET_NAME)";

@@ -210,7 +210,7 @@ static void extensionStateChanged (eARCONTROLLER_DEVICE_STATE newState, eARDISCO
     if (sc2 != nil) {
         switch (newState) {
             case ARCONTROLLER_DEVICE_STATE_RUNNING:
-                sc2.deviceController->aRDrone3->sendMediaStreamingVideoEnable(sc2.deviceController->aRDrone3, 1);
+                ARCONTROLLER_Device_StartVideoStream(sc2.deviceController);
                 break;
             default:
                 break;

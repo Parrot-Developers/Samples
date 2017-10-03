@@ -11,12 +11,15 @@ import com.parrot.arsdk.arcontroller.ARCONTROLLER_DEVICE_STATE_ENUM;
 import com.parrot.arsdk.arcontroller.ARCONTROLLER_DICTIONARY_KEY_ENUM;
 import com.parrot.arsdk.arcontroller.ARCONTROLLER_ERROR_ENUM;
 import com.parrot.arsdk.arcontroller.ARControllerArgumentDictionary;
+import com.parrot.arsdk.arcontroller.ARControllerCodec;
 import com.parrot.arsdk.arcontroller.ARControllerDictionary;
 import com.parrot.arsdk.arcontroller.ARControllerException;
 import com.parrot.arsdk.arcontroller.ARDeviceController;
 import com.parrot.arsdk.arcontroller.ARDeviceControllerListener;
+import com.parrot.arsdk.arcontroller.ARDeviceControllerStreamListener;
 import com.parrot.arsdk.arcontroller.ARFeatureCommon;
 import com.parrot.arsdk.arcontroller.ARFeatureMiniDrone;
+import com.parrot.arsdk.arcontroller.ARFrame;
 import com.parrot.arsdk.ardiscovery.ARDISCOVERY_PRODUCT_ENUM;
 import com.parrot.arsdk.ardiscovery.ARDISCOVERY_PRODUCT_FAMILY_ENUM;
 import com.parrot.arsdk.ardiscovery.ARDiscoveryDevice;
@@ -64,6 +67,20 @@ public class MiniDrone {
          * @param error ERROR_OK if picture has been taken, otherwise describe the error
          */
         void onPictureTaken(ARCOMMANDS_MINIDRONE_MEDIARECORDEVENT_PICTUREEVENTCHANGED_ERROR_ENUM error);
+
+        /**
+         * Called when the video decoder should be configured
+         * Called on a separate thread & only for Mambo FPV
+         * @param codec the codec to configure the decoder with
+         */
+        void configureDecoder(ARControllerCodec codec);
+
+        /**
+         * Called when a video frame has been received
+         * Called on a separate thread & only for Mambo FPV
+         * @param frame the video frame
+         */
+        void onFrameReceived(ARFrame frame);
 
         /**
          * Called before medias will be downloaded
@@ -330,6 +347,7 @@ public class MiniDrone {
             deviceController = new ARDeviceController(discoveryDevice);
 
             deviceController.addListener(mDeviceControllerListener);
+            deviceController.addStreamListener(mStreamListener);
         } catch (ARControllerException e) {
             Log.e(TAG, "Exception", e);
         }
@@ -363,6 +381,20 @@ public class MiniDrone {
         List<Listener> listenersCpy = new ArrayList<>(mListeners);
         for (Listener listener : listenersCpy) {
             listener.onPictureTaken(error);
+        }
+    }
+
+    private void notifyConfigureDecoder(ARControllerCodec codec) {
+        List<Listener> listenersCpy = new ArrayList<>(mListeners);
+        for (Listener listener : listenersCpy) {
+            listener.configureDecoder(codec);
+        }
+    }
+
+    private void notifyFrameReceived(ARFrame frame) {
+        List<Listener> listenersCpy = new ArrayList<>(mListeners);
+        for (Listener listener : listenersCpy) {
+            listener.onFrameReceived(frame);
         }
     }
 
@@ -424,7 +456,9 @@ public class MiniDrone {
         @Override
         public void onStateChanged(ARDeviceController deviceController, ARCONTROLLER_DEVICE_STATE_ENUM newState, ARCONTROLLER_ERROR_ENUM error) {
             mState = newState;
-            if (ARCONTROLLER_DEVICE_STATE_ENUM.ARCONTROLLER_DEVICE_STATE_STOPPED.equals(mState)) {
+            if (ARCONTROLLER_DEVICE_STATE_ENUM.ARCONTROLLER_DEVICE_STATE_RUNNING.equals(mState)) {
+                mDeviceController.startVideoStream();
+            } else if (ARCONTROLLER_DEVICE_STATE_ENUM.ARCONTROLLER_DEVICE_STATE_STOPPED.equals(mState)) {
                 if (mSDCardModule != null) {
                     mSDCardModule.cancelGetFlightMedias();
                 }
@@ -506,5 +540,22 @@ public class MiniDrone {
                 }
             }
         }
+    };
+
+    private final ARDeviceControllerStreamListener mStreamListener = new ARDeviceControllerStreamListener() {
+        @Override
+        public ARCONTROLLER_ERROR_ENUM configureDecoder(ARDeviceController deviceController, final ARControllerCodec codec) {
+            notifyConfigureDecoder(codec);
+            return ARCONTROLLER_ERROR_ENUM.ARCONTROLLER_OK;
+        }
+
+        @Override
+        public ARCONTROLLER_ERROR_ENUM onFrameReceived(ARDeviceController deviceController, final ARFrame frame) {
+            notifyFrameReceived(frame);
+            return ARCONTROLLER_ERROR_ENUM.ARCONTROLLER_OK;
+        }
+
+        @Override
+        public void onFrameTimeout(ARDeviceController deviceController) {}
     };
 }

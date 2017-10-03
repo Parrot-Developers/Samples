@@ -19,7 +19,7 @@ import com.parrot.arsdk.arcontroller.ARFrame;
 import com.parrot.arsdk.ardiscovery.ARDiscoveryDeviceService;
 import com.parrot.sdksample.R;
 import com.parrot.sdksample.drone.BebopDrone;
-import com.parrot.sdksample.view.BebopVideoView;
+import com.parrot.sdksample.view.H264VideoView;
 
 public class BebopActivity extends AppCompatActivity {
     private static final String TAG = "BebopActivity";
@@ -28,7 +28,7 @@ public class BebopActivity extends AppCompatActivity {
     private ProgressDialog mConnectionProgressDialog;
     private ProgressDialog mDownloadProgressDialog;
 
-    private BebopVideoView mVideoView;
+    private H264VideoView mVideoView;
 
     private TextView mBatteryLabel;
     private Button mTakeOffLandBt;
@@ -95,7 +95,7 @@ public class BebopActivity extends AppCompatActivity {
     }
 
     private void initIHM() {
-        mVideoView = (BebopVideoView) findViewById(R.id.videoView);
+        mVideoView = (H264VideoView) findViewById(R.id.videoView);
 
         findViewById(R.id.emergencyBt).setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {

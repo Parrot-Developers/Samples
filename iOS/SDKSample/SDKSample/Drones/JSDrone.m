@@ -190,7 +190,7 @@ static void stateChanged (eARCONTROLLER_DEVICE_STATE newState, eARCONTROLLER_ERR
     if (jsDrone != nil) {
         switch (newState) {
             case ARCONTROLLER_DEVICE_STATE_RUNNING:
-                jsDrone.deviceController->jumpingSumo->sendMediaStreamingVideoEnable(jsDrone.deviceController->jumpingSumo, 1);
+                ARCONTROLLER_Device_StartVideoStream(jsDrone.deviceController);
                 break;
             case ARCONTROLLER_DEVICE_STATE_STOPPED:
                 break;
