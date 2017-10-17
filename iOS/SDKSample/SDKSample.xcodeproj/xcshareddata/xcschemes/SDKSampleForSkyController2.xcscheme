@@ -42,7 +42,7 @@
       </AdditionalOptions>
    </TestAction>
    <LaunchAction
-      buildConfiguration = "DebugWithLocalSDK"
+      buildConfiguration = "DebugWithPrecompiledSDK"
       selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
       launchStyle = "0"
