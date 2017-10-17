@@ -139,28 +139,6 @@
 }
 
 - (void)createSDCardModule {
-    /*eARUTILS_ERROR ftpError = ARUTILS_OK;
-    
-    if (_discoveryDevice == NULL)
-        return;
-
-    if (!_ftpListManager) {
-        _ftpListManager = ARUTILS_Manager_New(&ftpError);
-
-        if(ftpError == ARUTILS_OK) {
-            ftpError = ARUTILS_Manager_InitFtp(_ftpListManager, _discoveryDevice, ARUTILS_DESTINATION_DRONE,
-                                               ARUTILS_FTP_TYPE_GENERIC);
-        }
-    }
-
-    if(!_ftpQueueManager && ftpError == ARUTILS_OK) {
-        _ftpQueueManager = ARUTILS_Manager_New(&ftpError);
-        if(ftpError == ARUTILS_OK) {
-            ftpError = ARUTILS_Manager_InitFtp(_ftpQueueManager, _discoveryDevice, ARUTILS_DESTINATION_DRONE,
-                                               ARUTILS_FTP_TYPE_GENERIC);
-        }
-    }*/
-
     if (_discoveryDevice) {
         _sdCardModule = [[SDCardModule alloc] initWithDiscoveryDevice:_discoveryDevice];
         _sdCardModule.delegate = self;

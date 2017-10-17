@@ -129,8 +129,24 @@
     if (cell == nil) {
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:simpleTableIdentifier];
     }
-    
-    cell.textLabel.text = ((ARService*)[_dataSource objectAtIndex:indexPath.row]).name;
+
+    ARService *service = (ARService*)[_dataSource objectAtIndex:indexPath.row];
+    NSString *networkType;
+    switch (service.network_type) {
+        case ARDISCOVERY_NETWORK_TYPE_NET:
+            networkType = @"IP (e.g. wifi)";
+            break;
+        case ARDISCOVERY_NETWORK_TYPE_BLE:
+            networkType = @"BLE";
+            break;
+        case ARDISCOVERY_NETWORK_TYPE_USBMUX:
+            networkType = @"libmux over USB";
+            break;
+        default:
+            networkType = @"Unknown";
+            break;
+    }
+    cell.textLabel.text = [NSString stringWithFormat:@"%@ on %@ network", service.name, networkType];
     return cell;
 }
 
