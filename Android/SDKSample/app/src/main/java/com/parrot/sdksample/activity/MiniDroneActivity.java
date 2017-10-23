@@ -14,9 +14,12 @@ import android.widget.TextView;
 import com.parrot.arsdk.arcommands.ARCOMMANDS_MINIDRONE_MEDIARECORDEVENT_PICTUREEVENTCHANGED_ERROR_ENUM;
 import com.parrot.arsdk.arcommands.ARCOMMANDS_MINIDRONE_PILOTINGSTATE_FLYINGSTATECHANGED_STATE_ENUM;
 import com.parrot.arsdk.arcontroller.ARCONTROLLER_DEVICE_STATE_ENUM;
+import com.parrot.arsdk.arcontroller.ARControllerCodec;
+import com.parrot.arsdk.arcontroller.ARFrame;
 import com.parrot.arsdk.ardiscovery.ARDiscoveryDeviceService;
 import com.parrot.sdksample.R;
 import com.parrot.sdksample.drone.MiniDrone;
+import com.parrot.sdksample.view.H264VideoView;
 
 public class MiniDroneActivity extends AppCompatActivity {
     private static final String TAG = "MiniDroneActivity";
@@ -24,6 +27,8 @@ public class MiniDroneActivity extends AppCompatActivity {
 
     private ProgressDialog mConnectionProgressDialog;
     private ProgressDialog mDownloadProgressDialog;
+
+    private H264VideoView mVideoView;
 
     private TextView mBatteryLabel;
     private Button mTakeOffLandBt;
@@ -92,6 +97,7 @@ public class MiniDroneActivity extends AppCompatActivity {
     }
 
     private void initIHM() {
+        mVideoView = (H264VideoView) findViewById(R.id.videoView);
 
         findViewById(R.id.emergencyBt).setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
@@ -384,6 +390,16 @@ public class MiniDroneActivity extends AppCompatActivity {
         @Override
         public void onPictureTaken(ARCOMMANDS_MINIDRONE_MEDIARECORDEVENT_PICTUREEVENTCHANGED_ERROR_ENUM error) {
             Log.i(TAG, "Picture has been taken");
+        }
+
+        @Override
+        public void configureDecoder(ARControllerCodec codec) {
+            mVideoView.configureDecoder(codec);
+        }
+
+        @Override
+        public void onFrameReceived(ARFrame frame) {
+            mVideoView.displayFrame(frame);
         }
 
         @Override

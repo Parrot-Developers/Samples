@@ -40,6 +40,7 @@ typedef enum {
 @implementation JSVC
 
 -(void)viewDidLoad {
+    [super viewDidLoad];
     _stateSem = dispatch_semaphore_create(0);
     
     _jsDrone = [[JSDrone alloc] initWithService:_service];
@@ -52,6 +53,7 @@ typedef enum {
 }
 
 - (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
     if ([_jsDrone connectionState] != ARCONTROLLER_DEVICE_STATE_RUNNING) {
         [_connectionAlertView show];
     }
@@ -59,6 +61,7 @@ typedef enum {
 
 - (void) viewDidDisappear:(BOOL)animated
 {
+    [super viewDidDisappear:animated];
     AudioStreamAUBackend *audioStream = [AudioStreamAUBackend sharedInstance];
     [audioStream stopPlaying];
     [audioStream stopRecording];

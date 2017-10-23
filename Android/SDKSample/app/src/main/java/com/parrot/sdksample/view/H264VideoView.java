@@ -17,9 +17,9 @@ import java.nio.ByteBuffer;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-public class BebopVideoView extends SurfaceView implements SurfaceHolder.Callback {
+public class H264VideoView extends SurfaceView implements SurfaceHolder.Callback {
 
-    private static final String TAG = "BebopVideoView";
+    private static final String TAG = "H264VideoView";
     private static final String VIDEO_MIME_TYPE = "video/avc";
     private static final int VIDEO_DEQUEUE_TIMEOUT = 33000;
 
@@ -36,17 +36,17 @@ public class BebopVideoView extends SurfaceView implements SurfaceHolder.Callbac
     private static final int VIDEO_WIDTH = 640;
     private static final int VIDEO_HEIGHT = 368;
 
-    public BebopVideoView(Context context) {
+    public H264VideoView(Context context) {
         super(context);
         customInit();
     }
 
-    public BebopVideoView(Context context, AttributeSet attrs) {
+    public H264VideoView(Context context, AttributeSet attrs) {
         super(context, attrs);
         customInit();
     }
 
-    public BebopVideoView(Context context, AttributeSet attrs, int defStyleAttr) {
+    public H264VideoView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         customInit();
     }

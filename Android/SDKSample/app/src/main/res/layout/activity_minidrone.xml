@@ -6,6 +6,10 @@
     tools:context=".activity.MiniDroneActivity"
     android:id="@+id/piloting_view">
 
+    <com.parrot.sdksample.view.H264VideoView
+        android:id="@+id/videoView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

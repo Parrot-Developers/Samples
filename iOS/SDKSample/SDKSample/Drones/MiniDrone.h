@@ -36,6 +36,23 @@
 - (void)miniDrone:(MiniDrone*)miniDrone flyingStateDidChange:(eARCOMMANDS_MINIDRONE_PILOTINGSTATE_FLYINGSTATECHANGED_STATE)state;
 
 /**
+ * Called when the video decoder should be configured
+ * Called on separate thread
+ * @param miniDrone the drone concerned
+ * @param codec the codec information about the stream
+ * @return true if configuration went well, false otherwise
+ */
+- (BOOL)miniDrone:(MiniDrone*)miniDrone configureDecoder:(ARCONTROLLER_Stream_Codec_t)codec;
+
+/**
+ * Called when a frame has been received
+ * Called on separate thread
+ * @param miniDrone the drone concerned
+ * @param frame the frame received
+ */
+- (BOOL)miniDrone:(MiniDrone*)miniDrone didReceiveFrame:(ARCONTROLLER_Frame_t*)frame;
+
+/**
  * Called before medias will be downloaded
  * Called on the main thread
  * @param miniDrone the drone concerned

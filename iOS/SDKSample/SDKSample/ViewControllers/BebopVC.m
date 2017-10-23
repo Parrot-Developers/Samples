@@ -5,7 +5,7 @@
 
 #import "BebopVC.h"
 #import "BebopDrone.h"
-#import "BebopVideoView.h"
+#import "H264VideoView.h"
 
 @interface BebopVC ()<BebopDroneDelegate>
 
@@ -18,7 +18,7 @@
 @property (nonatomic, assign) NSUInteger nbMaxDownload;
 @property (nonatomic, assign) int currentDownloadIndex; // from 1 to nbMaxDownload
 
-@property (nonatomic, strong) IBOutlet BebopVideoView *videoView;
+@property (nonatomic, strong) IBOutlet H264VideoView *videoView;
 @property (nonatomic, strong) IBOutlet UILabel *batteryLabel;
 @property (nonatomic, strong) IBOutlet UIButton *takeOffLandBt;
 @property (nonatomic, strong) IBOutlet UIButton *downloadMediasBt;
@@ -28,6 +28,7 @@
 @implementation BebopVC
 
 -(void)viewDidLoad {
+    [super viewDidLoad];
     _stateSem = dispatch_semaphore_create(0);
     
     _bebopDrone = [[BebopDrone alloc] initWithService:_service];
@@ -39,6 +40,7 @@
 }
 
 - (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
     if ([_bebopDrone connectionState] != ARCONTROLLER_DEVICE_STATE_RUNNING) {
         [_connectionAlertView show];
     }
@@ -46,6 +48,7 @@
 
 - (void) viewDidDisappear:(BOOL)animated
 {
+    [super viewDidDisappear:animated];
     if (_connectionAlertView && !_connectionAlertView.isHidden) {
         [_connectionAlertView dismissWithClickedButtonIndex:0 animated:NO];
     }

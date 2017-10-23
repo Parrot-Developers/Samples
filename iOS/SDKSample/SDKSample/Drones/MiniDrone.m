@@ -91,6 +91,21 @@
         if (error == ARCONTROLLER_OK) {
             error = ARCONTROLLER_Device_AddCommandReceivedCallback(_deviceController, onCommandReceived, (__bridge void *)(self));
         }
+
+        // add the received frame callback to be informed when a frame should be displayed
+        if (error == ARCONTROLLER_OK) {
+            error = ARCONTROLLER_Device_SetVideoStreamMP4Compliant(_deviceController, 1);
+            if (error == ARCONTROLLER_ERROR_NO_VIDEO)
+                error = ARCONTROLLER_OK;
+        }
+
+        // add the received frame callback to be informed when a frame should be displayed
+        if (error == ARCONTROLLER_OK) {
+            error = ARCONTROLLER_Device_SetVideoStreamCallbacks(_deviceController, configDecoderCallback,
+                                                                didReceiveFrameCallback, NULL , (__bridge void *)(self));
+            if (error == ARCONTROLLER_ERROR_NO_VIDEO)
+                error = ARCONTROLLER_OK;
+        }
         
         // start the device controller (the callback stateChanged should be called soon)
         if (error == ARCONTROLLER_OK) {
@@ -124,28 +139,6 @@
 }
 
 - (void)createSDCardModule {
-    /*eARUTILS_ERROR ftpError = ARUTILS_OK;
-    
-    if (_discoveryDevice == NULL)
-        return;
-
-    if (!_ftpListManager) {
-        _ftpListManager = ARUTILS_Manager_New(&ftpError);
-
-        if(ftpError == ARUTILS_OK) {
-            ftpError = ARUTILS_Manager_InitFtp(_ftpListManager, _discoveryDevice, ARUTILS_DESTINATION_DRONE,
-                                               ARUTILS_FTP_TYPE_GENERIC);
-        }
-    }
-
-    if(!_ftpQueueManager && ftpError == ARUTILS_OK) {
-        _ftpQueueManager = ARUTILS_Manager_New(&ftpError);
-        if(ftpError == ARUTILS_OK) {
-            ftpError = ARUTILS_Manager_InitFtp(_ftpQueueManager, _discoveryDevice, ARUTILS_DESTINATION_DRONE,
-                                               ARUTILS_FTP_TYPE_GENERIC);
-        }
-    }*/
-
     if (_discoveryDevice) {
         _sdCardModule = [[SDCardModule alloc] initWithDiscoveryDevice:_discoveryDevice];
         _sdCardModule.delegate = self;
@@ -235,6 +228,7 @@ static void stateChanged (eARCONTROLLER_DEVICE_STATE newState, eARCONTROLLER_ERR
     if (miniDrone != nil) {
         switch (newState) {
             case ARCONTROLLER_DEVICE_STATE_RUNNING:
+                ARCONTROLLER_Device_StartVideoStream(miniDrone.deviceController);
                 break;
             case ARCONTROLLER_DEVICE_STATE_STOPPED:
                 break;
@@ -303,6 +297,22 @@ static void onCommandReceived (eARCONTROLLER_DICTIONARY_KEY commandKey, ARCONTRO
             }
         }
     }
+}
+
+static eARCONTROLLER_ERROR configDecoderCallback (ARCONTROLLER_Stream_Codec_t codec, void *customData) {
+    MiniDrone *miniDrone = (__bridge MiniDrone*)customData;
+
+    BOOL success = [miniDrone.delegate miniDrone:miniDrone configureDecoder:codec];
+
+    return (success) ? ARCONTROLLER_OK : ARCONTROLLER_ERROR;
+}
+
+static eARCONTROLLER_ERROR didReceiveFrameCallback (ARCONTROLLER_Frame_t *frame, void *customData) {
+    MiniDrone *miniDrone = (__bridge MiniDrone*)customData;
+
+    BOOL success = [miniDrone.delegate miniDrone:miniDrone didReceiveFrame:frame];
+
+    return (success) ? ARCONTROLLER_OK : ARCONTROLLER_ERROR;
 }
 
 #pragma mark SDCardModuleDelegate

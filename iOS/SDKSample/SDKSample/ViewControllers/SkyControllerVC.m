@@ -5,7 +5,7 @@
 
 #import "SkyControllerVC.h"
 #import "SkyController.h"
-#import "BebopVideoView.h"
+#import "H264VideoView.h"
 
 @interface SkyControllerVC ()<SkyControllerDelegate>
 
@@ -18,7 +18,7 @@
 @property (nonatomic, assign) NSUInteger nbMaxDownload;
 @property (nonatomic, assign) int currentDownloadIndex; // from 1 to nbMaxDownload
 
-@property (nonatomic, strong) IBOutlet BebopVideoView *videoView;
+@property (nonatomic, strong) IBOutlet H264VideoView *videoView;
 @property (nonatomic, strong) IBOutlet UILabel *scBatteryLabel;
 @property (nonatomic, strong) IBOutlet UILabel *droneBatteryLabel;
 @property (nonatomic, strong) IBOutlet UIButton *takeOffLandBt;
@@ -32,6 +32,7 @@
 @implementation SkyControllerVC
 
 -(void)viewDidLoad {
+    [super viewDidLoad];
     _stateSem = dispatch_semaphore_create(0);
     
     _skyController = [[SkyController alloc] initWithService:_service];
@@ -43,6 +44,7 @@
 }
 
 - (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
     if ([_skyController connectionState] != ARCONTROLLER_DEVICE_STATE_RUNNING) {
         [_connectionAlertView show];
     }
@@ -50,6 +52,7 @@
 
 - (void) viewDidDisappear:(BOOL)animated
 {
+    [super viewDidDisappear:animated];
     if (_connectionAlertView && !_connectionAlertView.isHidden) {
         [_connectionAlertView dismissWithClickedButtonIndex:0 animated:NO];
     }
